@@ -1,0 +1,81 @@
+import { Router } from "express";
+import { ComputerVisionClient } from "@azure/cognitiveservices-computervision";
+import { ApiKeyCredentials } from "@azure/ms-rest-js";
+
+const router = Router();
+
+const computerVisionClient = new ComputerVisionClient(
+  new ApiKeyCredentials({ 
+    inHeader: { 
+      'Ocp-Apim-Subscription-Key': process.env.AZURE_VISION_KEY as string 
+    }
+  }),
+  process.env.AZURE_VISION_ENDPOINT as string
+);
+
+router.post("/verify-id", async (req, res) => {
+  try {
+    const { imageUrl } = req.body;
+
+    // Start the read operation
+    const readOperation = await computerVisionClient.read(imageUrl);
+
+    // Get operation location from the response header
+    const operationLocation = readOperation.operationLocation;
+
+    // Get operation ID from operation location
+    const operationId = operationLocation.split('/').pop();
+
+    if (!operationId) {
+      throw new Error('Failed to get operation ID');
+    }
+
+    // Wait for the read operation to complete
+    let result = await computerVisionClient.getReadResult(operationId);
+
+    // Wait until the operation completion
+    while (result.status === "Running" || result.status === "NotStarted") {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      result = await computerVisionClient.getReadResult(operationId);
+    }
+
+    if (result.status === "Succeeded" && result.analyzeResult) {
+      // Extract all the text from the document
+      const text = result.analyzeResult.readResults
+        .map(page => page.lines.map(line => line.text).join(' '))
+        .join(' ');
+
+      // Check if the document is likely to be an ID
+      const idIndicators = [
+        'identification',
+        'id card',
+        'identity',
+        'passport',
+        'driver',
+        'license',
+        'national',
+        'birth date',
+        'expiry',
+        'citizenship',
+        'nationality'
+      ];
+
+      const isLikelyId = idIndicators.some(indicator => 
+        text.toLowerCase().includes(indicator.toLowerCase())
+      );
+
+      return res.json({
+        isId: isLikelyId,
+        confidence: isLikelyId ? 'high' : 'low',
+        detectedText: text
+      });
+    }
+
+    return res.status(400).json({ error: 'Failed to analyze document' });
+  } catch (error) {
+    console.error('Vision API Error:', error);
+    return res.status(500).json({ error: 'Failed to verify document' });
+  }
+});
+
+export default router;

@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  display: inline-block;
+  animation: marquee 20s linear infinite;
+}
+
+.ribbon-container {
+  transition: background-color 0.3s ease;
+}
+
+.ribbon-container:hover {
+  background-color: rgb(168 85 247 / 0.2);
+}
+
+.ribbon-container:hover .text-primary {
+  color: hsl(var(--accent-foreground));
+}
+
+@tailwind utilities;
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes rainbow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+.animate-rainbow {
+  animation: rainbow 3s linear infinite;
+}
+
+@layer base {
+  :root {
+    --background: 39 38% 95%;
+    --foreground: 30 9% 25%;
+    --card: 37 35% 92%;
+    --card-foreground: 30 9% 25%;
+    --popover: 37 35% 92%;
+    --popover-foreground: 30 9% 25%;
+    --primary: 358 72% 65%;
+    --primary-foreground: 37 35% 92%;
+    --secondary: 35 40% 75%;
+    --secondary-foreground: 30 9% 25%;
+    --muted: 35 25% 85%;
+    --muted-foreground: 30 6% 45%;
+    --accent: 28 50% 75%;
+    --accent-foreground: 30 9% 25%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 37 35% 92%;
+    --border: 35 40% 75%;
+    --input: 35 40% 75%;
+    --ring: 358 72% 65%;
+    --radius: 0.5rem;
+    --circuit-color: #8B4513;
+  }
+
+  .dark {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 100%;
+    --card: 240 10% 4%;
+    --card-foreground: 0 0% 100%;
+    --popover: 240 10% 4%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 180 100% 50%;
+    --primary-foreground: 240 10% 4%;
+    --secondary: 240 5% 17%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 5% 13%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 180 100% 50%;
+    --accent-foreground: 240 10% 4%;
+    --destructive: 0 100% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 5% 17%;
+    --input: 240 5% 17%;
+    --ring: 180 100% 50%;
+    --circuit-color: #00F0FF;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground transition-colors duration-300;
+  }
+}

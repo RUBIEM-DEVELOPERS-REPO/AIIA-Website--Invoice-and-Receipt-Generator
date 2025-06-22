@@ -1,0 +1,164 @@
+import sys
+import json
+import cv2
+import easyocr
+import numpy as np
+from PIL import Image
+import os
+
+def verify_document(image_path, full_name):
+    try:
+        # Verify file exists
+        if not os.path.exists(image_path):
+            raise FileNotFoundError(f"Image file not found at path: {image_path}")
+
+        print(f"Processing image at path: {image_path}", file=sys.stderr)
+
+        # Initialize EasyOCR reader
+        reader = easyocr.Reader(['en'])
+
+        # Open and verify the image
+        try:
+            #image = Image.open(image_path)
+            image_location = image_path
+            image = cv2.imread(image_location)
+            #image_array = np.array(image)
+            print(f"Successfully loaded image. Size: {image.size} ", file=sys.stderr)
+        except Exception as e: 
+            raise Exception(f"Failed to load image: {str(e)}")
+
+        # Read text from image
+        result = reader.readtext(image)
+        print(f"OCR completed. Found {len(result)} text regions", file=sys.stderr)
+
+        # Extract all text and create detailed word information
+        words_found = []
+        extracted_text = []
+
+        for detection in result:
+            bbox, text, confidence = detection
+            # Convert numpy coordinates to native Python types
+            bbox_native = [
+                [float(x) for x in point] for point in bbox
+            ]
+            words_found.append({
+                'text': text,
+                'confidence': round(float(confidence), 2),  # Round to 2 decimal places
+                'position': {
+                    'top_left': bbox_native[0],
+                    'top_right': bbox_native[1],
+                    'bottom_right': bbox_native[2],
+                    'bottom_left': bbox_native[3]
+                }
+            })
+            extracted_text.append(text)
+
+        # Sort words by confidence score (highest first)
+        words_found.sort(key=lambda x: x['confidence'], reverse=True)
+
+        # Join all text for full document analysis
+        full_text = ' '.join(extracted_text)
+
+        # Convert to lowercase for case-insensitive comparison
+        extracted_text_lower = full_text.lower()
+        full_name_lower = full_name.lower()
+
+        # Common ID document indicators
+        id_indicator_list = {
+            'student_indicators':['student', 'student id', 'student card', 'student number', 'student name', 'student surname', 'registration number','university'],
+        
+        'fullmember_indicators':['certificate','artificial intelligence','institution','university'],
+        
+        'institutional_indicators':['TIN','Trade Name','Authentication Code','CERTIFICATE']
+        }
+        # Initialize a dictionary to count found indicators for each list
+        found_counts = {list_name: 0 for list_name in id_indicator_list}
+
+        # Check if document contains ID indicators
+        for list_name, indicators in id_indicator_list.items():
+            found = [indicator for indicator in indicators if indicator.lower() in extracted_text_lower]
+            found_counts[list_name] = len(found)
+
+        # Determine which list had the most found indicators
+        max_list = max(found_counts.items(), key=lambda item: item[1])  # Use items() for key-value pairs
+        max_list_name, max_count = max_list  # Unpack the result
+
+        is_id_document = max_count > 0
+
+        # Output the results
+        if is_id_document:
+            print(f"Found indicators in {max_list_name} with count: {max_count}")
+        else:
+            print("No ID indicators found.")
+
+        #Determine 
+
+        # Check if name appears in document
+        name_found = full_name_lower in extracted_text_lower
+
+        # Names might be in different formats, so also check parts of the name
+        name_parts = full_name_lower.split()
+        name_parts_found = all(part in extracted_text_lower for part in name_parts)
+        found_name_parts = [part for part in name_parts 
+                          if part in extracted_text_lower]
+
+        # Print detailed analysis to stderr
+        print("\nDocument Analysis Results:", file=sys.stderr)
+        print("-----------------------", file=sys.stderr)
+        print(f"Total words detected: {len(words_found)}", file=sys.stderr)
+        print("\nHigh confidence words (>80%):", file=sys.stderr)
+        for word in words_found:
+            if word['confidence'] > 0.8:
+                print(f"- {word['text']} (confidence: {word['confidence']*100:.1f}%)", file=sys.stderr)
+
+        print("\nID Document Indicators found:", file=sys.stderr)
+        if found_indicators:
+            for indicator in found_indicators:
+                print(f"- {indicator}", file=sys.stderr)
+        else:
+            print("- None found", file=sys.stderr)
+
+        print("\nName matching:", file=sys.stderr)
+        print(f"- Full name match: {'Yes' if name_found else 'No'}", file=sys.stderr)
+        print("- Name parts found:", file=sys.stderr)
+        for part in found_name_parts:
+            print(f"  * {part}", file=sys.stderr)
+
+        # Return the structured result as JSON to stdout
+        result = {
+            "isId": bool(is_id_document),  # Convert numpy.bool_ to native bool
+            "nameMatch": bool(name_found or name_parts_found),
+            "confidence": "high" if is_id_document and (name_found or name_parts_found) else "low",
+            "detectedText": {
+                "words": words_found,
+                "foundIdIndicators": found_indicators,
+                "foundNameParts": found_name_parts,
+                "completeText": full_text
+            }
+        }
+
+        return result
+
+    except Exception as e:
+        print(f"Error in verify_document: {str(e)}", file=sys.stderr)
+        error_result = {
+            "error": str(e),
+            "isId": False,
+            "nameMatch": False,
+            "confidence": "none",
+            "detectedText": None
+        }
+        return error_result
+
+if __name__ == "__main__":
+    if len(sys.argv) != 4 or sys.argv[1] != "verify_document":
+        print(json.dumps({"error": "Invalid arguments"}))
+        sys.exit(1)
+
+    image_path = sys.argv[2]
+    full_name = sys.argv[3]
+
+    result = verify_document(image_path, full_name)
+    # Only print the JSON result to stdout
+    print(json.dumps(result, indent=2))
+    sys.exit(0)

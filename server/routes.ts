@@ -1,0 +1,1044 @@
+import type { Express, Request, Response, NextFunction } from "express";
+import { createServer, type Server } from "http";
+import { db } from "@db";
+import { 
+  contacts, 
+  newsletters, 
+  users, 
+  payments, 
+  events, 
+  articles,
+  localArticles, 
+  eventCreationSchema, 
+  insertArticleSchema,
+  insertLocalArticleSchema
+} from "@db/schema";
+import { ZodError } from "zod";
+import newsRouter from "./routes/news";
+import contactRouter from "./routes/contact";
+import chatRouter from "./routes/chat";
+import visionRouter from "./routes/vision";
+import { setupAuth } from "./auth";
+import nodemailer from "nodemailer";
+import membershipRouter from "./routes/membership";
+import { initiatePayment } from "./services/paynow";
+import multer from "multer";
+import { verify_document } from "./service";
+import path from "path";
+import fs from "fs";
+import { eq, inArray, sql, asc, desc } from "drizzle-orm";
+import { sendRegistrationEmail, generateRegistrationEmailContent } from "./services/email";
+
+// Ensure uploads directory exists and is writable
+const uploadsDir = path.join(process.cwd(), "client", "src", "lib", "uploads");
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true, mode: 0o755 });
+  }
+  // Test write permissions
+  const testFile = path.join(uploadsDir, '.test-write');
+  fs.writeFileSync(testFile, '');
+  fs.unlinkSync(testFile);
+  console.log('Uploads directory verified:', uploadsDir);
+} catch (error) {
+  console.error('Error setting up uploads directory:', error);
+  throw new Error('Failed to setup uploads directory. Please check permissions.');
+}
+
+// Configure multer for disk storage
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    // Double-check directory exists before writing
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true, mode: 0o755 });
+    }
+    cb(null, uploadsDir);
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, `document-${uniqueSuffix}${ext}`);
+  },
+});
+
+// Update multer configuration with better error handling
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 2 * 4032 * 4032, // Limit file size to 2MB
+  },
+  fileFilter: (_req, file, cb) => {
+    // Check file extension and mime type
+    const allowedTypes = ["image/png", "image/jpeg", "image/tiff"];
+    if (!allowedTypes.includes(file.mimetype)) {
+      cb(new Error("Only .png, .jpg and .tiff files are allowed") as any, false);
+      return;
+    }
+    cb(null, true);
+  },
+}).single('file');
+
+// Configure multer for article images specifically
+const articleImagesDir = path.join(process.cwd(), "client", "src", "lib", "articleimages");
+const eventImagesDir = path.join(process.cwd(), "client", "src", "lib", "event_images");
+const articleImageStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    // Ensure directory exists before writing
+    if (!fs.existsSync(articleImagesDir)) {
+      fs.mkdirSync(articleImagesDir, { recursive: true, mode: 0o755 });
+    }
+    cb(null, articleImagesDir);
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, `article-${uniqueSuffix}${ext}`);
+  },
+});
+
+const uploadArticleImage = multer({
+  storage: articleImageStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // Limit file size to 5MB for article images
+  },
+  fileFilter: (_req, file, cb) => {
+    // Check file extension and mime type
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+    if (!allowedTypes.includes(file.mimetype)) {
+      cb(new Error("Only .png, .jpg, and .webp files are allowed") as any, false);
+      return;
+    }
+    cb(null, true);
+  },
+}).single('image');
+
+// Configure multer for event images
+const eventImageStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    // Ensure directory exists before writing
+    if (!fs.existsSync(eventImagesDir)) {
+      fs.mkdirSync(eventImagesDir, { recursive: true, mode: 0o755 });
+    }
+    cb(null, eventImagesDir);
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, `event-${uniqueSuffix}${ext}`);
+  },
+});
+
+const uploadEventImage = multer({
+  storage: eventImageStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // Limit file size to 5MB for event images
+  },
+  fileFilter: (_req, file, cb) => {
+    // Check file extension and mime type
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+    if (!allowedTypes.includes(file.mimetype)) {
+      cb(new Error("Only .png, .jpg, and .webp files are allowed") as any, false);
+      return;
+    }
+    cb(null, true);
+  },
+}).single('image');
+
+export function registerRoutes(app: Express): Server {
+  const httpServer = createServer(app);
+
+  // Setup authentication for regular users
+  setupAuth(app);
+
+  // Middleware to check if user has admin level
+  const isAdmin = (req: Request, res: Response, next: NextFunction) => {
+    console.log("Checking admin auth:", req.isAuthenticated(), req.user);
+    
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const user = req.user as { level?: string, id: number };
+    if (user.level !== 'admin') {
+      return res.status(403).json({ message: "Forbidden - Admin access required" });
+    }
+
+    next();
+  };
+
+  // /api/auth/me endpoint is now handled in auth.ts
+
+  // Register existing routers
+  app.use(newsRouter);
+  app.use("/api/contact", contactRouter);
+  app.use(chatRouter);
+  app.use("/api/membership", membershipRouter);
+  app.use("/api/vision", visionRouter);
+
+  // Admin routes
+  app.get("/api/admin/members", isAdmin, async (req: Request, res: Response) => {
+    try {
+      if (!req.user || !req.isAuthenticated()) {
+        console.log("User not authenticated:", req.user);
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const members = await db
+        .select({
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          membershipType: users.membershipType,
+          membershipStatus: users.membershipStatus,
+          level: users.level,
+          organization: users.organization,
+          country: users.country,
+          createdAt: users.createdAt,
+        })
+        .from(users)
+        .orderBy(users.createdAt);
+
+      console.log("Fetched members:", members.length);
+      res.json(members);
+    } catch (error) {
+      console.error("Error fetching members:", error);
+      res.status(500).json({ message: "Failed to fetch members" });
+    }
+  });
+
+  app.post("/api/admin/members/bulk", isAdmin, async (req: Request, res: Response) => {
+    const { memberIds, action } = req.body;
+
+    if (!Array.isArray(memberIds) || memberIds.length === 0) {
+      return res.status(400).json({ message: "Invalid member IDs" });
+    }
+
+    if (!["activate", "deactivate", "delete", "promote", "demote"].includes(action)) {
+      return res.status(400).json({ message: "Invalid action" });
+    }
+
+    try {
+      if (action === "delete") {
+        // First delete any related payment records to avoid foreign key constraint violations
+        for (const memberId of memberIds) {
+          try {
+            // Delete payment records for this user
+            await db.delete(payments).where(eq(payments.userId, memberId));
+            console.log(`Deleted payment records for user ${memberId}`);
+          } catch (err) {
+            console.log(`No payment records found for user ${memberId} or error:`, err);
+            // Continue with the next user
+          }
+        }
+        // Now delete the users
+        await db.delete(users).where(inArray(users.id, memberIds));
+      } else if (action === "promote" || action === "demote") {
+        await db
+          .update(users)
+          .set({
+            level: action === "promote" ? "admin" : "user",
+            updatedAt: new Date(),
+          })
+          .where(inArray(users.id, memberIds));
+      } else {
+        await db
+          .update(users)
+          .set({
+            membershipStatus: action === "activate" ? "Active" : "Inactive",
+            updatedAt: new Date(),
+          })
+          .where(inArray(users.id, memberIds));
+      }
+
+      res.json({ message: "Bulk operation completed successfully" });
+    } catch (error) {
+      console.error("Error performing bulk operation:", error);
+      res.status(500).json({ message: "Failed to perform bulk operation" });
+    }
+  });
+
+  app.get("/api/admin/payments", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const paymentsList = await db.select().from(payments);
+      res.json(paymentsList);
+    } catch (error) {
+      console.error("Error fetching payments:", error);
+      res.status(500).json({ message: "Failed to fetch payments" });
+    }
+  });
+
+  app.get("/api/admin/contacts", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const contactsList = await db.select().from(contacts);
+      res.json(contactsList);
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+      res.status(500).json({ message: "Failed to fetch contacts" });
+    }
+  });
+
+  app.get("/api/admin/dashboard/stats", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const [totalMembers] = await db
+        .select({ count: sql`count(*)::int` })
+        .from(users);
+
+      const [activeMembers] = await db
+        .select({ count: sql`count(*)::int` })
+        .from(users)
+        .where(eq(users.membershipStatus, "Active"));
+
+      const [pendingMembers] = await db
+        .select({ count: sql`count(*)::int` })
+        .from(users)
+        .where(eq(users.membershipStatus, "Pending"));
+
+      // Count applications from the last 30 days
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const [recentApplications] = await db
+        .select({ count: sql`count(*)::int` })
+        .from(users)
+        .where(sql`created_at >= ${thirtyDaysAgo}`);
+
+      // Get the 5 most recent members
+      const recentMembers = await db
+        .select({
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          membershipType: users.membershipType,
+          membershipStatus: users.membershipStatus,
+          level: users.level,
+          organization: users.organization,
+          country: users.country,
+          createdAt: users.createdAt,
+        })
+        .from(users)
+        .orderBy(sql`created_at DESC`)
+        .limit(5);
+
+      res.json({
+        totalMembers: totalMembers?.count || 0,
+        activeMembers: activeMembers?.count || 0,
+        pendingMembers: pendingMembers?.count || 0,
+        recentApplications: recentApplications?.count || 0,
+        recentMembers,
+      });
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+      res.status(500).json({ message: "Failed to fetch dashboard statistics" });
+    }
+  });
+
+  // Document verification endpoint with improved error handling
+  app.post("/api/verify-document", (req: Request, res: Response) => {
+    upload(req, res, async (err) => {
+      try {
+        if (err instanceof multer.MulterError) {
+          console.error('Multer error:', err);
+          return res.status(400).json({
+            error: err.message,
+            isId: false,
+            nameMatch: false,
+            confidence: "none",
+            type: "Free Membership",
+          });
+        } else if (err) {
+          console.error('Upload error:', err);
+          return res.status(500).json({
+            error: err.message,
+            isId: false,
+            nameMatch: false,
+            confidence: "none",
+            type: "Free Membership",
+          });
+        }
+
+        if (!req.file || !req.body.fullName) {
+          console.log("Missing file or full name in request");
+          return res.status(400).json({
+            error: "Missing file or full name",
+            isId: false,
+            nameMatch: false,
+            confidence: "none",
+            type: "Free Membership",
+          });
+        }
+
+        console.log(`Processing document for ${req.body.fullName}`);
+        const result = await verify_document(req.file.path, req.body.fullName);
+
+        console.log("Document Verification Results:", {
+          isId: result.isId,
+          nameMatch: result.nameMatch,
+          confidence: result.confidence,
+          membershipType: result.type,
+        });
+
+        res.json(result);
+      } catch (error) {
+        console.error("Document verification error:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to verify document";
+        res.status(500).json({
+          error: errorMessage,
+          isId: false,
+          nameMatch: false,
+          confidence: "none",
+          type: "Free Membership",
+        });
+      } finally {
+        // Clean up the uploaded file
+        if (req.file) {
+          fs.unlink(req.file.path, (err) => {
+            if (err) console.error("Error deleting uploaded file:", err);
+          });
+        }
+      }
+    });
+  });
+
+  // Payment and registration endpoint
+  app.post("/api/payments", async (req: Request, res: Response) => {
+    try {
+      console.log("Starting payment/registration process", {
+        email: req.body.email,
+        planName: req.body.planName,
+        membershipType: req.body.planName,
+        memberKey: req.body.memberKey,
+      });
+
+      const membershipType = req.body.planName;
+      const planName = membershipType === "Free Membership" ? "free" : "paid";
+
+      // Import the password utility
+      const { hashPassword } = await import("./utils/password");
+
+      // Hash the password before storing it
+      const hashedPassword = await hashPassword(req.body.password);
+
+      const [user] = await db
+        .insert(users)
+        .values({
+          email: req.body.email,
+          password: hashedPassword,
+          name: req.body.fullName,
+          organization: req.body.organization || null,
+          role: "member",
+          level: req.body.level || "user", // Add level field with default
+          membershipType: membershipType,
+          membershipStatus: "Active",
+          membershipStartDate: new Date(),
+          membershipEndDate:
+            req.body.billingCycle === "yearly"
+              ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+              : new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
+          country: req.body.country,
+          interests: [],
+          membership_key: req.body.memberKey,
+        })
+        .returning();
+
+      // No need to add to admins table anymore, since we're using the level field
+
+
+      console.log("User created successfully:", {
+        userId: user.id,
+        membershipType: user.membershipType,
+        membershipKey: user.membership_key,
+      });
+
+      // Send registration confirmation email with error handling
+      try {
+        const emailContent = generateRegistrationEmailContent(
+          user.name || '',
+          user.membershipType,
+          user.membership_key || ''
+        );
+
+        const emailSent = await sendRegistrationEmail({
+          to: user.email,
+          subject: "Welcome to AI Institute Africa - Registration Confirmed",
+          html: emailContent.html,
+          text: emailContent.text,
+        });
+
+        if (!emailSent) {
+          console.warn(`Failed to send welcome email to ${user.email}`);
+        }
+      } catch (emailError) {
+        console.error("Failed to send registration email:", emailError);
+        // Continue with registration process despite email failure
+      }
+
+      const [payment] = await db
+        .insert(payments)
+        .values({
+          userId: user.id, // Using the typescript property name
+          amount: req.body.amount || "0",
+          currency: "USD",
+          status: "Completed",
+          paymentMethod: req.body.paymentMethod || "free", // Using camelCase to match TS schema
+          billingAddress: `${req.body.address || ''}, ${req.body.city || ''}, ${req.body.country || ''}`,
+        })
+        .returning();
+
+      console.log("Payment record created:", {
+        paymentId: payment.id,
+        amount: payment.amount,
+      });
+
+      if (req.body.amount === "0") {
+        res.json({
+          success: true,
+          data: {
+            user,
+            payment,
+            memberKey: user.membership_key,
+          },
+        });
+      } else {
+        const paymentResponse = await initiatePayment(payment);
+        res.json({
+          success: true,
+          data: {
+            user,
+            payment,
+            pollUrl: paymentResponse.pollUrl,
+            paymentRef: paymentResponse.paymentRef,
+            memberKey: user.membership_key,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Payment/Registration Error:", error);
+      if (error instanceof ZodError) {
+        res
+          .status(400)
+          .json({ message: "Invalid form data", errors: error.errors });
+      } else {
+        res
+          .status(500)
+          .json({ message: "Failed to process registration/payment" });
+      }
+    }
+  });
+
+  // Contact endpoint
+  app.post("/api/contact", async (req: Request, res: Response) => {
+    try {
+      const { name, email, message } = req.body;
+
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: email,
+        to: "admin@aiinstituteafrica.com",
+        subject: `Message from ${name}`,
+        text: message,
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      const contact = await db.insert(contacts).values(req.body);
+      res.json({ success: true, data: contact });
+    } catch (error) {
+      console.error("Error sending email:", error);
+      if (error instanceof ZodError) {
+        res
+          .status(400)
+          .json({ message: "Invalid form data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Failed to send message" });
+      }
+    }
+  });
+
+  // Newsletter endpoint
+  app.post("/api/newsletter", async (req: Request, res: Response) => {
+    try {
+      const newsletter = await db.insert(newsletters).values({
+        email: req.body.email,
+      });
+      res.json({ success: true, data: newsletter });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ message: "Invalid email address" });
+      } else {
+        res.status(500).json({ message: "Failed to subscribe" });
+      }
+    }
+  });
+
+  // Applications endpoint
+  app.post(
+    "/api/applications",
+    (req: Request, res: Response, next: NextFunction) => {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      next();
+    },
+    async (req: Request, res: Response) => {
+      res.json({ message: "Application Received" });
+    },
+  );
+
+  // Events CRUD operations
+  app.get("/api/admin/events", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const eventsList = await db.select().from(events).orderBy(desc(events.createdAt));
+      res.json(eventsList);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      res.status(500).json({ message: "Failed to fetch events" });
+    }
+  });
+
+  app.get("/api/admin/events/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      const event = await db.select().from(events).where(eq(events.id, eventId)).limit(1);
+      
+      if (event.length === 0) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      res.json(event[0]);
+    } catch (error) {
+      console.error("Error fetching event:", error);
+      res.status(500).json({ message: "Failed to fetch event" });
+    }
+  });
+
+  app.post("/api/admin/events", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const eventData = eventCreationSchema.parse(req.body);
+      const result = await db.insert(events).values({
+        title: eventData.title,
+        description: eventData.description,
+        date: eventData.date,
+        location: eventData.location,
+        type: eventData.type,
+        capacity: eventData.capacity || null,
+        registrationRequired: eventData.registrationRequired,
+        registrationUrl: eventData.registrationUrl || null,
+        imageUrl: eventData.imageUrl || null,
+        organizer: eventData.organizer,
+        status: eventData.status,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }).returning();
+
+      res.status(201).json(result[0]);
+    } catch (error) {
+      console.error("Error creating event:", error);
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create event" });
+    }
+  });
+
+  app.put("/api/admin/events/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      const eventData = eventCreationSchema.parse(req.body);
+      
+      const result = await db.update(events)
+        .set({
+          title: eventData.title,
+          description: eventData.description,
+          date: eventData.date,
+          location: eventData.location,
+          type: eventData.type,
+          capacity: eventData.capacity || null,
+          registrationRequired: eventData.registrationRequired,
+          registrationUrl: eventData.registrationUrl || null,
+          imageUrl: eventData.imageUrl || null,
+          organizer: eventData.organizer,
+          status: eventData.status,
+          updatedAt: new Date(),
+        })
+        .where(eq(events.id, eventId))
+        .returning();
+      
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      res.json(result[0]);
+    } catch (error) {
+      console.error("Error updating event:", error);
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update event" });
+    }
+  });
+
+  app.delete("/api/admin/events/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      const result = await db.delete(events).where(eq(events.id, eventId)).returning();
+      
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      res.json({ message: "Event deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      res.status(500).json({ message: "Failed to delete event" });
+    }
+  });
+
+  // Articles CRUD operations
+  app.get("/api/admin/articles", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const articlesList = await db.select().from(articles).orderBy(desc(articles.createdAt));
+      res.json(articlesList);
+    } catch (error) {
+      console.error("Error fetching articles:", error);
+      res.status(500).json({ message: "Failed to fetch articles" });
+    }
+  });
+
+  app.get("/api/admin/articles/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const articleId = parseInt(req.params.id);
+      const article = await db.select().from(articles).where(eq(articles.id, articleId)).limit(1);
+      
+      if (article.length === 0) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      
+      res.json(article[0]);
+    } catch (error) {
+      console.error("Error fetching article:", error);
+      res.status(500).json({ message: "Failed to fetch article" });
+    }
+  });
+
+  app.post("/api/admin/articles", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const articleData = insertArticleSchema.parse(req.body);
+      const result = await db.insert(articles).values({
+        title: articleData.title,
+        author: articleData.author,
+        content: articleData.content,
+        imageUrl: articleData.imageUrl || null,
+        requirement: articleData.requirement || "Free",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }).returning();
+
+      res.status(201).json(result[0]);
+    } catch (error) {
+      console.error("Error creating article:", error);
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create article" });
+    }
+  });
+
+  app.put("/api/admin/articles/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const articleId = parseInt(req.params.id);
+      const articleData = insertArticleSchema.parse(req.body);
+      
+      const result = await db.update(articles)
+        .set({
+          title: articleData.title,
+          author: articleData.author,
+          content: articleData.content,
+          imageUrl: articleData.imageUrl || null,
+          requirement: articleData.requirement || "Free",
+          updatedAt: new Date(),
+        })
+        .where(eq(articles.id, articleId))
+        .returning();
+      
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      
+      res.json(result[0]);
+    } catch (error) {
+      console.error("Error updating article:", error);
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update article" });
+    }
+  });
+
+  app.delete("/api/admin/articles/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const articleId = parseInt(req.params.id);
+      const result = await db.delete(articles).where(eq(articles.id, articleId)).returning();
+      
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      
+      res.json({ message: "Article deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting article:", error);
+      res.status(500).json({ message: "Failed to delete article" });
+    }
+  });
+
+  // Public API endpoints for events and articles
+  app.get("/api/events", async (req: Request, res: Response) => {
+    try {
+      const allEvents = await db.select().from(events)
+        .where(eq(events.status, "Upcoming"))
+        .orderBy(asc(events.date));
+      res.json(allEvents);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      res.status(500).json({ message: "Failed to fetch events" });
+    }
+  });
+
+  app.get("/api/articles", async (req: Request, res: Response) => {
+    try {
+      const allArticles = await db.select().from(articles)
+        .orderBy(desc(articles.createdAt));
+      res.json(allArticles);
+    } catch (error) {
+      console.error("Error fetching articles:", error);
+      res.status(500).json({ message: "Failed to fetch articles" });
+    }
+  });
+  
+  // Local Articles endpoints
+  app.get("/api/local-articles", async (req: Request, res: Response) => {
+    try {
+      const allLocalArticles = await db.select().from(localArticles)
+        .orderBy(desc(localArticles.createdAt));
+      res.json(allLocalArticles);
+    } catch (error) {
+      console.error("Error fetching local articles:", error);
+      res.status(500).json({ message: "Failed to fetch local articles" });
+    }
+  });
+
+  app.get("/api/local-articles/:id", async (req: Request, res: Response) => {
+    try {
+      const articleId = parseInt(req.params.id);
+      const article = await db.select().from(localArticles).where(eq(localArticles.id, articleId)).limit(1);
+      
+      if (article.length === 0) {
+        return res.status(404).json({ message: "Local article not found" });
+      }
+      
+      res.json(article[0]);
+    } catch (error) {
+      console.error("Error fetching local article:", error);
+      res.status(500).json({ message: "Failed to fetch local article" });
+    }
+  });
+  
+  // Event image upload endpoint
+  app.post("/api/admin/event-image-upload", isAdmin, (req: Request, res: Response) => {
+    uploadEventImage(req, res, async (err) => {
+      try {
+        if (err instanceof multer.MulterError) {
+          console.error('Multer error:', err);
+          return res.status(400).json({
+            error: err.message,
+            success: false
+          });
+        } else if (err) {
+          console.error('Upload error:', err);
+          return res.status(500).json({
+            error: err.message,
+            success: false
+          });
+        }
+
+        if (!req.file) {
+          console.log("Missing file in request");
+          return res.status(400).json({
+            error: "Missing file",
+            success: false
+          });
+        }
+
+        // Return the path to the uploaded image relative to the public directory
+        const imagePath = `/lib/event_images/${path.basename(req.file.path)}`;
+        console.log("Event image uploaded successfully:", imagePath);
+
+        res.json({
+          success: true,
+          imagePath: imagePath
+        });
+      } catch (error) {
+        console.error("Event image upload error:", error);
+        const errorMessage = error instanceof Error ? error.message : "Failed to upload image";
+        res.status(500).json({
+          error: errorMessage,
+          success: false
+        });
+      }
+    });
+  });
+
+  // Admin Local Articles endpoints
+  app.get("/api/admin/local-articles", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const allLocalArticles = await db.select().from(localArticles)
+        .orderBy(desc(localArticles.createdAt));
+      res.json(allLocalArticles);
+    } catch (error) {
+      console.error("Error fetching local articles in admin:", error);
+      res.status(500).json({ message: "Failed to fetch local articles" });
+    }
+  });
+  
+  // Upload article image endpoint
+  app.post("/api/admin/article-image-upload", isAdmin, (req: Request, res: Response) => {
+    uploadArticleImage(req, res, async (err) => {
+      try {
+        if (err instanceof multer.MulterError) {
+          console.error('Multer error:', err);
+          return res.status(400).json({
+            error: err.message,
+            success: false
+          });
+        } else if (err) {
+          console.error('Upload error:', err);
+          return res.status(500).json({
+            error: err.message,
+            success: false
+          });
+        }
+
+        if (!req.file) {
+          console.log("Missing file in request");
+          return res.status(400).json({
+            error: "Missing file",
+            success: false
+          });
+        }
+
+        // Return the path to the uploaded image relative to the public directory
+        const imagePath = `/lib/articleimages/${path.basename(req.file.path)}`;
+        console.log("Article image uploaded successfully:", imagePath);
+
+        res.json({
+          success: true,
+          imagePath: imagePath
+        });
+      } catch (error) {
+        console.error("Article image upload error:", error);
+        const errorMessage = error instanceof Error ? error.message : "Failed to upload image";
+        res.status(500).json({
+          error: errorMessage,
+          success: false
+        });
+      }
+    });
+  });
+
+  app.get("/api/admin/local-articles/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const articleId = parseInt(req.params.id);
+      const article = await db.select().from(localArticles).where(eq(localArticles.id, articleId)).limit(1);
+      
+      if (article.length === 0) {
+        return res.status(404).json({ message: "Local article not found" });
+      }
+      
+      res.json(article[0]);
+    } catch (error) {
+      console.error("Error fetching local article in admin:", error);
+      res.status(500).json({ message: "Failed to fetch local article" });
+    }
+  });
+
+  app.post("/api/admin/local-articles", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const articleData = insertLocalArticleSchema.parse(req.body);
+      const result = await db.insert(localArticles).values({
+        title: articleData.title,
+        author: articleData.author,
+        content: articleData.content,
+        imageUrl: articleData.imageUrl,
+        requirement: articleData.requirement || "Free",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }).returning();
+
+      res.status(201).json(result[0]);
+    } catch (error) {
+      console.error("Error creating local article:", error);
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create local article" });
+    }
+  });
+
+  app.put("/api/admin/local-articles/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const articleId = parseInt(req.params.id);
+      const articleData = insertLocalArticleSchema.parse(req.body);
+      
+      const result = await db.update(localArticles)
+        .set({
+          title: articleData.title,
+          author: articleData.author,
+          content: articleData.content,
+          imageUrl: articleData.imageUrl,
+          requirement: articleData.requirement || "Free",
+          updatedAt: new Date(),
+        })
+        .where(eq(localArticles.id, articleId))
+        .returning();
+      
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Local article not found" });
+      }
+      
+      res.json(result[0]);
+    } catch (error) {
+      console.error("Error updating local article:", error);
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update local article" });
+    }
+  });
+
+  app.delete("/api/admin/local-articles/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const articleId = parseInt(req.params.id);
+      const result = await db.delete(localArticles)
+        .where(eq(localArticles.id, articleId))
+        .returning();
+      
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Local article not found" });
+      }
+      
+      res.json({ message: "Local article deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting local article:", error);
+      res.status(500).json({ message: "Failed to delete local article" });
+    }
+  });
+
+  return httpServer;
+}
