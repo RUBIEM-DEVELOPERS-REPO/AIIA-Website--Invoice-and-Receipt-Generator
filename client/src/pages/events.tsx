@@ -22,6 +22,8 @@ import { Event } from "@/types/events";
 import { SelectEvent } from "@db/schema";
 import heroimage1 from "@/lib/hero_images/event.png";
 import { useQuery } from "@tanstack/react-query";
+import { ConferenceSection } from "@/components/sections/conference-section";
+import { ConferenceModal, useConferenceModal } from "@/components/ui/conference-modal";
 
 // Map SelectEvent to the Event type used in the component
 const mapApiEventToEvent = (apiEvent: SelectEvent): Event => {
@@ -48,6 +50,7 @@ const mapApiEventToEvent = (apiEvent: SelectEvent): Event => {
 export default function Events() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [showFullImage, setShowFullImage] = useState(false);
+  const { isOpen, closeModal } = useConferenceModal();
 
   // Fetch events from the API
   const { data: apiEvents, isLoading, error } = useQuery<SelectEvent[]>({
@@ -62,6 +65,11 @@ export default function Events() {
 
   return (
     <div className="min-h-screen">
+      <ConferenceModal isOpen={isOpen} onClose={closeModal} />
+      
+      {/* Conference Promotion Section */}
+      <ConferenceSection />
+      
       {/* Hero Section */}
       <div className="relative bg-black">
         <div
