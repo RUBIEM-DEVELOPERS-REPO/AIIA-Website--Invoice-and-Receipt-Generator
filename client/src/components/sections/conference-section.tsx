@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { CountdownTimer } from "@/components/ui/countdown-timer";
-import { Calendar, MapPin, Users, ChevronRight, Phone, Mail, Sparkles, Zap, Target } from "lucide-react";
+import { Calendar, MapPin, Users, ChevronRight, Phone, Mail, Sparkles, Zap, Target, Download } from "lucide-react";
 import conferenceImage from "@/lib/images/conference-2025.jpg";
+import brochureImage from "@/lib/images/ai-conference-speakers-brochure.jpg";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -55,6 +56,16 @@ const fadeInUp = {
 export function ConferenceSection() {
   // Conference date: August 17, 2025
   const conferenceDate = new Date("2025-08-17T09:00:00Z");
+
+  // Download brochure function
+  const downloadBrochure = () => {
+    const link = document.createElement('a');
+    link.href = brochureImage;
+    link.download = 'AI-Conference-2025-Speakers-Brochure.jpg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   // Dynamic text carousel
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -300,6 +311,14 @@ export function ConferenceSection() {
                 <Calendar className="w-4 h-4 mr-2" />
                 Register Now
                 <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 group"
+                onClick={downloadBrochure}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download Brochure
               </Button>
               <Button
                 size="lg"

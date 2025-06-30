@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, MapPin, Clock, Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -7,6 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { format } from "date-fns";
 import { useState } from "react";
 import { Event } from "@/types/events";
 import heroimage1 from "@/lib/hero_images/event.png";
