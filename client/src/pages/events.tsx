@@ -1,13 +1,5 @@
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Clock, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,56 +7,20 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { EVENTS } from "@/lib/constants";
-import { format } from "date-fns";
 import { useState } from "react";
 import { Event } from "@/types/events";
-import { SelectEvent } from "@db/schema";
 import heroimage1 from "@/lib/hero_images/event.png";
-import { useQuery } from "@tanstack/react-query";
 import { ConferenceSection } from "@/components/sections/conference-section";
 import { ConferenceModal, useConferenceModal } from "@/components/ui/conference-modal";
 import aiConferencePoster from "@/lib/images/ai-conference-poster-2025.jpg";
 
 
 
-// Map SelectEvent to the Event type used in the component
-const mapApiEventToEvent = (apiEvent: SelectEvent): Event => {
-  // Process image URL - if it starts with /lib/ it's a local image
-  let imageUrl = apiEvent.imageUrl || heroimage1.toString();
-  
-  // If it's a local path that doesn't start with http, make it relative to the site root
-  if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('data:')) {
-    // If the path starts with /lib/, it's already correct. Otherwise, ensure proper formatting
-    imageUrl = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
-  }
-  
-  return {
-    title: apiEvent.title,
-    content: apiEvent.description,
-    venue: apiEvent.location,
-    image: imageUrl,
-    duration: `${format(new Date(apiEvent.date), "MMM d, yyyy")} - ${apiEvent.type}`,
-    endDate: new Date(apiEvent.date).toISOString(),
-    registrationLink: apiEvent.registrationUrl || undefined,
-  };
-};
 
 export default function Events() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [showFullImage, setShowFullImage] = useState(false);
   const { isOpen, closeModal } = useConferenceModal();
-
-  // Fetch events from the API
-  const { data: apiEvents, isLoading, error } = useQuery<SelectEvent[]>({
-    queryKey: ["/api/events"],
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-
-  // Use API events if available, otherwise fall back to hardcoded events
-  const events = apiEvents && apiEvents.length > 0
-    ? apiEvents.map(mapApiEventToEvent)
-    : EVENTS;
 
   return (
     <div className="min-h-screen">
@@ -158,94 +114,7 @@ export default function Events() {
         </div>
       </div>
 
-      {/* Events Listing Section */}
-      <div className="container mx-auto py-16">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold">Upcoming Events</h2>
-          <div className="flex gap-2">
-            {/* Add filter buttons here in the future */}
-          </div>
-        </div>
 
-        {isLoading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-          </div>
-        ) : error ? (
-          <div className="flex justify-center items-center py-20">
-            <p className="text-lg text-red-500">
-              There was a problem loading events. Please try again later.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {events.map((event, index) => (
-              <Card
-                key={index}
-                className="hover:shadow-lg transition-shadow w-full md:w-3/4 mx-auto"
-              >
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-2xl">{event.title}</CardTitle>
-                    <Badge variant="default">
-                      {new Date() < new Date(event.endDate) ? "Upcoming" : "Past"}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div
-                    className="aspect-video w-full overflow-hidden rounded-lg cursor-pointer group relative"
-                    onClick={() => {
-                      setSelectedEvent(event);
-                      setShowFullImage(true);
-                    }}
-                  >
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = heroimage1.toString();
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <span className="text-white text-lg font-medium">
-                        Click to view
-                      </span>
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground text-lg line-clamp-3">
-                    {event.content}
-                  </p>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="h-5 w-5 text-primary" />
-                      <span>{event.duration}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="h-5 w-5 text-primary" />
-                      <span>{event.venue}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm col-span-2">
-                      <Clock className="h-5 w-5 text-primary" />
-                      <span>Until {format(new Date(event.endDate), "PPP")}</span>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button
-                    className="w-full text-lg py-6"
-                    onClick={() => setSelectedEvent(event)}
-                  >
-                    Read More
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
 
       {/* Event Details Dialog */}
       <Dialog
