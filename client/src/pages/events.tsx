@@ -110,7 +110,11 @@ export default function Events() {
               Don't miss this opportunity to be part of Africa's AI transformation
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="px-8 py-3">
+              <Button 
+                size="lg" 
+                className="px-8 py-3"
+                onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSfaTEz5rXmI_iS844F6SaQF4_tvZsr5MJrcnXYtIrWO5Ff3WQ/viewform', '_blank')}
+              >
                 Register Now
               </Button>
               <Button size="lg" variant="outline" className="px-8 py-3">

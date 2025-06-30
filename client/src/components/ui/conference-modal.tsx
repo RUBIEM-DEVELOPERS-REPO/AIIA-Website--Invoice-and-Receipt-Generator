@@ -447,10 +447,23 @@ export function ConferenceModal({ isOpen, onClose }: ConferenceModalProps) {
                     <Button
                       size="sm"
                       className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 text-xs sm:text-sm"
+                      onClick={() => window.open("https://docs.google.com/forms/d/e/1FAIpQLSfaTEz5rXmI_iS844F6SaQF4_tvZsr5MJrcnXYtIrWO5Ff3WQ/viewform", "_blank")}
+                    >
+                      <Calendar className="w-3 h-3 mr-1" />
+                      Register Now
+                    </Button>
+                  </motion.div>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button
+                      size="sm"
+                      className="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 text-xs sm:text-sm"
                       onClick={() => window.open("tel:+263773277599")}
                     >
                       <Phone className="w-3 h-3 mr-1" />
-                      Call to Register
+                      Call for Info
                     </Button>
                   </motion.div>
                   <motion.div
