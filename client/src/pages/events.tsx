@@ -24,89 +24,9 @@ import heroimage1 from "@/lib/hero_images/event.png";
 import { useQuery } from "@tanstack/react-query";
 import { ConferenceSection } from "@/components/sections/conference-section";
 import { ConferenceModal, useConferenceModal } from "@/components/ui/conference-modal";
-import { Users, Star, Award } from "lucide-react";
+import aiConferencePoster from "@/lib/images/ai-conference-poster-2025.jpg";
 
-// Speaker data extracted from the conference poster
-const CONFERENCE_SPEAKERS = [
-  {
-    name: "Hon. Tomoka A. Mnyenera (MP)",
-    title: "Minister of ICT Postal and Courier Services (Zimbabwe)",
-    role: "Guest of Honour",
-    category: "keynote"
-  },
-  {
-    name: "Dr Dennis Maposa",
-    title: "Chairperson Artificial Intelligence Institute Africa (AiiA), Robotic Founder/CEO",
-    role: "Summit Chairperson", 
-    category: "keynote"
-  },
-  {
-    name: "Mr Adan Iscali",
-    title: "Founder Swisscoin, Author and 3 Dimensional Laser (USA)",
-    role: "Speaker",
-    category: "speaker"
-  },
-  {
-    name: "Mr Luckwell Mukandi",
-    title: "CEO DEV5 Sync & Consulting, Engineering (Zimbabwe)",
-    role: "Speaker",
-    category: "speaker"
-  },
-  {
-    name: "Mr Gilbert Kygurasimire",
-    title: "CEO President, Commercial Attachments",
-    role: "Speaker",
-    category: "speaker"
-  },
-  {
-    name: "Mr Philip Johnson",
-    title: "Co-Founder/CEO Blockchain - Artificial Intelligence (USA)",
-    role: "Speaker",
-    category: "speaker"
-  },
-  {
-    name: "Dr Lucy Fraboni",
-    title: "Managing Director EPC - Air Development (Botswana)",
-    role: "Speaker",
-    category: "speaker"
-  },
-  {
-    name: "Mr John Kamanja",
-    title: "Founder/CEO Artificial Intelligence Analytics of Excellence (Africa)",
-    role: "Speaker",
-    category: "speaker"
-  },
-  {
-    name: "Dr Die Son",
-    title: "Chief Product Officer - LINIO Principal Consultant - National University (USA)",
-    role: "Speaker",
-    category: "speaker"
-  },
-  {
-    name: "Prof Robert Ole Deacon",
-    title: "Professor of Engineering, University of Science and Technology Society (Ghana)",
-    role: "Speaker",
-    category: "speaker"
-  },
-  {
-    name: "George Maria Odoom-kwaku",
-    title: "Artificial Intelligence Researcher Department (Germany)",
-    role: "Speaker",
-    category: "speaker"
-  },
-  {
-    name: "Prof Dan Griffiths",
-    title: "Deputy Vice-Chancellor, Acting University (Zimbabwe)",
-    role: "Speaker",
-    category: "speaker"
-  },
-  {
-    name: "Mr Kevin Rugema",
-    title: "CEO MKR A Technology Advisory Member",
-    role: "Speaker",
-    category: "speaker"
-  }
-];
+
 
 // Map SelectEvent to the Event type used in the component
 const mapApiEventToEvent = (apiEvent: SelectEvent): Event => {
@@ -153,90 +73,50 @@ export default function Events() {
       {/* Conference Promotion Section */}
       <ConferenceSection />
       
-      {/* Speakers Section */}
+      {/* Conference Poster Section */}
       <section className="py-16 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center px-4 py-1.5 mb-4 border border-primary/20 rounded-full backdrop-blur-sm">
-              <Users className="w-4 h-4 mr-2 text-primary" />
+              <Sparkles className="w-4 h-4 mr-2 text-primary" />
               <span className="text-sm font-medium">AI Summit for Africa 2025</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Featured Speakers
+              Featured Speakers & Conference Details
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Join industry leaders, researchers, and innovators as they share insights on 
-              AI-powered transformation across Africa
+              Join industry leaders, researchers, and innovators for Africa's premier AI conference
             </p>
           </div>
 
-          {/* Keynote Speakers */}
-          <div className="mb-12">
-            <h3 className="text-2xl font-bold text-center mb-8 text-gray-800 dark:text-white">
-              Keynote Speakers
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {CONFERENCE_SPEAKERS.filter(speaker => speaker.category === 'keynote').map((speaker, index) => (
-                <Card key={index} className="bg-white/80 backdrop-blur-sm border-2 border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-xl">
-                  <CardHeader className="text-center pb-4">
-                    <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/70 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      {speaker.role === "Guest of Honour" ? (
-                        <Award className="w-10 h-10 text-white" />
-                      ) : (
-                        <Star className="w-10 h-10 text-white" />
-                      )}
-                    </div>
-                    <Badge variant="secondary" className="mb-2">
-                      {speaker.role}
-                    </Badge>
-                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">
-                      {speaker.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
-                      {speaker.title}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-
-          {/* Regular Speakers */}
-          <div>
-            <h3 className="text-2xl font-bold text-center mb-8 text-gray-800 dark:text-white">
-              Expert Speakers
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {CONFERENCE_SPEAKERS.filter(speaker => speaker.category === 'speaker').map((speaker, index) => (
-                <Card key={index} className="bg-white/60 backdrop-blur-sm hover:bg-white/80 transition-all duration-300 hover:shadow-lg">
-                  <CardHeader className="pb-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full mx-auto mb-3 flex items-center justify-center">
-                      <Users className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white text-center">
-                      {speaker.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm text-center leading-relaxed">
-                      {speaker.title}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+          {/* Conference Poster */}
+          <div className="flex justify-center mb-12">
+            <div className="max-w-4xl w-full">
+              <img
+                src={aiConferencePoster}
+                alt="AI Summit for Africa 2025 - Conference Poster with Speakers"
+                className="w-full h-auto rounded-2xl shadow-2xl border border-white/20 hover:shadow-3xl transition-shadow duration-300"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = heroimage1.toString();
+                }}
+              />
             </div>
           </div>
 
           {/* Registration CTA */}
-          <div className="text-center mt-12">
+          <div className="text-center">
             <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
-              Don't miss this opportunity to learn from Africa's leading AI experts
+              Don't miss this opportunity to be part of Africa's AI transformation
             </p>
-            <Button size="lg" className="px-8 py-3">
-              Register Now
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="px-8 py-3">
+                Register Now
+              </Button>
+              <Button size="lg" variant="outline" className="px-8 py-3">
+                Download Brochure
+              </Button>
+            </div>
           </div>
         </div>
       </section>
