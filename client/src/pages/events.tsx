@@ -15,6 +15,7 @@ import heroimage1 from "@/lib/hero_images/event.png";
 import { ConferenceSection } from "@/components/sections/conference-section";
 import { ConferenceModal, useConferenceModal } from "@/components/ui/conference-modal";
 import aiConferencePoster from "@/lib/images/ai-conference-poster-2025.jpg";
+import brochureImage from "@/lib/images/ai-conference-speakers-brochure.jpg";
 
 
 
@@ -23,6 +24,16 @@ export default function Events() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [showFullImage, setShowFullImage] = useState(false);
   const { isOpen, closeModal } = useConferenceModal();
+
+  // Download brochure function
+  const downloadBrochure = () => {
+    const link = document.createElement('a');
+    link.href = brochureImage;
+    link.download = 'AI-Conference-2025-Speakers-Brochure.jpg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="min-h-screen">
@@ -75,7 +86,12 @@ export default function Events() {
               >
                 Register Now
               </Button>
-              <Button size="lg" variant="outline" className="px-8 py-3">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="px-8 py-3"
+                onClick={downloadBrochure}
+              >
                 Download Brochure
               </Button>
             </div>
