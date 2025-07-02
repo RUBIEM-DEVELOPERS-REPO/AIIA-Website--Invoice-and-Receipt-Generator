@@ -29,8 +29,8 @@ interface Conversation {
 }
 
 const parseMarkdown = (text: string): React.ReactNode => {
-  const lines = text.split('\n');
-  
+  const lines = text.split("\n");
+
   return lines.map((line, lineIndex) => {
     if (line.startsWith("### ")) {
       return (
@@ -54,19 +54,21 @@ const parseMarkdown = (text: string): React.ReactNode => {
       );
     }
 
-    if (line.trim() === '') {
+    if (line.trim() === "") {
       return <br key={lineIndex} />;
     }
 
-    const formattedLine = line.split(/(\*\*.*?\*\*|__.*?__)/g).map((part, partIndex) => {
-      if (part.startsWith("**") && part.endsWith("**")) {
-        return <strong key={partIndex}>{part.slice(2, -2)}</strong>;
-      }
-      if (part.startsWith("__") && part.endsWith("__")) {
-        return <strong key={partIndex}>{part.slice(2, -2)}</strong>;
-      }
-      return part;
-    });
+    const formattedLine = line
+      .split(/(\*\*.*?\*\*|__.*?__)/g)
+      .map((part, partIndex) => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+          return <strong key={partIndex}>{part.slice(2, -2)}</strong>;
+        }
+        if (part.startsWith("__") && part.endsWith("__")) {
+          return <strong key={partIndex}>{part.slice(2, -2)}</strong>;
+        }
+        return part;
+      });
 
     return (
       <p key={lineIndex} className="mb-2">
@@ -76,12 +78,12 @@ const parseMarkdown = (text: string): React.ReactNode => {
   });
 };
 
-const SidebarContent = ({ 
-  conversations, 
-  currentConversationId, 
-  setCurrentConversationId, 
+const SidebarContent = ({
+  conversations,
+  currentConversationId,
+  setCurrentConversationId,
   createNewConversation,
-  closeSidebar 
+  closeSidebar,
 }: {
   conversations: Conversation[];
   currentConversationId: string | null;
@@ -103,7 +105,7 @@ const SidebarContent = ({
         New Chat
       </Button>
     </div>
-    
+
     <ScrollArea className="flex-1">
       <div className="p-2">
         {conversations.length === 0 ? (
@@ -116,7 +118,11 @@ const SidebarContent = ({
           conversations.map((conversation) => (
             <Button
               key={conversation.id}
-              variant={currentConversationId === conversation.id ? "secondary" : "ghost"}
+              variant={
+                currentConversationId === conversation.id
+                  ? "secondary"
+                  : "ghost"
+              }
               className="w-full justify-start mb-1 h-auto p-3 text-left"
               onClick={() => {
                 setCurrentConversationId(conversation.id);
@@ -126,7 +132,8 @@ const SidebarContent = ({
               <div className="truncate w-full">
                 <div className="font-medium truncate">{conversation.title}</div>
                 <div className="text-xs text-muted-foreground">
-                  {conversation.messages.length} message{conversation.messages.length !== 1 ? 's' : ''}
+                  {conversation.messages.length} message
+                  {conversation.messages.length !== 1 ? "s" : ""}
                 </div>
               </div>
             </Button>
@@ -139,7 +146,9 @@ const SidebarContent = ({
 
 export default function Chat() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [currentConversationId, setCurrentConversationId] = useState<
+    string | null
+  >(null);
   const [input, setInput] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -147,7 +156,9 @@ export default function Chat() {
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
-  const currentConversation = conversations.find(c => c.id === currentConversationId);
+  const currentConversation = conversations.find(
+    (c) => c.id === currentConversationId,
+  );
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -168,8 +179,8 @@ export default function Chat() {
     },
     onSuccess: (data) => {
       if (currentConversationId) {
-        setConversations(prev =>
-          prev.map(conv =>
+        setConversations((prev) =>
+          prev.map((conv) =>
             conv.id === currentConversationId
               ? {
                   ...conv,
@@ -184,8 +195,8 @@ export default function Chat() {
                   ],
                   lastActive: new Date(),
                 }
-              : conv
-          )
+              : conv,
+          ),
         );
       }
     },
@@ -206,7 +217,7 @@ export default function Chat() {
       messages: [],
       lastActive: new Date(),
     };
-    setConversations(prev => [newConversation, ...prev]);
+    setConversations((prev) => [newConversation, ...prev]);
     setCurrentConversationId(newConversation.id);
   };
 
@@ -222,7 +233,7 @@ export default function Chat() {
         messages: [],
         lastActive: new Date(),
       };
-      setConversations(prev => [newConversation, ...prev]);
+      setConversations((prev) => [newConversation, ...prev]);
       conversationId = newConversation.id;
       setCurrentConversationId(conversationId);
     }
@@ -234,17 +245,20 @@ export default function Chat() {
       timestamp: new Date(),
     };
 
-    setConversations(prev =>
-      prev.map(conv =>
+    setConversations((prev) =>
+      prev.map((conv) =>
         conv.id === conversationId
           ? {
               ...conv,
               messages: [...conv.messages, userMessage],
-              title: conv.messages.length === 0 ? input.slice(0, 30) + (input.length > 30 ? "..." : "") : conv.title,
+              title:
+                conv.messages.length === 0
+                  ? input.slice(0, 30) + (input.length > 30 ? "..." : "")
+                  : conv.title,
               lastActive: new Date(),
             }
-          : conv
-      )
+          : conv,
+      ),
     );
 
     const messageText = input;
@@ -294,13 +308,15 @@ export default function Chat() {
               </SheetContent>
             </Sheet>
           )}
-          
+
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className="w-8 h-8 flex-shrink-0">
               <LottieAnimation animationData={chatbotAnimation} />
             </div>
             <div className="min-w-0 flex-1">
-              <h1 className="font-semibold text-sm md:text-base truncate">AIIA Assistant</h1>
+              <h1 className="font-semibold text-sm md:text-base truncate">
+                AIIA Assistant
+              </h1>
               <p className="text-xs md:text-sm text-muted-foreground truncate">
                 AI Institute Africa's helpful assistant
               </p>
@@ -318,22 +334,26 @@ export default function Chat() {
         {/* Messages Area */}
         <div className="flex-1 overflow-hidden">
           <ScrollArea className="h-full p-3 md:p-4">
-            {!currentConversation || currentConversation.messages.length === 0 ? (
+            {!currentConversation ||
+            currentConversation.messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center max-w-2xl mx-auto px-4">
                 <div className="w-12 h-12 md:w-16 md:h-16 mb-4">
                   <LottieAnimation animationData={chatbotAnimation} />
                 </div>
-                <h2 className="text-xl md:text-2xl font-bold mb-2">Welcome to AIIA Assistant</h2>
+                <h2 className="text-xl md:text-2xl font-bold mb-2">
+                  Welcome to AIIA Assistant
+                </h2>
                 <p className="text-muted-foreground mb-6 text-sm md:text-base">
-                  I'm here to help you with information about AI Institute Africa's programs, 
-                  courses, events, and initiatives. Ask me anything!
+                  I'm here to help you with information about AI Institute
+                  Africa's programs, courses, events, and initiatives. Ask me
+                  anything!
                 </p>
                 <div className="grid grid-cols-1 gap-3 w-full max-w-lg">
                   {[
                     "What programs does AIIA offer?",
                     "How can I become a member?",
                     "Tell me about upcoming events",
-                    "What is AI Institute Africa's mission?"
+                    "What is AI Institute Africa's mission?",
                   ].map((suggestion, index) => (
                     <Button
                       key={index}
@@ -362,7 +382,7 @@ export default function Chat() {
                         </div>
                       </div>
                     )}
-                    
+
                     <Card
                       className={`max-w-[85%] md:max-w-[80%] ${
                         message.isUser
@@ -372,7 +392,9 @@ export default function Chat() {
                     >
                       <div className="p-3 md:p-4">
                         <div className="prose prose-sm dark:prose-invert">
-                          {message.isUser ? message.text : parseMarkdown(message.text)}
+                          {message.isUser
+                            ? message.text
+                            : parseMarkdown(message.text)}
                         </div>
                         <div className="text-xs opacity-70 mt-2">
                           {message.timestamp.toLocaleTimeString([], {
@@ -444,7 +466,8 @@ export default function Chat() {
               </Button>
             </form>
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              AIIA Assistant can make mistakes. Please verify important information.
+              AIIA Assistant can make mistakes. Please verify important
+              information.
             </p>
           </div>
         </div>

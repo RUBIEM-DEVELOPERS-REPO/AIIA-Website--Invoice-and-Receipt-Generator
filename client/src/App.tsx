@@ -46,10 +46,13 @@ function Router() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Navbar and Footer are conditionally rendered based on the route */}
+
       <Navbar />
       <main className="flex-1">
         <Switch>
           {/* Public Routes */}
+
           <Route path="/" component={Home} />
           <Route path="/about" component={About} />
           <Route path="/programs" component={Programs} />
@@ -66,7 +69,10 @@ function Router() {
           <Route path="/reset-password" component={ResetPassword} />
 
           {/* Admin Routes */}
-          <Route path="/admin/forgot-password" component={AdminForgotPassword} />
+          <Route
+            path="/admin/forgot-password"
+            component={AdminForgotPassword}
+          />
           <Route path="/admin/reset-password" component={AdminResetPassword} />
           <ProtectedAdminRoute
             path="/admin/dashboard"

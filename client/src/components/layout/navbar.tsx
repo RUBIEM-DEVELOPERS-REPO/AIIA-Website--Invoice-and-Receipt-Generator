@@ -50,15 +50,15 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       // Call the logout API endpoint
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
       });
-      
+
       // Clear session storage
       sessionStorage.removeItem("user");
       setUser(null);
-      
+
       // Reload the page to update state
       window.location.reload();
     } catch (error) {
@@ -74,7 +74,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container flex h-16 items-right justify-between">
         <Link
-          href="/"
+          href="//"
           className="flex items-center gap-2 font-bold text-2xl text-primary"
         >
           <img src={logoImage} alt="AiiA Logo" className="h-8" />
