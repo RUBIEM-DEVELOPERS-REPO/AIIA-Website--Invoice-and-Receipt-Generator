@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { LottieAnimation } from "@/components/ui/lottie-animation";
-import { Send, Bot, User, Plus, Menu } from "lucide-react";
+import { Send, Bot, User, Plus, ChevronLeft, ChevronRight, Home } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -82,7 +82,7 @@ export default function Chat() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [input, setInput] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -149,7 +149,6 @@ export default function Chat() {
     };
     setConversations(prev => [newConversation, ...prev]);
     setCurrentConversationId(newConversation.id);
-    setSidebarOpen(false);
   };
 
   const handleSend = async () => {
@@ -199,66 +198,90 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="fixed inset-0 flex bg-background">
       {/* Sidebar */}
-      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:relative z-20 w-80 bg-card border-r transition-transform duration-300 ease-in-out`}>
-        <div className="p-4 border-b">
-          <Button
-            onClick={createNewConversation}
-            className="w-full justify-start gap-2"
-            variant="outline"
-          >
-            <Plus className="h-4 w-4" />
-            New Conversation
-          </Button>
+      <div className={`${
+        sidebarCollapsed ? 'w-16' : 'w-80'
+      } bg-card border-r transition-all duration-300 ease-in-out flex-shrink-0 flex flex-col`}>
+        
+        {/* Sidebar Header */}
+        <div className="p-4 border-b flex items-center justify-between">
+          {!sidebarCollapsed && (
+            <Button
+              onClick={createNewConversation}
+              className="flex-1 justify-start gap-2 mr-2"
+              variant="outline"
+            >
+              <Plus className="h-4 w-4" />
+              New Chat
+            </Button>
+          )}
+          
+          <div className="flex gap-1">
+            {!sidebarCollapsed && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSidebarCollapsed(true)}
+                title="Collapse sidebar"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            )}
+            
+            {sidebarCollapsed && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSidebarCollapsed(false)}
+                  title="Expand sidebar"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={createNewConversation}
+                  title="New conversation"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </div>
         </div>
         
-        <ScrollArea className="flex-1 h-[calc(100vh-80px)]">
-          <div className="p-2">
-            {conversations.map((conversation) => (
-              <Button
-                key={conversation.id}
-                variant={currentConversationId === conversation.id ? "secondary" : "ghost"}
-                className="w-full justify-start mb-1 h-auto p-3 text-left"
-                onClick={() => {
-                  setCurrentConversationId(conversation.id);
-                  setSidebarOpen(false);
-                }}
-              >
-                <div className="truncate">
-                  <div className="font-medium truncate">{conversation.title}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {conversation.messages.length} message{conversation.messages.length !== 1 ? 's' : ''}
+        {/* Conversations List */}
+        {!sidebarCollapsed && (
+          <ScrollArea className="flex-1">
+            <div className="p-2">
+              {conversations.map((conversation) => (
+                <Button
+                  key={conversation.id}
+                  variant={currentConversationId === conversation.id ? "secondary" : "ghost"}
+                  className="w-full justify-start mb-1 h-auto p-3 text-left"
+                  onClick={() => setCurrentConversationId(conversation.id)}
+                >
+                  <div className="truncate">
+                    <div className="font-medium truncate">{conversation.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {conversation.messages.length} message{conversation.messages.length !== 1 ? 's' : ''}
+                    </div>
                   </div>
-                </div>
-              </Button>
-            ))}
-          </div>
-        </ScrollArea>
+                </Button>
+              ))}
+            </div>
+          </ScrollArea>
+        )}
       </div>
 
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-10 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <div className="border-b p-4 flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-          
-          <div className="flex items-center gap-3">
+        <div className="border-b p-4 flex items-center gap-3 flex-shrink-0">
+          <div className="flex items-center gap-3 flex-1">
             <div className="w-8 h-8">
               <LottieAnimation animationData={chatbotAnimation} />
             </div>
@@ -270,116 +293,117 @@ export default function Chat() {
             </div>
           </div>
 
-          <div className="ml-auto">
-            <Link href="/">
-              <Button variant="outline" size="sm">
-                Back to Home
-              </Button>
-            </Link>
-          </div>
+          <Link href="/">
+            <Button variant="outline" size="sm">
+              <Home className="h-4 w-4 mr-2" />
+              Home
+            </Button>
+          </Link>
         </div>
 
-        {/* Messages Area */}
-        <ScrollArea className="flex-1 p-4">
-          {!currentConversation || currentConversation.messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center max-w-2xl mx-auto">
-              <div className="w-16 h-16 mb-4">
-                <LottieAnimation animationData={chatbotAnimation} />
+        {/* Messages Area - Fixed height with scroll */}
+        <div className="flex-1 overflow-hidden">
+          <ScrollArea className="h-full p-4">
+            {!currentConversation || currentConversation.messages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center max-w-2xl mx-auto">
+                <div className="w-16 h-16 mb-4">
+                  <LottieAnimation animationData={chatbotAnimation} />
+                </div>
+                <h2 className="text-2xl font-bold mb-2">Welcome to AIIA Assistant</h2>
+                <p className="text-muted-foreground mb-6">
+                  I'm here to help you with information about AI Institute Africa's programs, 
+                  courses, events, and initiatives. Ask me anything!
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-lg">
+                  {[
+                    "What programs does AIIA offer?",
+                    "How can I become a member?",
+                    "Tell me about upcoming events",
+                    "What is AI Institute Africa's mission?"
+                  ].map((suggestion, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      className="text-left h-auto p-3 whitespace-normal"
+                      onClick={() => setInput(suggestion)}
+                    >
+                      {suggestion}
+                    </Button>
+                  ))}
+                </div>
               </div>
-              <h2 className="text-2xl font-bold mb-2">Welcome to AIIA Assistant</h2>
-              <p className="text-muted-foreground mb-6">
-                I'm here to help you with information about AI Institute Africa's programs, 
-                courses, events, and initiatives. Ask me anything!
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-lg">
-                {[
-                  "What programs does AIIA offer?",
-                  "How can I become a member?",
-                  "Tell me about upcoming events",
-                  "What is AI Institute Africa's mission?"
-                ].map((suggestion, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    className="text-left h-auto p-3 whitespace-normal"
-                    onClick={() => setInput(suggestion)}
+            ) : (
+              <div className="max-w-4xl mx-auto space-y-6 pb-4">
+                {currentConversation.messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex gap-3 ${
+                      message.isUser ? "justify-end" : "justify-start"
+                    }`}
                   >
-                    {suggestion}
-                  </Button>
+                    {!message.isUser && (
+                      <div className="w-8 h-8 mt-1 flex-shrink-0">
+                        <div className="w-full h-full bg-primary rounded-full flex items-center justify-center">
+                          <Bot className="h-4 w-4 text-primary-foreground" />
+                        </div>
+                      </div>
+                    )}
+                    
+                    <Card
+                      className={`max-w-[80%] ${
+                        message.isUser
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted"
+                      }`}
+                    >
+                      <div className="p-4">
+                        <div className="prose prose-sm dark:prose-invert">
+                          {message.isUser ? message.text : parseMarkdown(message.text)}
+                        </div>
+                        <div className="text-xs opacity-70 mt-2">
+                          {message.timestamp.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                      </div>
+                    </Card>
+
+                    {message.isUser && (
+                      <div className="w-8 h-8 mt-1 flex-shrink-0">
+                        <div className="w-full h-full bg-secondary rounded-full flex items-center justify-center">
+                          <User className="h-4 w-4 text-secondary-foreground" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 ))}
-              </div>
-            </div>
-          ) : (
-            <div className="max-w-4xl mx-auto space-y-6">
-              {currentConversation.messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex gap-3 ${
-                    message.isUser ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  {!message.isUser && (
-                    <div className="w-8 h-8 mt-1 flex-shrink-0">
+
+                {chatMutation.isPending && (
+                  <div className="flex gap-3 justify-start">
+                    <div className="w-8 h-8 mt-1">
                       <div className="w-full h-full bg-primary rounded-full flex items-center justify-center">
                         <Bot className="h-4 w-4 text-primary-foreground" />
                       </div>
                     </div>
-                  )}
-                  
-                  <Card
-                    className={`max-w-[80%] ${
-                      message.isUser
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted"
-                    }`}
-                  >
-                    <div className="p-4">
-                      <div className="prose prose-sm dark:prose-invert">
-                        {message.isUser ? message.text : parseMarkdown(message.text)}
+                    <Card className="bg-muted">
+                      <div className="p-4">
+                        <div className="w-8 h-8">
+                          <LottieAnimation animationData={loadingAnimation} />
+                        </div>
                       </div>
-                      <div className="text-xs opacity-70 mt-2">
-                        {message.timestamp.toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </div>
-                    </div>
-                  </Card>
-
-                  {message.isUser && (
-                    <div className="w-8 h-8 mt-1 flex-shrink-0">
-                      <div className="w-full h-full bg-secondary rounded-full flex items-center justify-center">
-                        <User className="h-4 w-4 text-secondary-foreground" />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              {chatMutation.isPending && (
-                <div className="flex gap-3 justify-start">
-                  <div className="w-8 h-8 mt-1">
-                    <div className="w-full h-full bg-primary rounded-full flex items-center justify-center">
-                      <Bot className="h-4 w-4 text-primary-foreground" />
-                    </div>
+                    </Card>
                   </div>
-                  <Card className="bg-muted">
-                    <div className="p-4">
-                      <div className="w-8 h-8">
-                        <LottieAnimation animationData={loadingAnimation} />
-                      </div>
-                    </div>
-                  </Card>
-                </div>
-              )}
+                )}
 
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-        </ScrollArea>
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+          </ScrollArea>
+        </div>
 
-        {/* Input Area */}
-        <div className="border-t p-4">
+        {/* Input Area - Fixed at bottom */}
+        <div className="border-t p-4 flex-shrink-0">
           <div className="max-w-4xl mx-auto">
             <form
               onSubmit={(e) => {

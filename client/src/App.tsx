@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -33,6 +33,17 @@ import LocalArticlesPage from "@/pages/admin/local-articles";
 import { ChatAssistant } from "@/components/ui/chat-assistant";
 
 function Router() {
+  const [location] = useLocation();
+  const isFullscreenRoute = location === "/chat";
+
+  if (isFullscreenRoute) {
+    return (
+      <Switch>
+        <Route path="/chat" component={Chat} />
+      </Switch>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -51,7 +62,6 @@ function Router() {
           <Route path="/forms" component={Forms} />
           <Route path="/events" component={Events} />
           <Route path="/local_articles" component={Local_Articles} />
-          <Route path="/chat" component={Chat} />
           <Route path="/forgot-password" component={ForgotPassword} />
           <Route path="/reset-password" component={ResetPassword} />
 
@@ -94,6 +104,9 @@ function Router() {
 }
 
 function App() {
+  const [location] = useLocation();
+  const isFullscreenRoute = location === "/chat";
+
   return (
     <ThemeProvider defaultTheme="dark">
       <QueryClientProvider client={queryClient}>
@@ -101,7 +114,7 @@ function App() {
           <MembershipProvider>
             <Router />
             <Toaster />
-            <ChatAssistant />
+            {!isFullscreenRoute && <ChatAssistant />}
           </MembershipProvider>
         </AdminAuthProvider>
       </QueryClientProvider>
