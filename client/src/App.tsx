@@ -19,6 +19,7 @@ import Payment from "@/pages/payment";
 import Forms from "@/pages/forms";
 import Events from "@/pages/events";
 import Local_Articles from "@/pages/local_articles";
+import Chat from "@/pages/chat";
 import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
 import NotFound from "@/pages/not-found";
@@ -50,6 +51,7 @@ function Router() {
           <Route path="/forms" component={Forms} />
           <Route path="/events" component={Events} />
           <Route path="/local_articles" component={Local_Articles} />
+          <Route path="/chat" component={Chat} />
           <Route path="/forgot-password" component={ForgotPassword} />
           <Route path="/reset-password" component={ResetPassword} />
 

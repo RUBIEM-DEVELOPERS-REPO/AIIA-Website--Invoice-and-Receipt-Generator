@@ -24,6 +24,7 @@ const NAV_ITEMS = [
       "relative before:absolute before:inset-0 before:animate-rainbow before:bg-gradient-to-r before:from-purple-600 before:via-pink-600 before:to-blue-600 before:bg-[length:200%_100%] before:blur-sm before:-z-10 before:opacity-75 hover:before:opacity-100 before:transition-all px-2 py-1 rounded-md text-white",
   },
   { label: "Events", href: "/events" },
+  { label: "Chat", href: "/chat" },
   { label: "About Us", href: "/about" },
   { label: "Contact Us", href: "/contact" },
 ];
