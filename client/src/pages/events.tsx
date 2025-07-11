@@ -13,12 +13,12 @@ import { useState } from "react";
 import { Event } from "@/types/events";
 import heroimage1 from "@/lib/hero_images/event.png";
 import { ConferenceSection } from "@/components/sections/conference-section";
-import { ConferenceModal, useConferenceModal } from "@/components/ui/conference-modal";
-import aiConferencePoster from "@/lib/images/ai-conference-poster-2025.jpg";
-import brochureImage from "@/lib/images/ai-conference-speakers-brochure.jpg";
-
-
-
+import {
+  ConferenceModal,
+  useConferenceModal,
+} from "@/components/ui/conference-modal";
+import aiConferencePoster from "@/lib/images/poster.jpg";
+import brochureImage from "@/lib/images/ai confere.jpg";
 
 export default function Events() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -27,9 +27,9 @@ export default function Events() {
 
   // Download brochure function
   const downloadBrochure = () => {
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = brochureImage;
-    link.download = 'AI-Conference-2025-Speakers-Brochure.jpg';
+    link.download = "AI-Conference-2025-Speakers-Brochure.jpg";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -38,23 +38,26 @@ export default function Events() {
   return (
     <div className="min-h-screen">
       <ConferenceModal isOpen={isOpen} onClose={closeModal} />
-      
+
       {/* Conference Promotion Section */}
       <ConferenceSection />
-      
+
       {/* Conference Poster Section */}
       <section className="py-16 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center px-4 py-1.5 mb-4 border border-primary/20 rounded-full backdrop-blur-sm">
               <Sparkles className="w-4 h-4 mr-2 text-primary" />
-              <span className="text-sm font-medium">AI Summit for Africa 2025</span>
+              <span className="text-sm font-medium">
+                AI Summit for Africa 2025
+              </span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Featured Speakers & Conference Details
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Join industry leaders, researchers, and innovators for Africa's premier AI conference
+              Join industry leaders, researchers, and innovators for Africa's
+              premier AI conference
             </p>
           </div>
 
@@ -76,19 +79,25 @@ export default function Events() {
           {/* Registration CTA */}
           <div className="text-center">
             <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
-              Don't miss this opportunity to be part of Africa's AI transformation
+              Don't miss this opportunity to be part of Africa's AI
+              transformation
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="px-8 py-3"
-                onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSfaTEz5rXmI_iS844F6SaQF4_tvZsr5MJrcnXYtIrWO5Ff3WQ/viewform', '_blank')}
+                onClick={() =>
+                  window.open(
+                    "https://docs.google.com/forms/d/e/1FAIpQLSfaTEz5rXmI_iS844F6SaQF4_tvZsr5MJrcnXYtIrWO5Ff3WQ/viewform",
+                    "_blank",
+                  )
+                }
               >
                 Register Now
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
+              <Button
+                size="lg"
+                variant="outline"
                 className="px-8 py-3"
                 onClick={downloadBrochure}
               >
@@ -98,7 +107,7 @@ export default function Events() {
           </div>
         </div>
       </section>
-      
+
       {/* Hero Section */}
       <div className="relative bg-black">
         <div
@@ -131,8 +140,6 @@ export default function Events() {
           </div>
         </div>
       </div>
-
-
 
       {/* Event Details Dialog */}
       <Dialog
@@ -190,21 +197,21 @@ export default function Events() {
               <DialogDescription className="text-lg leading-relaxed">
                 {selectedEvent.content}
               </DialogDescription>
-              
+
               {selectedEvent.registrationLink && (
                 <div className="flex justify-center">
-                  <Button 
-                    size="lg" 
-                    className="mt-4" 
-                    asChild
-                  >
-                    <a href={selectedEvent.registrationLink} target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" className="mt-4" asChild>
+                    <a
+                      href={selectedEvent.registrationLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       Register for Event
                     </a>
                   </Button>
                 </div>
               )}
-              
+
               <div className="flex justify-end gap-4">
                 <Button
                   variant="outline"
