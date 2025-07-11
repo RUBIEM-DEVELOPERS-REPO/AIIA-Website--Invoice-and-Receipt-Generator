@@ -65,8 +65,8 @@ export default function Events() {
           <div className="flex justify-center mb-12">
             <div className="max-w-4xl w-full">
               <img
-                src={aiConferencePoster}
-                alt="AI Summit for Africa 2025 - Conference Poster with Speakers"
+                src={brochureImage}
+                alt="AI Summit for Africa 2025 - Featured Speakers"
                 className="w-full h-auto rounded-2xl shadow-2xl border border-white/20 hover:shadow-3xl transition-shadow duration-300"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
