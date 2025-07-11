@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CountdownTimer } from "@/components/ui/countdown-timer";
 import { Calendar, MapPin, Users, ChevronRight, Phone, Mail, Sparkles, Zap, Target, Download } from "lucide-react";
 import conferenceImage from "@/lib/images/conference-2025.jpg";
-import brochureImage from "@/lib/images/ai-conference-speakers-brochure.jpg";
+import brochureImage from "@/lib/images/ai confere.jpg";
 
 const containerVariants = {
   hidden: { opacity: 0 },
