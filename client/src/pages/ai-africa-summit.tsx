@@ -19,9 +19,8 @@ export default function AIAfricaSummit() {
 
   const handleSectionChange = (sectionId: string) => {
     setActiveSection(sectionId);
-    const url = new URL(window.location.href);
-    url.searchParams.set('section', sectionId);
-    window.history.pushState({}, '', url.toString());
+    const newUrl = `/ai-africa-summit?section=${sectionId}`;
+    window.history.pushState({}, '', newUrl);
   };
 
   const sections = [
