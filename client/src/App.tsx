@@ -22,6 +22,7 @@ import Local_Articles from "@/pages/local_articles";
 import Chat from "@/pages/chat";
 import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
+import AIAfricaSummit from "@/pages/ai-africa-summit";
 import NotFound from "@/pages/not-found";
 import AdminForgotPassword from "@/pages/admin/forgot-password";
 import AdminResetPassword from "@/pages/admin/reset-password";
@@ -65,6 +66,7 @@ function Router() {
           <Route path="/forms" component={Forms} />
           <Route path="/events" component={Events} />
           <Route path="/local_articles" component={Local_Articles} />
+          <Route path="/ai-africa-summit" component={AIAfricaSummit} />
           <Route path="/forgot-password" component={ForgotPassword} />
           <Route path="/reset-password" component={ResetPassword} />
 
