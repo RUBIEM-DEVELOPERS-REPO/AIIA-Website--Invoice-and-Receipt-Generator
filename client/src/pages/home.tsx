@@ -7,7 +7,7 @@ import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { PartnerShowcase } from "@/components/sections/partner-showcase";
 import { ConferenceSection } from "@/components/sections/conference-section";
-import { ConferenceModal, useConferenceModal } from "@/components/ui/conference-modal";
+
 
 import logoImage2 from "@/lib/logos/preloader.png";
 
@@ -40,11 +40,8 @@ const floatAnimation = {
 };
 
 export default function Home() {
-  const { isOpen, closeModal } = useConferenceModal();
-
   return (
     <div className="overflow-x-hidden">
-      <ConferenceModal isOpen={isOpen} onClose={closeModal} />
       <Hero />
 
       {/* Programs Section */}
