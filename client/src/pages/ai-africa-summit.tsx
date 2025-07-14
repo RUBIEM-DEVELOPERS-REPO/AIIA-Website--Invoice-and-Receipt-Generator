@@ -8,14 +8,25 @@ import {
   Mail,
   ExternalLink,
   Sparkles,
+  Send,
+  Loader2,
 } from "lucide-react";
 import { useLocation } from "wouter";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import conferenceImage from "@/lib/images/conference-2025.jpg";
 import speakersImage from "@/lib/images/ai confere.jpg";
 
 export default function AIAfricaSummit() {
   const [location] = useLocation();
   const [activeSection, setActiveSection] = useState("Concert");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const { toast } = useToast();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -31,6 +42,58 @@ export default function AIAfricaSummit() {
     const url = new URL(window.location.href);
     url.searchParams.set("section", sectionId);
     window.history.replaceState({}, "", url.toString());
+  };
+
+  // Contact form mutation
+  const contactMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      const response = await fetch("/api/conference/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to send message");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Message sent successfully!",
+        description: "We'll get back to you soon regarding your inquiry.",
+      });
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error sending message",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      toast({
+        title: "Please fill in all fields",
+        description: "All fields are required to send your message.",
+        variant: "destructive",
+      });
+      return;
+    }
+    contactMutation.mutate(formData);
   };
 
   const sections = [
@@ -433,25 +496,6 @@ export default function AIAfricaSummit() {
                     </div>
                   </div>
                 </div>
-
-                <div className="bg-gradient-to-br from-teal-50 to-blue-50 dark:from-teal-950 dark:to-blue-950 rounded-xl p-6 border border-teal-200 dark:border-teal-800">
-                  <h4 className="text-lg font-semibold mb-3 text-teal-900 dark:text-teal-100">
-                    Business Hours
-                  </h4>
-                  <div className="space-y-2 text-gray-700 dark:text-gray-300">
-                    <p>
-                      <span className="font-medium">Monday - Friday:</span> 8:00
-                      AM - 5:00 PM (CAT)
-                    </p>
-                    <p>
-                      <span className="font-medium">Saturday:</span> 9:00 AM -
-                      1:00 PM (CAT)
-                    </p>
-                    <p>
-                      <span className="font-medium">Sunday:</span> Closed
-                    </p>
-                  </div>
-                </div>
               </div>
 
               <div className="space-y-6">
@@ -459,15 +503,19 @@ export default function AIAfricaSummit() {
                   <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
                     Quick Contact
                   </h3>
-                  <div className="space-y-4">
+                  <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium mb-2">
                         Name
                       </label>
                       <input
                         type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                         placeholder="Your full name"
+                        required
                       />
                     </div>
                     <div>
@@ -476,24 +524,34 @@ export default function AIAfricaSummit() {
                       </label>
                       <input
                         type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                         placeholder="your.email@example.com"
+                        required
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2">
                         Subject
                       </label>
-                      <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white">
+                      <select
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                        required
+                      >
                         <option value="">Select a topic</option>
-                        <option value="registration">
+                        <option value="Registration Inquiry">
                           Registration Inquiry
                         </option>
-                        <option value="sponsorship">
+                        <option value="Sponsorship Opportunities">
                           Sponsorship Opportunities
                         </option>
-                        <option value="speaking">Speaking Opportunities</option>
-                        <option value="general">General Information</option>
+                        <option value="Speaking Opportunities">Speaking Opportunities</option>
+                        <option value="General Information">General Information</option>
                       </select>
                     </div>
                     <div>
@@ -501,15 +559,33 @@ export default function AIAfricaSummit() {
                         Message
                       </label>
                       <textarea
+                        name="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
                         rows={4}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
                         placeholder="Your message..."
+                        required
                       />
                     </div>
-                    <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium">
-                      Send Message
+                    <button
+                      type="submit"
+                      disabled={contactMutation.isPending}
+                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {contactMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4" />
+                          Send Message
+                        </>
+                      )}
                     </button>
-                  </div>
+                  </form>
                 </div>
               </div>
             </div>

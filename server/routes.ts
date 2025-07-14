@@ -562,6 +562,74 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Conference contact endpoint using SMTP2GO
+  app.post("/api/conference/contact", async (req: Request, res: Response) => {
+    try {
+      const { name, email, subject, message } = req.body;
+      
+      // Validate required fields
+      if (!name || !email || !subject || !message) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      // Import the SMTP2GO email service
+      const { sendRegistrationEmail } = await import("./services/email");
+      
+      // Create email content
+      const emailContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #1e40af; border-bottom: 2px solid #1e40af; padding-bottom: 10px;">
+            AI Africa Summit 2025 - Contact Form Submission
+          </h2>
+          
+          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #374151; margin-top: 0;">Contact Information</h3>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Subject:</strong> ${subject}</p>
+          </div>
+          
+          <div style="background-color: #ffffff; padding: 20px; border-left: 4px solid #1e40af; margin: 20px 0;">
+            <h3 style="color: #374151; margin-top: 0;">Message</h3>
+            <p style="line-height: 1.6;">${message.replace(/\n/g, '<br>')}</p>
+          </div>
+          
+          <div style="background-color: #eff6ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 0; color: #1e40af; font-size: 14px;">
+              <strong>Note:</strong> This inquiry was submitted through the AI Africa Summit 2025 contact form.
+            </p>
+          </div>
+        </div>
+      `;
+
+      // Send email using SMTP2GO
+      const emailSent = await sendRegistrationEmail({
+        to: "events@alphamedia.co.zw",
+        subject: `AI Africa Summit 2025 - ${subject}`,
+        text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\n\nMessage:\n${message}`,
+        html: emailContent,
+      });
+
+      if (emailSent) {
+        // Also save to database for record keeping
+        await db.insert(contacts).values({
+          name,
+          email,
+          subject: `AI Africa Summit 2025 - ${subject}`,
+          message,
+          createdAt: new Date(),
+        });
+
+        res.json({ success: true, message: "Your message has been sent successfully!" });
+      } else {
+        res.status(500).json({ message: "Failed to send email. Please try again." });
+      }
+    } catch (error) {
+      console.error("Error sending conference contact email:", error);
+      res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
   // Newsletter endpoint
   app.post("/api/newsletter", async (req: Request, res: Response) => {
     try {
