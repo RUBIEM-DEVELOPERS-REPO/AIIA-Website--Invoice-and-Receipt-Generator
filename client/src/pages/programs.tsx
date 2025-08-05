@@ -242,9 +242,7 @@ export default function Programs() {
           <TabsContent value="transformation" className="mt-8 space-y-8">
             <Card className="p-0 overflow-hidden">
               <CardHeader className="p-6">
-                <CardTitle>
-                  Master AI for Law and Justice
-                </CardTitle>
+                <CardTitle>Master AI for Law and Justice</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 items-start p-6">
                 <img
@@ -319,9 +317,7 @@ export default function Programs() {
           <TabsContent value="tech_experts" className="mt-8 space-y-8">
             <Card className="p-0 overflow-hidden">
               <CardHeader className="p-6">
-                <CardTitle>
-                  Advanced AI for Technical Experts.
-                </CardTitle>
+                <CardTitle>Advanced AI for Technical Experts.</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 items-start p-6">
                 <img

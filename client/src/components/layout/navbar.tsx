@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, User, LogOut, ChevronDown, Sparkles, MapPin, Users, ExternalLink, Phone } from "lucide-react";
+import { Menu, User, LogOut, ChevronDown, Sparkles, MapPin, Users, ExternalLink, Phone, Calendar, UserCheck } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -29,7 +29,6 @@ const NAV_ITEMS = [
     className:
       "relative before:absolute before:inset-0 before:animate-rainbow before:bg-gradient-to-r before:from-purple-600 before:via-pink-600 before:to-blue-600 before:bg-[length:200%_100%] before:blur-sm before:-z-10 before:opacity-75 hover:before:opacity-100 before:transition-all px-2 py-1 rounded-md text-white",
   },
-  { label: "Events", href: "/events" },
   { label: "Chat", href: "/chat" },
   { label: "About Us", href: "/about" },
   { label: "Contact Us", href: "/contact" },
@@ -43,6 +42,11 @@ const SUMMIT_SECTIONS = [
   { id: "Call/Contact", label: "Contact", icon: <Phone className="w-4 h-4" /> },
 ];
 
+const EVENTS_SECTIONS = [
+  { id: "all-events", label: "All Events", href: "/events", icon: <Calendar className="w-4 h-4" /> },
+  { id: "permanent-secretaries", label: "Permanent Secretaries Event", href: "/events/permanent-secretaries", icon: <UserCheck className="w-4 h-4" /> },
+];
+
 export default function Navbar() {
   const [location] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -52,6 +56,7 @@ export default function Navbar() {
     plan: string;
     level: string;
     loginTime: string;
+    memberKey?: string;
   } | null>(null);
 
   useEffect(() => {
@@ -108,6 +113,32 @@ export default function Navbar() {
               {item.label}
             </Link>
           ))}
+          
+          {/* Events Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="text-sm font-medium transition-colors hover:text-primary text-foreground flex items-center gap-1"
+              >
+                Events
+                <ChevronDown className="w-3 h-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              {EVENTS_SECTIONS.map((section) => (
+                <DropdownMenuItem key={section.id} asChild>
+                  <Link 
+                    href={section.href}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
+                    {section.icon}
+                    {section.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           {/* AI Africa Summit Dropdown */}
           <DropdownMenu>
@@ -209,6 +240,24 @@ export default function Navbar() {
                   {item.label}
                 </Link>
               ))}
+              
+              {/* Events Mobile Section */}
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-foreground">Events</p>
+                <div className="pl-4 space-y-2">
+                  {EVENTS_SECTIONS.map((section) => (
+                    <Link
+                      key={section.id}
+                      href={section.href}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {section.icon}
+                      {section.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
               
               {/* AI Africa Summit Mobile Section */}
               <div className="space-y-2">
