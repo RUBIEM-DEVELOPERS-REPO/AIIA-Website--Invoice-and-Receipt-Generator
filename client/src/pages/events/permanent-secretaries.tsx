@@ -5,6 +5,9 @@ import ProjectCard from "@/components/sections/project-card";
 import logoImage2 from "@/lib/logos/preloader.png";
 
 export default function PermanentSecretariesEvent() {
+  console.log("PROJECTS:", PROJECTS);
+  console.log("PROJECTS length:", PROJECTS.length);
+  
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
     visible: {
