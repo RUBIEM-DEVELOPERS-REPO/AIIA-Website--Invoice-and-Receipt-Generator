@@ -369,6 +369,21 @@ export const PROJECTS = [
     impact: "Transforming healthcare delivery in remote clinics across Zimbabwe with instant AI diagnostics",
     image: hupenyuBackgroundImage,
     externalLink: "https://hupenyu-demo-43ad1j9v5-geraldtadikaps-gmailcoms-projects.vercel.app/"
+  },
+  {
+    id: 4,
+    title: "Communications Intelligence Workflow",
+    description: "The Communications Intelligence Workflow is an AI-driven system that automatically creates professional, audience-specific newsletters using real-time web research. Triggered by a webhook receiving a topic, tone, and target audience, the process begins with planning a Table of Contents and selecting sources (Pinecone or Tavily). Each section is researched, summarized, and written based on the audience and tone. The content is then merged, formatted into clean HTML, and enhanced with citations. A compelling subject line is generated, and the final newsletter is emailed to subscribers. Key features include prioritizing Zimbabwean government sources for NDS topics, a 1,000-word limit, and email-ready HTML output—ideal for government, media, and institutional use.",
+    status: "Active",
+    category: "Smart Cities",
+    startDate: "2024-11-01",
+    endDate: "2025-12-31",
+    progress: 85,
+    team: ["AI Engineers", "Content Strategists", "Government Relations", "Communications Specialists"],
+    technologies: ["Webhook Automation", "Real-time Web Research", "AI Content Generation", "HTML Formatting", "Email Automation"],
+    impact: "Streamlining government and institutional communications with automated, research-backed newsletters",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500",
+    externalLink: "https://replit.com/@devgithub1/ChatPilot"
   }
 ];
 
