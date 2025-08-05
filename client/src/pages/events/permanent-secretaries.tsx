@@ -5,9 +5,6 @@ import ProjectCard from "@/components/sections/project-card";
 import logoImage2 from "@/lib/logos/preloader.png";
 
 export default function PermanentSecretariesEvent() {
-  console.log("PROJECTS:", PROJECTS);
-  console.log("PROJECTS length:", PROJECTS.length);
-  
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
     visible: {
@@ -31,10 +28,7 @@ export default function PermanentSecretariesEvent() {
     },
   };
 
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 },
-  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:from-slate-900 dark:via-blue-900/10 dark:to-purple-900/10">
@@ -66,16 +60,19 @@ export default function PermanentSecretariesEvent() {
             </p>
           </motion.div>
 
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            variants={staggerContainer}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {PROJECTS.map((project) => (
-              <motion.div key={project.id} variants={item}>
+              <motion.div 
+                key={project.id} 
+                variants={fadeInUp}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: project.id * 0.1 }}
+              >
                 <ProjectCard {...project} />
               </motion.div>
             ))}
-          </motion.div>
+          </div>
 
           <motion.div 
             className="text-center mt-12"
