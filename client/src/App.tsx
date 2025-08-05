@@ -19,7 +19,7 @@ import Payment from "@/pages/payment";
 import Forms from "@/pages/forms";
 import Events from "@/pages/events";
 import PermanentSecretariesEvent from "@/pages/events/permanent-secretaries";
-import MaizeDiseaseDetection from "@/pages/maize-disease-detection";
+
 import Local_Articles from "@/pages/local_articles";
 import Chat from "@/pages/chat";
 import ForgotPassword from "@/pages/forgot-password";
@@ -68,7 +68,7 @@ function Router() {
           <Route path="/forms" component={Forms} />
           <Route path="/events" component={Events} />
           <Route path="/events/permanent-secretaries" component={PermanentSecretariesEvent} />
-          <Route path="/projects/maize-disease-detection" component={MaizeDiseaseDetection} />
+
           <Route path="/local_articles" component={Local_Articles} />
           <Route path="/ai-africa-summit" component={AIAfricaSummit} />
           <Route path="/forgot-password" component={ForgotPassword} />
