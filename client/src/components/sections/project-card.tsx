@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
+import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { 
   Calendar, 
   Users, 
@@ -9,7 +11,8 @@ import {
   Target,
   CheckCircle,
   Clock,
-  AlertCircle
+  AlertCircle,
+  ExternalLink
 } from "lucide-react";
 
 interface ProjectCardProps {
@@ -33,6 +36,8 @@ const getStatusIcon = (status: string) => {
       return <CheckCircle className="w-4 h-4 text-green-600" />;
     case "In Progress":
       return <Clock className="w-4 h-4 text-blue-600" />;
+    case "Active":
+      return <CheckCircle className="w-4 h-4 text-green-600" />;
     case "Planning":
       return <AlertCircle className="w-4 h-4 text-orange-600" />;
     case "Pilot Phase":
@@ -48,6 +53,8 @@ const getStatusColor = (status: string) => {
       return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
     case "In Progress":
       return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+    case "Active":
+      return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
     case "Planning":
       return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
     case "Pilot Phase":
@@ -76,7 +83,18 @@ const getCategoryColor = (category: string) => {
   }
 };
 
+const getProjectRoute = (id: number, title: string) => {
+  // Map specific projects to their dedicated pages
+  switch (id) {
+    case 8: // Maize Disease Detection project
+      return "/projects/maize-disease-detection";
+    default:
+      return null;
+  }
+};
+
 export default function ProjectCard({
+  id,
   title,
   description,
   status,
@@ -223,6 +241,18 @@ export default function ProjectCard({
               {impact}
             </p>
           </div>
+
+          {/* View Details Button for projects with dedicated pages */}
+          {getProjectRoute(id, title) && (
+            <div className="pt-2">
+              <Link href={getProjectRoute(id, title)!}>
+                <Button size="sm" className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white">
+                  <ExternalLink className="w-3 h-3 mr-2" />
+                  View Details
+                </Button>
+              </Link>
+            </div>
+          )}
         </CardContent>
       </Card>
     </motion.div>
