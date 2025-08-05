@@ -362,7 +362,8 @@ export const PROJECTS = [
     team: ["Dermatologists", "AI Researchers", "Medical Specialists", "Healthcare Workers"],
     technologies: ["Medical Imaging", "Deep Learning", "Computer Vision", "Disease Classification", "Clinical AI"],
     impact: "Providing accessible dermatological screening for underserved communities across Africa",
-    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500"
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500",
+    externalLink: "https://huggingface.co/spaces/fastinom/Skin_disease"
   }
 ];
 
