@@ -28,6 +28,7 @@ interface ProjectCardProps {
   technologies: string[];
   impact: string;
   image: string;
+  externalLink?: string;
 }
 
 const getStatusIcon = (status: string) => {
@@ -105,7 +106,8 @@ export default function ProjectCard({
   team,
   technologies,
   impact,
-  image
+  image,
+  externalLink
 }: ProjectCardProps) {
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -242,17 +244,28 @@ export default function ProjectCard({
             </p>
           </div>
 
-          {/* View Details Button for projects with dedicated pages */}
-          {getProjectRoute(id, title) && (
-            <div className="pt-2">
+          {/* Action Buttons */}
+          <div className="pt-2 space-y-2">
+            {/* View Details Button for projects with dedicated pages */}
+            {getProjectRoute(id, title) && (
               <Link href={getProjectRoute(id, title)!}>
                 <Button size="sm" className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white">
                   <ExternalLink className="w-3 h-3 mr-2" />
                   View Details
                 </Button>
               </Link>
-            </div>
-          )}
+            )}
+            
+            {/* External Link Button */}
+            {externalLink && (
+              <a href={externalLink} target="_blank" rel="noopener noreferrer">
+                <Button size="sm" variant="outline" className="w-full border-green-600 text-green-600 hover:bg-green-50">
+                  <ExternalLink className="w-3 h-3 mr-2" />
+                  Try Live Demo
+                </Button>
+              </a>
+            )}
+          </div>
         </CardContent>
       </Card>
     </motion.div>

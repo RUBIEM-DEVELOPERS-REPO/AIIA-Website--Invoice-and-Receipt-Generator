@@ -347,7 +347,8 @@ export const PROJECTS = [
     team: ["Agricultural Scientists", "AI Engineers", "Plant Pathologists", "Farmers"],
     technologies: ["Computer Vision", "Deep Learning", "Agricultural Imaging", "Gradio Client", "Disease Classification"],
     impact: "Supporting over 10,000 farmers across 15 African countries with crop disease prevention",
-    image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=500"
+    image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=500",
+    externalLink: "https://huggingface.co/spaces/fastinom/Maize_disease"
   }
 ];
 
