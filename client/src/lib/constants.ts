@@ -349,6 +349,20 @@ export const PROJECTS = [
     impact: "Supporting over 10,000 farmers across 15 African countries with crop disease prevention",
     image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=500",
     externalLink: "https://huggingface.co/spaces/fastinom/Maize_disease"
+  },
+  {
+    id: 2,
+    title: "Skin Disease Classification",
+    description: "Advanced AI model for accurate classification of skin conditions through image analysis. Upload an image of a skin condition, and this model will classify the disease and provide relevant information. Supports 8 major skin condition categories including acne, melanoma, eczema, and fungal infections for improved dermatological care across Africa.",
+    status: "Active",
+    category: "Healthcare",
+    startDate: "2024-09-01",
+    endDate: "2025-11-30",
+    progress: 78,
+    team: ["Dermatologists", "AI Researchers", "Medical Specialists", "Healthcare Workers"],
+    technologies: ["Medical Imaging", "Deep Learning", "Computer Vision", "Disease Classification", "Clinical AI"],
+    impact: "Providing accessible dermatological screening for underserved communities across Africa",
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500"
   }
 ];
 

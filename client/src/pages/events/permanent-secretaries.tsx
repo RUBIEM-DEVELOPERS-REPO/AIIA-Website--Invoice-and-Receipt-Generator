@@ -51,28 +51,26 @@ export default function PermanentSecretariesEvent() {
                 className="h-8 transition-transform transform hover:scale-105"
               />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-600 via-blue-600 to-green-700 bg-clip-text text-transparent">
-              AI-Powered Agriculture
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-600 via-blue-600 to-red-600 bg-clip-text text-transparent">
+              AI-Powered Solutions
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Revolutionary AI system for maize disease detection, helping farmers across Africa protect their crops and improve food security with 85% accuracy in disease classification.
+              Cutting-edge AI systems for agriculture and healthcare, helping communities across Africa with crop disease detection and medical diagnosis through advanced computer vision and machine learning.
             </p>
           </motion.div>
 
-          <div className="flex justify-center">
-            <div className="max-w-md">
-              {PROJECTS.map((project) => (
-                <motion.div 
-                  key={project.id} 
-                  variants={fadeInUp}
-                  initial="hidden"
-                  animate="visible"
-                  transition={{ delay: 0.2 }}
-                >
-                  <ProjectCard {...project} />
-                </motion.div>
-              ))}
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {PROJECTS.map((project) => (
+              <motion.div 
+                key={project.id} 
+                variants={fadeInUp}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: project.id * 0.1 }}
+              >
+                <ProjectCard {...project} />
+              </motion.div>
+            ))}
           </div>
         </div>
       </motion.section>
