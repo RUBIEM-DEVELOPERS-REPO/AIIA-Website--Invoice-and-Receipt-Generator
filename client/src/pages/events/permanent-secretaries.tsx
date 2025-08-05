@@ -51,40 +51,29 @@ export default function PermanentSecretariesEvent() {
                 className="h-8 transition-transform transform hover:scale-105"
               />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent">
-              Projects
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-600 via-blue-600 to-green-700 bg-clip-text text-transparent">
+              AI-Powered Agriculture
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Discover our cutting-edge AI projects that are transforming communities across Africa. 
-              From healthcare to agriculture, we're building the future of AI in Africa.
+              Revolutionary AI system for maize disease detection, helping farmers across Africa protect their crops and improve food security with 85% accuracy in disease classification.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {PROJECTS.map((project) => (
-              <motion.div 
-                key={project.id} 
-                variants={fadeInUp}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: project.id * 0.1 }}
-              >
-                <ProjectCard {...project} />
-              </motion.div>
-            ))}
+          <div className="flex justify-center">
+            <div className="max-w-md">
+              {PROJECTS.map((project) => (
+                <motion.div 
+                  key={project.id} 
+                  variants={fadeInUp}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ delay: 0.2 }}
+                >
+                  <ProjectCard {...project} />
+                </motion.div>
+              ))}
+            </div>
           </div>
-
-          <motion.div 
-            className="text-center mt-12"
-            variants={fadeInUp}
-          >
-            <Button 
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              View All Projects
-            </Button>
-          </motion.div>
         </div>
       </motion.section>
     </div>
