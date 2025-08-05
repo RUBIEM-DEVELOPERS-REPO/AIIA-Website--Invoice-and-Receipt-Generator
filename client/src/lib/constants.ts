@@ -6,7 +6,6 @@ import animationData5 from "@/lib/lotties/locked.json";
 
 import magayaImage from "@/lib/team/magaya.jpg";
 import chiketaImage from "@/lib/team/chiketa2.jpg";
-import wekweteImage from "@/lib/team/wekwete.jpg";
 import erastusImage from "@/lib/team/erastus.jpg";
 import rusikeImage from "@/lib/team/rusike.jpg";
 import mafiImage from "@/lib/team/mafi.jpg";
@@ -105,16 +104,6 @@ export const BOARD_MEMBERS = {
           linkedin: "https://www.linkedin.com/in/cleopas-chiketa-cpf-0158802b/",
           twitter:
             "https://x.com/cleopaschairman?s=21&t=HWrqqLvw0iOr6jcLvBp2fQ",
-        },
-      },
-      {
-        name: "Brig (Rtrd) Charles Wekwete",
-        role: "Deputy Chairman",
-        image: wekweteImage,
-        bio: "Chief Executive Officer at 1010 Technologies (Pvt) Ltd and Non-Executive Chairman of Africom (Pvt) Ltd, Charles Wekwete has over 20 years of experience in technology, governance, and ICT policy. He formerly served as Permanent Secretary for the E-Government Department in the Office of the President and Cabinet (2018-2022) and held various leadership roles, including Director of Technical Services for the President’s Department and Vice Chairman of TelOne (Pvt) Ltd. With a Master’s in Business Administration and a background in Information Systems, he has represented Zimbabwe internationally in ICT and cybersecurity initiatives, contributing to projects such as the National E-Government Readiness Survey and the UN ICT Experts Group on Cybercrime​.",
-        socials: {
-          linkedin: "https://linkedin.com",
-          twitter: "https://twitter.com",
         },
       },
       {
