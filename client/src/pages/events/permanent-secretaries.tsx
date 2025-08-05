@@ -300,18 +300,18 @@ export default function PermanentSecretariesEvent() {
       >
         <div className="container mx-auto max-w-4xl text-center text-white">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Join Africa's Government AI Leaders
+            Projects
           </h2>
           <p className="text-xl mb-8 opacity-90">
-            This is an invitation-only event for Permanent Secretaries and senior government officials.
-            Spaces are limited to ensure meaningful interaction and strategic discussions.
+            Explore our innovative AI projects that are transforming Africa's future.
+            From healthcare to agriculture, we're building solutions that matter for our continent.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" className="bg-white text-gray-900 hover:bg-gray-100">
-              Request Invitation
+              View All Projects
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-              Contact Organizers
+              Partner With Us
             </Button>
           </div>
           <p className="text-sm mt-6 opacity-75">
