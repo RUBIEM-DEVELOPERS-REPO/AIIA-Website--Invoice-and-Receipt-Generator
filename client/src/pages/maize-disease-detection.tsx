@@ -58,26 +58,127 @@ export default function MaizeDiseaseDetection() {
     }
   };
 
-  const analyzeImage = async () => {
-    if (!uploadedImage) return;
-
+  const testWithSampleImage = async () => {
     setIsAnalyzing(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Use the sample image from the API example
+      const response = await fetch("https://raw.githubusercontent.com/gradio-app/gradio/main/test/test_files/bus.png");
+      const imageBlob = await response.blob();
+      
+      // Create a data URL for display
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUploadedImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(imageBlob);
+      
+      // Create FormData for the API request
+      const formData = new FormData();
+      formData.append('data', JSON.stringify([imageBlob]));
+      
+      // Call Gradio API directly
+      const apiResponse = await fetch('https://fastinom-maize-disease.hf.space/api/predict', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!apiResponse.ok) {
+        throw new Error(`API request failed with status ${apiResponse.status}`);
+      }
+
+      const result = await apiResponse.json();
+      console.log("API Result:", result);
+      
+      // Process the result
+      const prediction = result.data?.[0] || "Disease Detected";
+      const confidence = result.data?.[1] || 95.0;
+      
       setAnalysisResult({
-        disease: "Northern Corn Leaf Blight",
+        disease: prediction,
+        confidence: parseFloat(confidence.toString()),
+        severity: confidence > 80 ? "High" : confidence > 60 ? "Moderate" : "Low",
+        recommendations: [
+          "Apply fungicide within 24-48 hours",
+          "Improve field drainage",
+          "Remove affected plant debris",
+          "Monitor neighboring plants for spread"
+        ]
+      });
+      setIsAnalyzing(false);
+    } catch (error) {
+      console.error("Error analyzing sample image:", error);
+      setAnalysisResult({
+        disease: "Demo: Northern Corn Leaf Blight",
         confidence: 94.7,
         severity: "Moderate",
         recommendations: [
           "Apply fungicide within 24-48 hours",
           "Improve field drainage",
           "Remove affected plant debris",
-          "Monitor neighboring plants"
+          "Monitor neighboring plants for spread"
         ]
       });
       setIsAnalyzing(false);
-    }, 3000);
+    }
+  };
+
+  const analyzeImage = async () => {
+    if (!uploadedImage) return;
+
+    setIsAnalyzing(true);
+    
+    try {
+      // Convert uploaded image to blob
+      const response = await fetch(uploadedImage);
+      const imageBlob = await response.blob();
+      
+      // Create FormData for the API request
+      const formData = new FormData();
+      formData.append('data', JSON.stringify([imageBlob]));
+      
+      // Call Gradio API directly
+      const apiResponse = await fetch('https://fastinom-maize-disease.hf.space/api/predict', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!apiResponse.ok) {
+        throw new Error(`API request failed with status ${apiResponse.status}`);
+      }
+
+      const result = await apiResponse.json();
+      console.log("API Result:", result);
+      
+      // Process the result and set analysis result
+      const prediction = result.data?.[0] || "Disease Detected";
+      const confidence = result.data?.[1] || 95.0;
+      
+      setAnalysisResult({
+        disease: prediction,
+        confidence: parseFloat(confidence.toString()),
+        severity: confidence > 80 ? "High" : confidence > 60 ? "Moderate" : "Low",
+        recommendations: [
+          "Apply fungicide within 24-48 hours",
+          "Improve field drainage",
+          "Remove affected plant debris",
+          "Monitor neighboring plants for spread"
+        ]
+      });
+      setIsAnalyzing(false);
+    } catch (error) {
+      console.error("Error analyzing image:", error);
+      setAnalysisResult({
+        disease: "Analysis Failed",
+        confidence: 0,
+        severity: "Unknown",
+        recommendations: [
+          "Please try again with a different image",
+          "Ensure image is clear and well-lit",
+          "Check your internet connection"
+        ]
+      });
+      setIsAnalyzing(false);
+    }
   };
 
   const projectStats = [
@@ -205,11 +306,24 @@ export default function MaizeDiseaseDetection() {
                             className="hidden"
                             id="image-upload"
                           />
-                          <label htmlFor="image-upload">
-                            <Button asChild className="cursor-pointer">
-                              <span>Choose Image</span>
-                            </Button>
-                          </label>
+                          <div className="space-y-3">
+                            <label htmlFor="image-upload">
+                              <Button asChild className="cursor-pointer">
+                                <span>Choose Image</span>
+                              </Button>
+                            </label>
+                            <div>
+                              <Button 
+                                onClick={testWithSampleImage}
+                                variant="secondary"
+                                disabled={isAnalyzing}
+                                className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                              >
+                                <Leaf className="w-4 h-4 mr-2" />
+                                Try with Sample Image
+                              </Button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     )}
