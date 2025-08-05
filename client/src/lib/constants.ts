@@ -432,6 +432,20 @@ export const PROJECTS = [
     technologies: ["Computer Vision", "Deep Learning", "Medical Imaging", "Gradio Interface"],
     impact: "Early disease detection for thousands of patients across Africa",
     image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500"
+  },
+  {
+    id: 8,
+    title: "AI-Powered Maize Disease Detection",
+    description: "Revolutionary agricultural AI system for early detection and classification of maize diseases. Using advanced computer vision and deep learning, this system helps farmers identify crop diseases quickly and accurately to prevent agricultural losses and improve food security across Africa.",
+    status: "Active",
+    category: "Agriculture",
+    startDate: "2024-08-01",
+    endDate: "2025-12-31",
+    progress: 85,
+    team: ["Agricultural Scientists", "AI Engineers", "Plant Pathologists", "Farmers"],
+    technologies: ["Computer Vision", "Deep Learning", "Agricultural Imaging", "Gradio Client", "Disease Classification"],
+    impact: "Supporting over 10,000 farmers across 15 African countries with crop disease prevention",
+    image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=500"
   }
 ];
 
