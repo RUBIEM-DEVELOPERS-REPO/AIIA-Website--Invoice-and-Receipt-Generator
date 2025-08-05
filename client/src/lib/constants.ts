@@ -418,6 +418,20 @@ export const PROJECTS = [
     technologies: ["Computer Vision", "Real-time Analytics", "IoT"],
     impact: "30% reduction in traffic delays in pilot areas",
     image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=500"
+  },
+  {
+    id: 7,
+    title: "AI-Powered Disease Prediction System",
+    description: "Advanced machine learning system for early detection and prediction of skin diseases using computer vision and medical imaging. The system analyzes medical images to provide accurate diagnostic predictions and treatment recommendations.",
+    status: "In Progress",
+    category: "Healthcare",
+    startDate: "2024-11-01",
+    endDate: "2025-09-30",
+    progress: 75,
+    team: ["Medical Specialists", "AI Engineers", "Dermatologists"],
+    technologies: ["Computer Vision", "Deep Learning", "Medical Imaging", "Gradio Interface"],
+    impact: "Early disease detection for thousands of patients across Africa",
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500"
   }
 ];
 
