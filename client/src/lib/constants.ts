@@ -44,6 +44,7 @@ import articleContent11 from "@/lib/article_content/article11.txt";
 import articleContent12 from "@/lib/article_content/article12.txt";
 
 import eventImage1 from "@/lib/event_images/AI events.jpg";
+import hupenyuBackgroundImage from "@/lib/event_images/hupenyu_ai_background.jpg";
 
 export const PROGRAMS = [
   {
@@ -366,7 +367,7 @@ export const PROJECTS = [
     team: ["Medical AI Specialists", "Radiologists", "Maternal Health Experts", "Software Engineers"],
     technologies: ["FractureSense™", "MamaScan™", "Medical Imaging AI", "Diagnostic Analytics", "Remote Healthcare"],
     impact: "Transforming healthcare delivery in remote clinics across Zimbabwe with instant AI diagnostics",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=500",
+    image: hupenyuBackgroundImage,
     externalLink: "https://hupenyu-demo-43ad1j9v5-geraldtadikaps-gmailcoms-projects.vercel.app/"
   }
 ];
