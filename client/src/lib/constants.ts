@@ -364,6 +364,21 @@ export const PROJECTS = [
     impact: "Providing accessible dermatological screening for underserved communities across Africa",
     image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500",
     externalLink: "https://huggingface.co/spaces/fastinom/Skin_disease"
+  },
+  {
+    id: 3,
+    title: "Hupenyu AI",
+    description: "HUPENYU AI is a powerful AI-driven diagnostic tool transforming healthcare across Zimbabwe. It offers lightning-fast FractureSense™ for precise bone injury detection and MamaScan™ for insightful maternal health predictions — empowering doctors to make life-saving decisions instantly, even in the most remote clinics.",
+    status: "Active",
+    category: "Healthcare",
+    startDate: "2024-10-01",
+    endDate: "2025-10-31",
+    progress: 90,
+    team: ["Medical AI Specialists", "Radiologists", "Maternal Health Experts", "Software Engineers"],
+    technologies: ["FractureSense™", "MamaScan™", "Medical Imaging AI", "Diagnostic Analytics", "Remote Healthcare"],
+    impact: "Transforming healthcare delivery in remote clinics across Zimbabwe with instant AI diagnostics",
+    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=500",
+    externalLink: "https://hupenyu-demo-43ad1j9v5-geraldtadikaps-gmailcoms-projects.vercel.app/"
   }
 ];
 

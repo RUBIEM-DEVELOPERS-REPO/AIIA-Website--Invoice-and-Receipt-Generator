@@ -54,12 +54,12 @@ export default function PermanentSecretariesEvent() {
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-600 via-blue-600 to-red-600 bg-clip-text text-transparent">
               AI-Powered Solutions
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Cutting-edge AI systems for agriculture and healthcare, helping communities across Africa with crop disease detection and medical diagnosis through advanced computer vision and machine learning.
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-4xl mx-auto">
+              Comprehensive AI systems transforming agriculture and healthcare across Africa. From crop disease detection to advanced medical diagnostics including bone injury detection and maternal health predictions, empowering communities with cutting-edge technology.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {PROJECTS.map((project) => (
               <motion.div 
                 key={project.id} 
