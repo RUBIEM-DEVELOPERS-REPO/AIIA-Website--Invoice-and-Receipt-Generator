@@ -334,6 +334,93 @@ export const LOCAL_ARTICLES = [
   },
 ];
 
+export const PROJECTS = [
+  {
+    id: 1,
+    title: "AI-Powered Healthcare System for Rural Zimbabwe",
+    description: "Developing an AI diagnostic system to support healthcare workers in rural areas with limited access to specialists. The system provides preliminary diagnosis assistance and treatment recommendations.",
+    status: "In Progress",
+    category: "Healthcare",
+    startDate: "2024-06-01",
+    endDate: "2025-05-31",
+    progress: 65,
+    team: ["Dr. Dennis Magaya", "Dr. Sarah Mwangi", "Tech Team"],
+    technologies: ["Machine Learning", "Computer Vision", "Mobile Apps"],
+    impact: "Improved healthcare access for 50,000+ rural residents",
+    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=500"
+  },
+  {
+    id: 2,
+    title: "Smart Agriculture Analytics Platform",
+    description: "An AI-driven platform that analyzes soil conditions, weather patterns, and crop health to provide farmers with actionable insights for improved yield and sustainable farming practices.",
+    status: "Completed",
+    category: "Agriculture",
+    startDate: "2023-08-01",
+    endDate: "2024-12-01",
+    progress: 100,
+    team: ["Prof. James Ochieng", "Agricultural Experts", "Data Scientists"],
+    technologies: ["IoT Sensors", "Machine Learning", "Satellite Imagery"],
+    impact: "20% yield increase for participating farmers",
+    image: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=500"
+  },
+  {
+    id: 3,
+    title: "Financial Inclusion AI Chatbot",
+    description: "A multilingual AI chatbot that provides financial literacy education and microfinance guidance to underbanked populations across African communities.",
+    status: "Planning",
+    category: "FinTech",
+    startDate: "2025-03-01",
+    endDate: "2026-02-28",
+    progress: 15,
+    team: ["Ms. Fatima Al-Rashid", "Fintech Partners", "Linguists"],
+    technologies: ["Natural Language Processing", "Blockchain", "Mobile Banking"],
+    impact: "Target: 100,000 users in first year",
+    image: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=500"
+  },
+  {
+    id: 4,
+    title: "AI Education Platform for African Students",
+    description: "An adaptive learning platform that personalizes AI and computer science education for students across Africa, addressing the digital skills gap.",
+    status: "In Progress",
+    category: "Education",
+    startDate: "2024-01-15",
+    endDate: "2025-12-31",
+    progress: 45,
+    team: ["Education Specialists", "AI Researchers", "Content Creators"],
+    technologies: ["Adaptive Learning", "AI Tutoring", "Cloud Computing"],
+    impact: "5,000+ students enrolled across 15 countries",
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500"
+  },
+  {
+    id: 5,
+    title: "Climate Change Prediction Model",
+    description: "Advanced AI models to predict climate patterns and support government decision-making for climate adaptation and mitigation strategies across Africa.",
+    status: "In Progress",
+    category: "Climate",
+    startDate: "2024-03-01",
+    endDate: "2025-08-31",
+    progress: 30,
+    team: ["Climate Scientists", "ML Engineers", "Government Partners"],
+    technologies: ["Deep Learning", "Satellite Data", "Weather Analytics"],
+    impact: "Supporting climate policy for 10+ African nations",
+    image: "https://images.unsplash.com/photo-1569163139394-de4e4f43e4e5?w=500"
+  },
+  {
+    id: 6,
+    title: "AI-Powered Traffic Management System",
+    description: "Smart traffic optimization system for major African cities using computer vision and machine learning to reduce congestion and improve urban mobility.",
+    status: "Pilot Phase",
+    category: "Smart Cities",
+    startDate: "2024-09-01",
+    endDate: "2025-06-30",
+    progress: 55,
+    team: ["Urban Planners", "AI Engineers", "City Governments"],
+    technologies: ["Computer Vision", "Real-time Analytics", "IoT"],
+    impact: "30% reduction in traffic delays in pilot areas",
+    image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=500"
+  }
+];
+
 export const EVENTS = [
   {
     title: "AI Conference Africa 2025",
