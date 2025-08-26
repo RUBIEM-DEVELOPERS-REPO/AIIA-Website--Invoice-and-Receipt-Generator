@@ -140,9 +140,7 @@ export default function About() {
           <div>
             <h2 className="text-2xl font-bold mb-4">Our Vision</h2>
             <p className="text-muted-foreground">
-              To establish Africa as a global leader in AI innovation, fostering
-              a thriving ecosystem of researchers, entrepreneurs, and industry
-              partners.
+              AI for better lives
             </p>
           </div>
         </div>
