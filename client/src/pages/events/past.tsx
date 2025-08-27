@@ -3,24 +3,25 @@ import { Calendar, MapPin, Clock, Users, Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import logoImage from "@/lib/logos/preloader.png";
+import aiSummitAfricaImage from "@/lib/event_images/ai_summit_africa_2025.jpg";
 
 const pastEvents = [
   {
     id: 1,
-    title: "AI for Business Leadership Conference 2025",
-    description: "A comprehensive conference focusing on how AI can transform business operations, featuring permanent secretaries and industry leaders from across Zimbabwe and Africa.",
-    date: "March 15, 2025",
-    location: "Rainbow Towers, Harare",
-    time: "8:00 AM - 6:00 PM",
+    title: "AI Summit for Africa 2025",
+    description: "The summit was a powerful convergence of vision and practicality. The message was unanimous: our future depends on bold leadership, collaboration, and a definitive shift from talk to implementation. Africa's moment is now. Let's build it.",
+    date: "17-20 August, 2025",
+    location: "Elephant Hills Victoria Falls",
+    time: "9:00 AM - 5:00 PM",
     status: "Completed",
-    attendees: 250,
+    attendees: 300,
     highlights: [
       "Keynote on AI in Government Operations",
       "Panel Discussion on Digital Transformation",
       "AI Demonstration Sessions",
       "Networking with Industry Leaders"
     ],
-    image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=500",
+    image: aiSummitAfricaImage,
   },
   {
     id: 2,

@@ -45,6 +45,7 @@ import articleContent12 from "@/lib/article_content/article12.txt";
 
 import eventImage1 from "@/lib/event_images/AI events.jpg";
 import hupenyuBackgroundImage from "@/lib/event_images/hupenyu_ai_background.jpg";
+import aiSummitAfricaImage from "@/lib/event_images/ai_summit_africa_2025.jpg";
 
 export const PROGRAMS = [
   {
