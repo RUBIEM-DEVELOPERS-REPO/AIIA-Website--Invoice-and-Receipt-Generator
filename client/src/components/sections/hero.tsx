@@ -2,18 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronRight } from "lucide-react";
-import { useMembershipCount } from "@/hooks/use-membership-count";
 
-function Counter() {
-  const { remainingSpots, isLoading } = useMembershipCount();
-
-  if (isLoading) return <span className="font-bold">...</span>;
-  return (
-    <span>
-      <span className="font-bold">{remainingSpots}</span> spots left
-    </span>
-  );
-}
 
 import WireframeAnimation from "./wireframe-animation";
 import { Card } from "@/components/ui/card";
@@ -48,11 +37,7 @@ export default function Hero() {
                 Shaping Africa's AI Future
               </span>
             </div>
-            <div className="inline-block bg-green-500/20 text-green-500 rounded-full px-4 py-1 border border-green-500/20">
-              <span className="text-sm font-medium">
-                First 200 Members Join Free! • <Counter />
-              </span>
-            </div>
+
           </motion.div>
 
           <motion.h1
