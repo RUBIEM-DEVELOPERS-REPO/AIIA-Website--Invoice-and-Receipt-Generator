@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, User, LogOut, ChevronDown, Sparkles, MapPin, Users, ExternalLink, Phone, Calendar, UserCheck } from "lucide-react";
+import { Menu, User, LogOut, ChevronDown, Calendar, UserCheck } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -34,17 +34,9 @@ const NAV_ITEMS = [
   { label: "Contact Us", href: "/contact" },
 ];
 
-const SUMMIT_SECTIONS = [
-  { id: "Concert", label: "Concert", icon: <Sparkles className="w-4 h-4" /> },
-  { id: "Venue", label: "Venue", icon: <MapPin className="w-4 h-4" /> },
-  { id: "Speakers", label: "Speakers", icon: <Users className="w-4 h-4" /> },
-  { id: "Registration", label: "Registration", icon: <ExternalLink className="w-4 h-4" /> },
-  { id: "Call/Contact", label: "Contact", icon: <Phone className="w-4 h-4" /> },
-];
-
 const EVENTS_SECTIONS = [
-  { id: "all-events", label: "All Events", href: "/events", icon: <Calendar className="w-4 h-4" /> },
-  { id: "permanent-secretaries", label: "Permanent Secretaries Event", href: "/events/permanent-secretaries", icon: <UserCheck className="w-4 h-4" /> },
+  { id: "upcoming-events", label: "Upcoming Events", href: "/events/upcoming", icon: <Calendar className="w-4 h-4" /> },
+  { id: "past-events", label: "Past Events", href: "/events/past", icon: <UserCheck className="w-4 h-4" /> },
 ];
 
 export default function Navbar() {
@@ -140,31 +132,7 @@ export default function Navbar() {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          {/* AI Africa Summit Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                className="text-sm font-medium transition-colors hover:text-primary text-foreground flex items-center gap-1"
-              >
-                AI Africa Summit
-                <ChevronDown className="w-3 h-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              {SUMMIT_SECTIONS.map((section) => (
-                <DropdownMenuItem key={section.id} asChild>
-                  <Link 
-                    href={`/ai-africa-summit?section=${section.id}`}
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
-                    {section.icon}
-                    {section.label}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+
           
           <div className="flex items-center gap-2">
             {user ? (
@@ -259,23 +227,7 @@ export default function Navbar() {
                 </div>
               </div>
               
-              {/* AI Africa Summit Mobile Section */}
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-foreground">AI Africa Summit</p>
-                <div className="pl-4 space-y-2">
-                  {SUMMIT_SECTIONS.map((section) => (
-                    <Link
-                      key={section.id}
-                      href={`/ai-africa-summit?section=${section.id}`}
-                      onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      {section.icon}
-                      {section.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
+
               {user ? (
                 <div className="space-y-2 border-t pt-4">
                   <p className="text-sm font-medium">Email: {user.email}</p>

@@ -19,6 +19,8 @@ import Payment from "@/pages/payment";
 import Forms from "@/pages/forms";
 import Events from "@/pages/events";
 import PermanentSecretariesEvent from "@/pages/events/permanent-secretaries";
+import UpcomingEvents from "@/pages/events/upcoming";
+import PastEvents from "@/pages/events/past";
 
 import Local_Articles from "@/pages/local_articles";
 import Chat from "@/pages/chat";
@@ -67,6 +69,8 @@ function Router() {
           <Route path="/application" component={Forms} />
           <Route path="/forms" component={Forms} />
           <Route path="/events" component={Events} />
+          <Route path="/events/upcoming" component={UpcomingEvents} />
+          <Route path="/events/past" component={PastEvents} />
           <Route path="/events/permanent-secretaries" component={PermanentSecretariesEvent} />
 
           <Route path="/local_articles" component={Local_Articles} />
