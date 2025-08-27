@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import logoImage from "@/lib/logos/preloader.png";
 import aiSummitAfricaImage from "@/lib/event_images/ai_summit_africa_2025.jpg";
+import teloneTrainingImage from "@/lib/event_images/telone_ai_training.jpg";
 
 const pastEvents = [
   {
@@ -25,20 +26,20 @@ const pastEvents = [
   },
   {
     id: 2,
-    title: "AI Research Workshop Series",
-    description: "Monthly workshop series covering advanced AI research topics, machine learning methodologies, and practical applications in African contexts.",
-    date: "February 2025",
-    location: "University of Zimbabwe",
-    time: "2:00 PM - 5:00 PM",
-    status: "Series Completed",
-    attendees: 180,
+    title: "AI Training at TelOne: Shaping the Future of Innovation",
+    description: "We hosted a transformative AI training session at TelOne, empowering participants with skills to navigate and lead in an AI-driven world.",
+    date: "June 2025",
+    location: "Telone Centre for Learning",
+    time: "9:00 AM - 5:00 PM",
+    status: "Completed",
+    attendees: 45,
     highlights: [
-      "Deep Learning Fundamentals",
-      "Computer Vision Applications",
-      "Natural Language Processing",
-      "Ethics in AI Development"
+      "Data Transformation: Fueling Intelligent Systems",
+      "Practical Tools for Real-World AI",
+      "The Future of Work: AI & Jobs",
+      "AI's Disruption in Telecom & Education"
     ],
-    image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=500",
+    image: teloneTrainingImage,
   },
 ];
 
