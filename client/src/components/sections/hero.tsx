@@ -8,6 +8,7 @@ import WireframeAnimation from "./wireframe-animation";
 import { Card } from "@/components/ui/card";
 import { LottieAnimation } from "@/components/ui/lottie-animation";
 import animationData from "@/lib/lotties/Africa.json";
+import introVideo from "../../lib/videos/aiia_intro_video.mp4";
 
 export default function Hero() {
   return (
@@ -144,15 +145,37 @@ export default function Hero() {
               },
             }}
           >
-            <Card className="w-96 p-6 bg-transparent border-none  mr-0">
-              <div className="space-y-4">
-                <LottieAnimation animationData={animationData} />
-                <div className="flex items-center gap-2 text-sm text-primary"></div>
-                <p className="text-white">
-                  Our Vision tells Us to Keep On Moving And Innovating
-                </p>
-              </div>
-            </Card>
+            <div className="space-y-6">
+              {/* Video Section */}
+              <Card className="w-96 p-4 bg-transparent border-none">
+                <div className="space-y-3">
+                  <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full h-48 object-cover rounded-lg border border-white/20"
+                  >
+                    <source src={introVideo} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                  <p className="text-white text-sm text-center">
+                    AI Institute Africa Introduction
+                  </p>
+                </div>
+              </Card>
+
+              {/* Map Section */}
+              <Card className="w-96 p-6 bg-transparent border-none">
+                <div className="space-y-4">
+                  <LottieAnimation animationData={animationData} />
+                  <div className="flex items-center gap-2 text-sm text-primary"></div>
+                  <p className="text-white">
+                    Our Vision tells Us to Keep On Moving And Innovating
+                  </p>
+                </div>
+              </Card>
+            </div>
           </motion.div>
         </motion.div>
       </div>
