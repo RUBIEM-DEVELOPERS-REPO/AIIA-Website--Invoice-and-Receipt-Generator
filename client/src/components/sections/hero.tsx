@@ -145,28 +145,28 @@ export default function Hero() {
               },
             }}
           >
-            <div className="space-y-6 w-full max-w-sm lg:max-w-none lg:w-96">
+            <div className="space-y-6 w-full">
               {/* Video Section */}
-              <Card className="w-full p-4 bg-transparent border-none">
+              <Card className="w-full p-0 bg-transparent border-none">
                 <div className="space-y-3">
                   <video
                     autoPlay
                     muted
                     loop
                     playsInline
-                    className="w-full h-48 object-cover rounded-lg border border-white/20"
+                    className="w-full h-64 lg:h-80 object-cover rounded-lg border border-white/20"
                   >
                     <source src={introVideo} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
-                  <p className="text-white text-sm text-center">
+                  <p className="text-white text-sm text-center px-4">
                     AI Institute Africa Introduction
                   </p>
                 </div>
               </Card>
 
               {/* Map Section */}
-              <Card className="w-full p-6 bg-transparent border-none">
+              <Card className="w-full max-w-sm mx-auto lg:max-w-none lg:w-96 p-6 bg-transparent border-none">
                 <div className="space-y-4">
                   <LottieAnimation animationData={animationData} />
                   <div className="flex items-center gap-2 text-sm text-primary"></div>
