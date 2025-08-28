@@ -7,7 +7,7 @@ import NewsCard from "@/components/sections/news-card";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { PartnerShowcase } from "@/components/sections/partner-showcase";
-import { ConferenceSection } from "@/components/sections/conference-section";
+
 
 
 import logoImage2 from "@/lib/logos/preloader.png";
@@ -81,9 +81,6 @@ export default function Home() {
       <div className="flex justify-center">
         <PartnerShowcase />
       </div>
-
-      {/* Conference Section */}
-      <ConferenceSection />
 
       {/* Projects Section */}
       <motion.section
