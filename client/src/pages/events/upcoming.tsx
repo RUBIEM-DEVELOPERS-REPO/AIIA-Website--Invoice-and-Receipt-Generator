@@ -8,12 +8,19 @@ import logoImage from "@/lib/logos/preloader.png";
 const upcomingEvents = [
   {
     id: 1,
-    title: "AI Conference Africa 2025",
-    description: "The AI Conference Africa 2025, taking place from April 14–17, 2025, at Elephant Hills Hotel, Victoria Falls, will bring together government leaders, academia, organizations, and industry captains to explore advancements in artificial intelligence.",
-    date: "April 14-17, 2025",
-    location: "Elephant Hills Victoria Falls",
-    time: "9:00 AM - 5:00 PM",
-    status: "Upcoming",
+    title: "AI Training for Delegates",
+    description: "A 2-Day Free AI Training to be held in Harare in September 2025 (exact venue and date to be announced). This training will be facilitated by experts from academia and industry.",
+    date: "September 2025",
+    location: "Harare (venue to be announced)",
+    time: "To be announced",
+    status: "Registration Opening Soon",
+    expectedAttendees: 150,
+    highlights: [
+      "Expert facilitators from academia and industry",
+      "Comprehensive 2-day curriculum",
+      "Free training for all delegates",
+      "Practical AI applications and case studies"
+    ],
     registrationUrl: "#",
     image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=500",
   },
