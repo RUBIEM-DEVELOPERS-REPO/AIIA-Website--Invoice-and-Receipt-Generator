@@ -13,14 +13,30 @@ import introVideo from "../../lib/videos/aiia_intro_video.mp4";
 export default function Hero() {
   return (
     <div className="relative h-[100vh] overflow-hidden bg-gray-900">
+      {/* Video Background */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      >
+        <source src={introVideo} type="video/mp4" />
+      </video>
+
       {/* Neural Network Animation Background */}
-      <WireframeAnimation />
+      <div className="absolute inset-0 z-[1] opacity-20">
+        <WireframeAnimation />
+      </div>
+
+      {/* Dark Overlay for better text readability */}
+      <div className="absolute inset-0 z-[2] bg-black/50" />
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 z-[1] mix-blend-overlay opacity-50 dark:opacity-40 bg-gradient-to-br from-background via-background/70 to-background/30" />
+      <div className="absolute inset-0 z-[3] mix-blend-overlay opacity-30 dark:opacity-20 bg-gradient-to-br from-background via-background/70 to-background/30" />
 
       {/* Content */}
-      <div className="relative z-10 container h-full flex flex-col lg:flex-row items-center justify-between px-8 md:px-16 gap-12 lg:gap-20">
+      <div className="relative z-[4] container h-full flex flex-col lg:flex-row items-center justify-between px-8 md:px-16 gap-12 lg:gap-20">
         <motion.div
           className="max-w-2xl"
           initial={{ opacity: 0, y: 20 }}
@@ -120,9 +136,9 @@ export default function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* Floating Card */}
+        {/* Floating Map Card */}
         <motion.div
-          className="block"
+          className="hidden lg:block"
           initial={{ opacity: 0, y: -200 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
@@ -145,37 +161,15 @@ export default function Hero() {
               },
             }}
           >
-            <div className="space-y-6 w-full">
-              {/* Video Section */}
-              <Card className="w-full p-0 bg-transparent border-none">
-                <div className="space-y-3">
-                  <video
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="w-full h-64 lg:h-80 object-cover rounded-lg border border-white/20"
-                  >
-                    <source src={introVideo} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                  <p className="text-white text-sm text-center px-4">
-                    AI Institute Africa Introduction
-                  </p>
-                </div>
-              </Card>
-
-              {/* Map Section */}
-              <Card className="w-full max-w-sm mx-auto lg:max-w-none lg:w-96 p-6 bg-transparent border-none">
-                <div className="space-y-4">
-                  <LottieAnimation animationData={animationData} />
-                  <div className="flex items-center gap-2 text-sm text-primary"></div>
-                  <p className="text-white">
-                    Our Vision tells Us to Keep On Moving And Innovating
-                  </p>
-                </div>
-              </Card>
-            </div>
+            <Card className="w-96 p-6 bg-black/20 backdrop-blur-sm border border-white/20">
+              <div className="space-y-4">
+                <LottieAnimation animationData={animationData} />
+                <div className="flex items-center gap-2 text-sm text-primary"></div>
+                <p className="text-white">
+                  Our Vision tells Us to Keep On Moving And Innovating
+                </p>
+              </div>
+            </Card>
           </motion.div>
         </motion.div>
       </div>
