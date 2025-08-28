@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import logoImage from "@/lib/logos/preloader.png";
 import aiSummitAfricaImage from "@/lib/event_images/ai_summit_africa_2025.jpg";
 import teloneTrainingImage from "@/lib/event_images/telone_ai_training.jpg";
+import cityParkingTrainingImage from "@/lib/event_images/city_parking_ai_training.jpg";
 
 const pastEvents = [
   {
@@ -40,6 +41,23 @@ const pastEvents = [
       "AI's Disruption in Telecom & Education"
     ],
     image: teloneTrainingImage,
+  },
+  {
+    id: 3,
+    title: "AI Training at City Parking: Shaping the Future of Innovation",
+    description: "This training equipped CITY Parking with cutting-edge knowledge on how Artificial Intelligence can revolutionize parking systems, streamline operations, and enhance service delivery in urban spaces.",
+    date: "June 2025",
+    location: "Holiday Inn Hotel",
+    time: "9:00 AM - 5:00 PM",
+    status: "Completed",
+    attendees: 20,
+    highlights: [
+      "AI & Machine Learning fundamentals tailored for urban infrastructure",
+      "Data analytics for real-time parking management",
+      "Case studies on smart city solutions",
+      "Strategies for integrating AI into public services"
+    ],
+    image: cityParkingTrainingImage,
   },
 ];
 

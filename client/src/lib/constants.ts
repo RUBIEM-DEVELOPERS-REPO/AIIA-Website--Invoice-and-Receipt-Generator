@@ -47,6 +47,7 @@ import eventImage1 from "@/lib/event_images/AI events.jpg";
 import hupenyuBackgroundImage from "@/lib/event_images/hupenyu_ai_background.jpg";
 import aiSummitAfricaImage from "@/lib/event_images/ai_summit_africa_2025.jpg";
 import teloneTrainingImage from "@/lib/event_images/telone_ai_training.jpg";
+import cityParkingTrainingImage from "@/lib/event_images/city_parking_ai_training.jpg";
 
 export const PROGRAMS = [
   {
