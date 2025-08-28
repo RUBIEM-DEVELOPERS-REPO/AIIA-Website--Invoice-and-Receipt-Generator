@@ -20,7 +20,7 @@ export default function Hero() {
       <div className="absolute inset-0 z-[1] mix-blend-overlay opacity-50 dark:opacity-40 bg-gradient-to-br from-background via-background/70 to-background/30" />
 
       {/* Content */}
-      <div className="relative z-10 container h-full flex items-center justify-between px-8 md:px-16 gap-20">
+      <div className="relative z-10 container h-full flex flex-col lg:flex-row items-center justify-between px-8 md:px-16 gap-12 lg:gap-20">
         <motion.div
           className="max-w-2xl"
           initial={{ opacity: 0, y: 20 }}
@@ -122,7 +122,7 @@ export default function Hero() {
 
         {/* Floating Card */}
         <motion.div
-          className="hidden lg:block"
+          className="block"
           initial={{ opacity: 0, y: -200 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
@@ -145,9 +145,9 @@ export default function Hero() {
               },
             }}
           >
-            <div className="space-y-6">
+            <div className="space-y-6 w-full max-w-sm lg:max-w-none lg:w-96">
               {/* Video Section */}
-              <Card className="w-96 p-4 bg-transparent border-none">
+              <Card className="w-full p-4 bg-transparent border-none">
                 <div className="space-y-3">
                   <video
                     autoPlay
@@ -166,7 +166,7 @@ export default function Hero() {
               </Card>
 
               {/* Map Section */}
-              <Card className="w-96 p-6 bg-transparent border-none">
+              <Card className="w-full p-6 bg-transparent border-none">
                 <div className="space-y-4">
                   <LottieAnimation animationData={animationData} />
                   <div className="flex items-center gap-2 text-sm text-primary"></div>
