@@ -15,6 +15,7 @@ import {
   FileText,
   BellRing,
   CircleCheck,
+  Mail,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
@@ -183,9 +184,11 @@ export default function AdminDashboard() {
                     View All Members
                   </Link>
                 </Button>
-                <Button variant="secondary" className="w-full">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Add New Member
+                <Button asChild className="w-full" variant="secondary">
+                  <Link href="/admin/marketing-email">
+                    <Mail className="mr-2 h-4 w-4" />
+                    Send Marketing Email
+                  </Link>
                 </Button>
                 <Button variant="outline" className="w-full">
                   <Bell className="mr-2 h-4 w-4" />

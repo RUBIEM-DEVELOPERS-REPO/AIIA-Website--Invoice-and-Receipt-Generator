@@ -1108,5 +1108,82 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Marketing email endpoint
+  app.post("/api/admin/marketing-email", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const { subject, message, htmlContent } = req.body;
+
+      if (!subject || !message) {
+        return res.status(400).json({ message: "Subject and message are required" });
+      }
+
+      // Get all active registered users with valid emails
+      const registeredUsers = await db
+        .select({ email: users.email, name: users.name })
+        .from(users)
+        .where(eq(users.isActive, true));
+
+      if (registeredUsers.length === 0) {
+        return res.status(404).json({ message: "No registered users found" });
+      }
+
+      const emailResults = {
+        total: registeredUsers.length,
+        successful: 0,
+        failed: 0,
+        errors: [] as string[]
+      };
+
+      // Send emails to all registered users
+      for (const user of registeredUsers) {
+        try {
+          const personalizedMessage = message.replace(/{name}/g, user.name || 'Valued Member');
+          
+          const personalizedHtml = htmlContent 
+            ? htmlContent.replace(/{name}/g, user.name || 'Valued Member')
+            : `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #1e40af;">Hello ${user.name || 'Valued Member'},</h2>
+                <div style="margin: 20px 0; line-height: 1.6;">
+                  ${personalizedMessage.replace(/\n/g, '<br>')}
+                </div>
+                <hr style="border: 1px solid #e5e7eb; margin: 30px 0;">
+                <p style="color: #6b7280; font-size: 14px;">
+                  Best regards,<br>
+                  AI Institute Africa Team
+                </p>
+              </div>
+            `;
+
+          const emailSent = await sendRegistrationEmail({
+            to: user.email,
+            subject: subject,
+            text: personalizedMessage,
+            html: personalizedHtml,
+          });
+
+          if (emailSent) {
+            emailResults.successful++;
+          } else {
+            emailResults.failed++;
+            emailResults.errors.push(`Failed to send to ${user.email}`);
+          }
+        } catch (emailError) {
+          console.error(`Error sending email to ${user.email}:`, emailError);
+          emailResults.failed++;
+          emailResults.errors.push(`Error sending to ${user.email}: ${emailError instanceof Error ? emailError.message : 'Unknown error'}`);
+        }
+      }
+
+      res.json({
+        message: `Marketing email sent to ${emailResults.successful} out of ${emailResults.total} users`,
+        results: emailResults
+      });
+    } catch (error) {
+      console.error("Error sending marketing emails:", error);
+      res.status(500).json({ message: "Failed to send marketing emails" });
+    }
+  });
+
   return httpServer;
 }
