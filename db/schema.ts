@@ -105,7 +105,7 @@ export const users = pgTable("users", {
 
 export const payments = pgTable("payments", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id, { foreignKeyName: "fk_user" }),
+  userId: integer("user_id").notNull().references(() => users.id),
   amount: text("amount").notNull(),
   currency: text("currency").notNull().default("USD"),
   status: text("status", {

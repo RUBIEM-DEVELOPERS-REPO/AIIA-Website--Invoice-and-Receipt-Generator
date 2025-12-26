@@ -37,6 +37,7 @@ import ArticlesPage from "@/pages/admin/articles";
 import LocalArticlesPage from "@/pages/admin/local-articles";
 import MarketingEmailPage from "@/pages/admin/marketing-email";
 import { ChatAssistant } from "@/components/ui/chat-assistant";
+import { EnrollmentPopup, useEnrollmentPopup } from "@/components/ui/enrollment-popup";
 
 function Router() {
   const [location] = useLocation();
@@ -125,18 +126,31 @@ function Router() {
   );
 }
 
-function App() {
+function AppContent() {
   const [location] = useLocation();
   const isFullscreenRoute = location === "/chat";
+  const isAdminRoute = location.startsWith("/admin");
+  const { isOpen, closePopup } = useEnrollmentPopup();
 
+  return (
+    <>
+      <Router />
+      <Toaster />
+      {!isFullscreenRoute && <ChatAssistant />}
+      {!isFullscreenRoute && !isAdminRoute && (
+        <EnrollmentPopup isOpen={isOpen} onClose={closePopup} />
+      )}
+    </>
+  );
+}
+
+function App() {
   return (
     <ThemeProvider defaultTheme="dark">
       <QueryClientProvider client={queryClient}>
         <AdminAuthProvider>
           <MembershipProvider>
-            <Router />
-            <Toaster />
-            {!isFullscreenRoute && <ChatAssistant />}
+            <AppContent />
           </MembershipProvider>
         </AdminAuthProvider>
       </QueryClientProvider>
