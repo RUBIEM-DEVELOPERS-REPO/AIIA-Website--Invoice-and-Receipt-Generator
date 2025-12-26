@@ -27,6 +27,7 @@ import Chat from "@/pages/chat";
 import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
 import AIAfricaSummit from "@/pages/ai-africa-summit";
+import Enrollment from "@/pages/enrollment";
 import NotFound from "@/pages/not-found";
 import AdminForgotPassword from "@/pages/admin/forgot-password";
 import AdminResetPassword from "@/pages/admin/reset-password";
@@ -77,6 +78,7 @@ function Router() {
 
           <Route path="/local_articles" component={Local_Articles} />
           <Route path="/ai-africa-summit" component={AIAfricaSummit} />
+          <Route path="/enrollment" component={Enrollment} />
           <Route path="/forgot-password" component={ForgotPassword} />
           <Route path="/reset-password" component={ResetPassword} />
 

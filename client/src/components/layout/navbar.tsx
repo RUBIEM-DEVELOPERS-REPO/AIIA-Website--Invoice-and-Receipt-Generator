@@ -24,6 +24,12 @@ const NAV_ITEMS = [
   { label: "Collaborations", href: "/solution" },
   { label: "Publications", href: "/local_articles" },
   {
+    label: "Enroll",
+    href: "/enrollment",
+    className:
+      "relative before:absolute before:inset-0 before:animate-pulse before:bg-gradient-to-r before:from-cyan-500 before:via-blue-500 before:to-purple-600 before:bg-[length:200%_100%] before:blur-sm before:-z-10 before:opacity-75 hover:before:opacity-100 before:transition-all px-2 py-1 rounded-md text-white",
+  },
+  {
     label: "Membership",
     href: "/membership",
     className:
