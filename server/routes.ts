@@ -9,9 +9,11 @@ import {
   events, 
   articles,
   localArticles, 
+  studentLeads,
   eventCreationSchema, 
   insertArticleSchema,
-  insertLocalArticleSchema
+  insertLocalArticleSchema,
+  insertStudentLeadSchema
 } from "@db/schema";
 import { ZodError } from "zod";
 import newsRouter from "./routes/news";
@@ -642,6 +644,27 @@ export function registerRoutes(app: Express): Server {
         res.status(400).json({ message: "Invalid email address" });
       } else {
         res.status(500).json({ message: "Failed to subscribe" });
+      }
+    }
+  });
+
+  // Student leads endpoint for March 2026 intake
+  app.post("/api/student-leads", async (req: Request, res: Response) => {
+    try {
+      const leadData = insertStudentLeadSchema.parse(req.body);
+      await db.insert(studentLeads).values({
+        email: leadData.email,
+        phone: leadData.phone,
+        courseInterest: leadData.courseInterest,
+        educationLevel: leadData.educationLevel || null,
+      });
+      res.json({ success: true, message: "Thank you for your interest! We will contact you soon." });
+    } catch (error) {
+      console.error("Error saving student lead:", error);
+      if (error instanceof ZodError) {
+        res.status(400).json({ message: "Invalid information provided" });
+      } else {
+        res.status(500).json({ message: "Failed to submit. Please try again." });
       }
     }
   });
