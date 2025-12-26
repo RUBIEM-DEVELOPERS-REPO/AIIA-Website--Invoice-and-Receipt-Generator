@@ -132,6 +132,17 @@ export const admins = pgTable("admins", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const studentLeads = pgTable("student_leads", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  courseInterest: text("course_interest", {
+    enum: ["3_day", "6_month", "12_month"]
+  }).notNull(),
+  educationLevel: text("education_level"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Schema validations
 export const insertContactSchema = createInsertSchema(contacts);
 export const selectContactSchema = createSelectSchema(contacts);
@@ -157,6 +168,14 @@ export const insertAdminSchema = createInsertSchema(admins, {
 
 export const selectAdminSchema = createSelectSchema(admins);
 
+export const insertStudentLeadSchema = createInsertSchema(studentLeads, {
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(5, "Phone number is required"),
+  courseInterest: z.enum(["3_day", "6_month", "12_month"]),
+  educationLevel: z.string().optional(),
+});
+export const selectStudentLeadSchema = createSelectSchema(studentLeads);
+
 // Type definitions
 export type InsertContact = typeof contacts.$inferInsert;
 export type SelectContact = typeof contacts.$inferSelect;
@@ -174,6 +193,8 @@ export type InsertLocalArticle = typeof localArticles.$inferInsert;
 export type SelectLocalArticle = typeof localArticles.$inferSelect;
 export type InsertAdmin = typeof admins.$inferInsert;
 export type SelectAdmin = typeof admins.$inferSelect;
+export type InsertStudentLead = typeof studentLeads.$inferInsert;
+export type SelectStudentLead = typeof studentLeads.$inferSelect;
 
 // Additional validation schemas
 export const userRegistrationSchema = z.object({
