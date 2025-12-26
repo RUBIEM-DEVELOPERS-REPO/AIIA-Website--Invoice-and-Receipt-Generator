@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Phone, GraduationCap, Clock, BookOpen, Laptop, Send } from "lucide-react";
+import { X, Mail, Phone, GraduationCap, Clock, BookOpen, Laptop, Send, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -106,7 +106,20 @@ export function EnrollmentPopup({ isOpen, onClose }: EnrollmentPopupProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+          />
+
+          <motion.div
+            className="absolute inset-0 overflow-hidden pointer-events-none"
+            animate={{
+              background: [
+                "radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%)",
+                "radial-gradient(circle at 80% 50%, rgba(0, 200, 255, 0.1) 0%, transparent 50%)",
+                "radial-gradient(circle at 50% 20%, rgba(100, 0, 255, 0.1) 0%, transparent 50%)",
+                "radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%)",
+              ],
+            }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           />
 
           <motion.div
@@ -114,133 +127,159 @@ export function EnrollmentPopup({ isOpen, onClose }: EnrollmentPopupProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 25 }}
-            className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+            className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-cyan-500/30"
+            style={{
+              boxShadow: "0 0 40px rgba(0, 255, 255, 0.15), 0 0 80px rgba(0, 200, 255, 0.1)",
+              fontFamily: "'Orbitron', 'Rajdhani', 'Share Tech Mono', sans-serif",
+            }}
             onClick={(e) => e.stopPropagation()}
           >
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px] rounded-2xl pointer-events-none" />
+
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-3 right-3 z-10 bg-gray-100 hover:bg-gray-200 rounded-full"
+              className="absolute top-3 right-3 z-10 bg-slate-800/80 hover:bg-cyan-500/20 rounded-full border border-cyan-500/30 text-cyan-400 hover:text-cyan-300"
               onClick={onClose}
             >
               <X className="w-5 h-5" />
             </Button>
 
-            <div className="p-6">
+            <div className="p-6 relative">
               <div className="text-center mb-6">
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-accent text-white px-4 py-2 rounded-full text-sm font-medium mb-3">
-                  <GraduationCap className="w-4 h-4" />
+                <motion.div
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold mb-3 tracking-wider uppercase"
+                  animate={{ boxShadow: ["0 0 20px rgba(0,255,255,0.3)", "0 0 40px rgba(0,255,255,0.5)", "0 0 20px rgba(0,255,255,0.3)"] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  style={{ fontFamily: "'Orbitron', sans-serif" }}
+                >
+                  <Zap className="w-4 h-4" />
                   March 2026 Intake
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  Interested in Enrolling?
+                </motion.div>
+                <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 mb-2 tracking-wide" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+                  Ready to Join the Future?
                 </h2>
-                <p className="text-gray-600 text-sm">
-                  Choose your preferred course and we'll contact you with details
+                <p className="text-cyan-200/70 text-sm tracking-wide">
+                  Select your program and we'll contact you with details
                 </p>
               </div>
 
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 mb-6">
+              <motion.div
+                className="bg-gradient-to-r from-purple-900/40 to-blue-900/40 rounded-lg p-4 mb-6 border border-purple-500/30"
+                animate={{ borderColor: ["rgba(168,85,247,0.3)", "rgba(59,130,246,0.5)", "rgba(168,85,247,0.3)"] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
                 <div className="flex items-center gap-2 mb-2">
-                  <Laptop className="w-5 h-5 text-blue-600" />
-                  <span className="font-semibold text-gray-800">E-Training Platform Coming Soon!</span>
+                  <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 4, repeat: Infinity, ease: "linear" }}>
+                    <Laptop className="w-5 h-5 text-purple-400" />
+                  </motion.div>
+                  <span className="font-bold text-purple-300 tracking-wide" style={{ fontFamily: "'Orbitron', sans-serif" }}>E-Training Platform Coming Soon!</span>
                 </div>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-purple-200/70">
                   Free introductory courses will be available online. Stay tuned!
                 </p>
-              </div>
+              </motion.div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                  <Label className="text-sm font-bold text-cyan-300 mb-2 block tracking-wider uppercase" style={{ fontFamily: "'Orbitron', sans-serif" }}>
                     Select Course Duration
                   </Label>
                   <RadioGroup value={selectedCourse} onValueChange={setSelectedCourse} className="space-y-2">
                     {courseOptions.map((course) => (
-                      <div
+                      <motion.div
                         key={course.id}
-                        className={`flex items-center space-x-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                        className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer transition-all ${
                           selectedCourse === course.id
-                            ? "border-primary bg-primary/5"
-                            : "border-gray-200 hover:border-gray-300"
+                            ? "border-cyan-400 bg-cyan-500/10 shadow-[0_0_15px_rgba(0,255,255,0.2)]"
+                            : "border-slate-600/50 hover:border-cyan-500/50 bg-slate-800/50"
                         }`}
                         onClick={() => setSelectedCourse(course.id)}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                       >
-                        <RadioGroupItem value={course.id} id={course.id} />
-                        <course.icon className="w-5 h-5 text-primary" />
+                        <RadioGroupItem value={course.id} id={course.id} className="border-cyan-500 text-cyan-400" />
+                        <course.icon className={`w-5 h-5 ${selectedCourse === course.id ? "text-cyan-400" : "text-slate-400"}`} />
                         <div className="flex-1">
-                          <p className="font-medium text-gray-800 text-sm">{course.name}</p>
-                          <p className="text-xs text-gray-500">{course.description}</p>
+                          <p className="font-semibold text-slate-200 text-sm tracking-wide">{course.name}</p>
+                          <p className="text-xs text-slate-400">{course.description}</p>
                         </div>
-                        <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">
+                        <span className={`text-xs font-bold px-2 py-1 rounded ${
+                          selectedCourse === course.id
+                            ? "text-cyan-300 bg-cyan-500/20 border border-cyan-500/50"
+                            : "text-slate-400 bg-slate-700/50"
+                        }`} style={{ fontFamily: "'Orbitron', sans-serif" }}>
                           {course.duration}
                         </span>
-                      </div>
+                      </motion.div>
                     ))}
                   </RadioGroup>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                    <Label htmlFor="email" className="text-sm font-bold text-cyan-300 tracking-wider uppercase" style={{ fontFamily: "'Orbitron', sans-serif" }}>
                       Email Address
                     </Label>
                     <div className="relative mt-1">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-cyan-500/50" />
                       <Input
                         id="email"
                         type="email"
                         placeholder="your@email.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10"
+                        className="pl-10 bg-slate-800/80 border-slate-600/50 text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20"
                         required
                       />
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                    <Label htmlFor="phone" className="text-sm font-bold text-cyan-300 tracking-wider uppercase" style={{ fontFamily: "'Orbitron', sans-serif" }}>
                       Phone Number
                     </Label>
                     <div className="relative mt-1">
-                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-cyan-500/50" />
                       <Input
                         id="phone"
                         type="tel"
                         placeholder="+263 7XX XXX XXX"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="pl-10"
+                        className="pl-10 bg-slate-800/80 border-slate-600/50 text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20"
                         required
                       />
                     </div>
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white"
-                  disabled={submitMutation.isPending}
-                >
-                  {submitMutation.isPending ? (
-                    "Submitting..."
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4 mr-2" />
-                      Express Interest
-                    </>
-                  )}
-                </Button>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold tracking-wider uppercase"
+                    style={{ fontFamily: "'Orbitron', sans-serif", boxShadow: "0 0 20px rgba(0,255,255,0.3)" }}
+                    disabled={submitMutation.isPending}
+                  >
+                    {submitMutation.isPending ? (
+                      "Transmitting..."
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        Express Interest
+                      </>
+                    )}
+                  </Button>
+                </motion.div>
               </form>
 
-              <div className="mt-6 pt-4 border-t border-gray-200">
-                <p className="text-xs text-gray-600 mb-2">
-                  <span className="font-semibold">To Apply:</span> A Level, O Level, or University Degree (if any)
+              <div className="mt-6 pt-4 border-t border-slate-700/50">
+                <p className="text-xs text-slate-400 mb-2">
+                  <span className="font-bold text-cyan-400">To Apply:</span> A Level, O Level, or University Degree (if any)
                 </p>
-                <div className="flex items-center gap-2 text-xs text-gray-600">
-                  <Mail className="w-3 h-3" />
+                <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <Mail className="w-3 h-3 text-cyan-500" />
                   <span>Send applications to:</span>
-                  <a href="mailto:admin@aiinstituteafrica.com" className="text-primary font-medium hover:underline">
+                  <a href="mailto:admin@aiinstituteafrica.com" className="text-cyan-400 font-bold hover:text-cyan-300 hover:underline">
                     admin@aiinstituteafrica.com
                   </a>
                 </div>
