@@ -4,212 +4,135 @@ import {
   Clock, 
   BookOpen, 
   Brain, 
-  Cpu, 
-  Bot, 
-  BarChart3, 
-  MessageSquare, 
-  Shield, 
-  Eye, 
-  Zap, 
   Users, 
   Building2, 
   Laptop,
   Sparkles,
   ArrowRight,
   Mail,
-  Phone,
   MapPin,
   Calendar,
   DollarSign,
   Award,
   Layers,
   Target,
-  TrendingUp,
-  Settings,
-  HeartPulse,
-  Leaf,
-  Lock,
-  Lightbulb,
   Briefcase,
-  UserCheck,
-  PieChart,
+  Monitor,
   FileText,
-  Workflow
+  Zap,
+  Star,
+  CheckCircle2,
+  Globe
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "wouter";
 
-const diplomaPrograms = [
-  {
-    name: "Diploma in Artificial Intelligence and Data Science",
-    duration: "1 Year (2 Semesters)",
-    price: "$560 per semester",
-    icon: Brain,
-    hnd: true,
-  },
-  {
-    name: "Diploma in Machine Learning and Deep Learning",
-    duration: "1 Year (2 Semesters)",
-    price: "$560 per semester",
-    icon: Cpu,
-    hnd: true,
-  },
-  {
-    name: "Diploma in Robotics and Intelligent Systems",
-    duration: "1 Year (2 Semesters)",
-    price: "$560 per semester",
-    icon: Bot,
-    hnd: true,
-  },
-  {
-    name: "Diploma in Data Analytics and AI Applications",
-    duration: "1 Year (2 Semesters)",
-    price: "$560 per semester",
-    icon: BarChart3,
-    hnd: true,
-  },
-  {
-    name: "Diploma in Natural Language Processing (NLP)",
-    duration: "1 Year (2 Semesters)",
-    price: "$560 per semester",
-    icon: MessageSquare,
-    hnd: true,
-  },
-  {
-    name: "Diploma in AI for Business and Innovation",
-    duration: "1 Year (2 Semesters)",
-    price: "$560 per semester",
-    icon: Lightbulb,
-    hnd: true,
-  },
-  {
-    name: "Diploma in Computer Vision and Image Processing",
-    duration: "1 Year (2 Semesters)",
-    price: "$560 per semester",
-    icon: Eye,
-    hnd: true,
-  },
-  {
-    name: "Diploma in Ethical AI and Policy Studies",
-    duration: "1 Year (2 Semesters)",
-    price: "$560 per semester",
-    icon: Shield,
-    hnd: true,
-  },
-];
-
 const shortCourses = [
-  { name: "Introduction to Artificial Intelligence and Machine Learning", icon: Brain },
-  { name: "AI for Business Decision-Making", icon: Target },
-  { name: "Data Analytics and Visualization Using AI Tools", icon: PieChart },
-  { name: "ChatGPT and Generative AI for Productivity", icon: Sparkles },
-  { name: "AI for Human Resources (HR Analytics & Automation)", icon: UserCheck },
-  { name: "AI in Finance and Risk Management", icon: TrendingUp },
-  { name: "Machine Learning for Non-Programmers", icon: Cpu },
-  { name: "AI in Marketing and Customer Insights", icon: Users },
-  { name: "Responsible and Ethical AI in Organizations", icon: Shield },
-  { name: "AI for Innovation and Digital Transformation", icon: Lightbulb },
-  { name: "Robotic Process Automation (RPA) for Business Efficiency", icon: Workflow },
-  { name: "Natural Language Processing (NLP) in Business", icon: MessageSquare },
-  { name: "AI and Cybersecurity", icon: Lock },
-  { name: "Data-Driven Leadership with Artificial Intelligence", icon: Briefcase },
-  { name: "AI Project Implementation for Managers", icon: Settings },
-  { name: "AI for Education and Learning", icon: BookOpen },
-  { name: "AI for Healthcare and Diagnostics", icon: HeartPulse },
-  { name: "AI Tools for Everyday Office Use", icon: Laptop },
-  { name: "AI in Agriculture and Smart Farming", icon: Leaf },
-  { name: "Introduction to Data Ethics and AI Policy Frameworks", icon: FileText },
+  {
+    name: "Master AI for Directors",
+    duration: "1.5 Days",
+    target: "Directors and C-suite",
+    format: "Physical training",
+    price: "USD 310 / person",
+    icon: Target,
+    color: "from-amber-500 to-orange-600",
+    borderColor: "border-amber-500/30",
+    glowColor: "rgba(245,158,11,0.3)",
+  },
+  {
+    name: "Master AI for Executives",
+    duration: "2 Days",
+    target: "Executives and Management",
+    format: "Physical training",
+    price: "USD 280 / person",
+    icon: Briefcase,
+    color: "from-cyan-500 to-blue-600",
+    borderColor: "border-cyan-500/30",
+    glowColor: "rgba(0,255,255,0.3)",
+  },
+  {
+    name: "Master AI for Professionals",
+    duration: "3 Days",
+    target: "Professional development",
+    format: "Physical and Online training",
+    price: "USD 280 / person",
+    icon: Users,
+    color: "from-purple-500 to-pink-600",
+    borderColor: "border-purple-500/30",
+    glowColor: "rgba(168,85,247,0.3)",
+  },
 ];
 
-const intensiveWorkshops = [
+const certificates = [
   {
-    category: "Generative AI & Large Language Models",
-    icon: Sparkles,
-    courses: [
-      {
-        name: "Generative AI for Business Productivity",
-        focus: "Leveraging tools like ChatGPT, Microsoft Copilot, and Gemini",
-        idealFor: "All employees, from executives to individual contributors",
-        day1: "Prompt Engineering Fundamentals, Automating Communication, Research & Summarization",
-        day2: "Data Analysis with AI, Creating Presentations, Building Custom GPTs",
-      },
-      {
-        name: "Building with Large Language Models (LLMs)",
-        focus: "Technical deep dive for developers on integrating LLMs via APIs",
-        idealFor: "Software Developers, Data Engineers, IT Professionals",
-        day1: "LLM Architecture Overview, OpenAI & Anthropic APIs, Advanced Prompt Engineering",
-        day2: "Building AI-Powered Applications, LangChain Framework, RAG Introduction",
-      },
-      {
-        name: "AI-Powered Marketing & Content Creation",
-        focus: "Using generative AI for marketing campaigns and design",
-        idealFor: "Marketing Teams, Content Creators, Social Media Managers",
-        day1: "AI Copywriting, Market Research with AI, SEO Optimization",
-        day2: "AI for Visual Content (Midjourney, DALL-E), Video Scripts, Content Workflow",
-      },
-    ],
+    name: "AI Postgraduate Certificate",
+    subtitle: "Entry Level AI Certificate",
+    duration: "4 months",
+    format: "Online and Physical",
+    modules: "8 Modules",
+    requirement: "Bachelor's Degree",
+    price: "USD 155 / Module",
+    icon: Award,
+    color: "from-emerald-500 to-teal-600",
+    borderColor: "border-emerald-500/30",
+    glowColor: "rgba(16,185,129,0.3)",
   },
   {
-    category: "Data Science & Machine Learning",
-    icon: BarChart3,
-    courses: [
-      {
-        name: "Practical AI for Data Analysis",
-        focus: "Using no-code/low-code AI tools to gain insights from data",
-        idealFor: "Business Analysts, Financial Analysts, Project Managers",
-        day1: "Data Preprocessing, Automated Exploratory Data Analysis, Pattern Recognition",
-        day2: "Building Predictive Models with AutoML, Interpreting Results, Dashboards",
-      },
-      {
-        name: "AI-Driven Strategic Decision Making",
-        focus: "Using AI models for forecasting, risk assessment, and strategy",
-        idealFor: "Executives, Strategy Consultants, Department Heads",
-        day1: "Predictive & Prescriptive Analytics, Scenario Planning, Demand Forecasting",
-        day2: "Risk Analysis, Supply Chain Optimization, AI-Augmented Decision Framework",
-      },
-    ],
+    name: "AI Professional Certificate",
+    subtitle: "Entry Level AI Certificate",
+    duration: "4 months",
+    format: "Online and Physical",
+    modules: "8 Modules",
+    requirement: "O Level",
+    price: "USD 155 / Module",
+    icon: Star,
+    color: "from-blue-500 to-indigo-600",
+    borderColor: "border-blue-500/30",
+    glowColor: "rgba(59,130,246,0.3)",
   },
   {
-    category: "Process Automation & Optimization",
-    icon: Workflow,
-    courses: [
-      {
-        name: "Intelligent Process Automation with AI",
-        focus: "Going beyond traditional RPA by incorporating AI for cognitive tasks",
-        idealFor: "Operations Teams, Finance & Accounting, Process Engineers",
-        day1: "Introduction to IPA, Identifying Automation Opportunities, Document Processing",
-        day2: "Building Workflows with Power Automate/UiPath, Handling Unstructured Data",
-      },
-      {
-        name: "AI for Customer Service Excellence",
-        focus: "Implementing AI to enhance customer support operations",
-        idealFor: "Customer Support Managers, CX Teams, Operations Managers",
-        day1: "Building AI Chatbots, Intent Classification, Automating Tier-1 Support",
-        day2: "Sentiment Analysis, Agent Assist Tools, Bot-to-Human Handoff",
-      },
-    ],
+    name: "AI Expert Certification",
+    subtitle: "Technical AI Experts",
+    duration: "6 months",
+    format: "Online and Physical",
+    modules: "10 Modules",
+    requirement: "O Level",
+    price: "USD 140 / Module",
+    icon: Zap,
+    color: "from-rose-500 to-red-600",
+    borderColor: "border-rose-500/30",
+    glowColor: "rgba(244,63,94,0.3)",
+  },
+];
+
+const diplomas = [
+  {
+    name: "AI Postgraduate Diploma",
+    subtitle: "Qualifications Advancement",
+    duration: "8 months",
+    format: "Online and Physical",
+    modules: "8 Modules",
+    requirement: "Bachelor's Degree",
+    price: "USD 160 / Module",
+    icon: GraduationCap,
+    color: "from-violet-500 to-purple-600",
+    borderColor: "border-violet-500/30",
+    glowColor: "rgba(139,92,246,0.3)",
   },
   {
-    category: "Specialized & Technical Applications",
-    icon: Eye,
-    courses: [
-      {
-        name: "Computer Vision for Business",
-        focus: "Applying image and video recognition to solve business problems",
-        idealFor: "Manufacturing, Retail, Logistics, Security Teams",
-        day1: "Computer Vision Fundamentals, Use Cases, Pre-trained Models",
-        day2: "Building Custom Image Classifiers, Video Analytics, Ethical Considerations",
-      },
-      {
-        name: "Responsible AI & Governance",
-        focus: "Ensuring AI systems are fair, explainable, ethical, and compliant",
-        idealFor: "Legal & Compliance Teams, Risk Officers, Senior Leadership",
-        day1: "AI Bias & Fairness, Model Explainability (XAI), Regulatory Landscape",
-        day2: "AI Ethics Framework, Governance Checklist, Case Studies",
-      },
-    ],
+    name: "AI Diploma",
+    subtitle: "Qualifications Advancement",
+    duration: "8 months",
+    format: "Online and Physical",
+    modules: "8 Modules",
+    requirement: "3 A Levels",
+    price: "USD 160 / Module",
+    icon: BookOpen,
+    color: "from-sky-500 to-cyan-600",
+    borderColor: "border-sky-500/30",
+    glowColor: "rgba(14,165,233,0.3)",
   },
 ];
 
@@ -217,19 +140,55 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 },
+    transition: { staggerChildren: 0.15 },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { duration: 0.5, ease: "easeOut" }
+  },
+};
+
+const floatAnimation = {
+  y: [0, -10, 0],
+  transition: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+};
+
+const pulseAnimation = {
+  scale: [1, 1.05, 1],
+  transition: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+};
+
+const rotateAnimation = {
+  rotate: [0, 360],
+  transition: { duration: 20, repeat: Infinity, ease: "linear" }
 };
 
 export default function Enrollment() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+      
+      <motion.div
+        className="absolute top-10 left-10 w-2 h-2 bg-cyan-400 rounded-full"
+        animate={{ x: [0, 100, 0], y: [0, 50, 0], opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 5, repeat: Infinity }}
+      />
+      <motion.div
+        className="absolute top-40 right-20 w-3 h-3 bg-purple-400 rounded-full"
+        animate={{ x: [0, -80, 0], y: [0, 80, 0], opacity: [0.3, 1, 0.3] }}
+        transition={{ duration: 7, repeat: Infinity }}
+      />
+      <motion.div
+        className="absolute bottom-40 left-1/4 w-2 h-2 bg-pink-400 rounded-full"
+        animate={{ x: [0, 60, 0], y: [0, -40, 0], opacity: [0.4, 1, 0.4] }}
+        transition={{ duration: 6, repeat: Infinity }}
+      />
       
       <section className="relative py-20 overflow-hidden">
         <motion.div
@@ -241,6 +200,10 @@ export default function Enrollment() {
           className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
           animate={{ x: [0, -40, 0], y: [0, 40, 0], opacity: [0.2, 0.4, 0.2] }}
           transition={{ duration: 10, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 w-64 h-64 bg-pink-500/5 rounded-full blur-3xl"
+          animate={rotateAnimation}
         />
 
         <div className="container mx-auto px-4 relative z-10">
@@ -255,215 +218,267 @@ export default function Enrollment() {
               transition={{ duration: 2, repeat: Infinity }}
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
-              <Zap className="w-4 h-4" />
+              <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }}>
+                <Zap className="w-4 h-4" />
+              </motion.div>
               March 2026 Intake Now Open
             </motion.div>
-            <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 mb-4" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+            <motion.h1 
+              className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 mb-4" 
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
+              animate={{ backgroundPosition: ["0%", "100%", "0%"] }}
+              transition={{ duration: 5, repeat: Infinity }}
+            >
               AI Course Catalogue
-            </h1>
-            <p className="text-xl text-cyan-200/70 max-w-3xl mx-auto">
+            </motion.h1>
+            <motion.p 
+              className="text-xl text-cyan-200/70 max-w-3xl mx-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
               Empowering Africa through Artificial Intelligence Education and Innovation
-            </p>
+            </motion.p>
           </motion.div>
 
-          <Tabs defaultValue="diploma" className="w-full">
+          <Tabs defaultValue="short" className="w-full">
             <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 bg-slate-800/50 border border-cyan-500/20 mb-8">
-              <TabsTrigger value="diploma" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300" style={{ fontFamily: "'Orbitron', sans-serif" }}>
-                <GraduationCap className="w-4 h-4 mr-2" />
-                Diploma Programs
-              </TabsTrigger>
               <TabsTrigger value="short" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300" style={{ fontFamily: "'Orbitron', sans-serif" }}>
-                <Clock className="w-4 h-4 mr-2" />
+                <motion.div whileHover={{ rotate: 15 }}>
+                  <Clock className="w-4 h-4 mr-2" />
+                </motion.div>
                 Short Courses
               </TabsTrigger>
-              <TabsTrigger value="intensive" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300" style={{ fontFamily: "'Orbitron', sans-serif" }}>
-                <Zap className="w-4 h-4 mr-2" />
-                2-Day Workshops
+              <TabsTrigger value="certificates" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+                <motion.div whileHover={{ rotate: 15 }}>
+                  <Award className="w-4 h-4 mr-2" />
+                </motion.div>
+                Certificates
+              </TabsTrigger>
+              <TabsTrigger value="diplomas" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+                <motion.div whileHover={{ rotate: 15 }}>
+                  <GraduationCap className="w-4 h-4 mr-2" />
+                </motion.div>
+                Diplomas
               </TabsTrigger>
             </TabsList>
-
-            <TabsContent value="diploma">
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-              >
-                {diplomaPrograms.map((program, index) => (
-                  <motion.div key={index} variants={itemVariants}>
-                    <Card className="bg-slate-800/50 border-cyan-500/20 hover:border-cyan-400/50 transition-all duration-300 h-full group" style={{ boxShadow: "0 0 20px rgba(0,255,255,0.05)" }}>
-                      <CardHeader className="pb-2">
-                        <motion.div
-                          className="w-12 h-12 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-600/20 flex items-center justify-center mb-3 border border-cyan-500/30"
-                          whileHover={{ rotate: 360, scale: 1.1 }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          <program.icon className="w-6 h-6 text-cyan-400" />
-                        </motion.div>
-                        <CardTitle className="text-lg text-slate-200 group-hover:text-cyan-300 transition-colors">
-                          {program.name}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center gap-2 text-slate-400">
-                            <Calendar className="w-4 h-4 text-cyan-500" />
-                            <span>{program.duration}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-slate-400">
-                            <DollarSign className="w-4 h-4 text-green-500" />
-                            <span>{program.price}</span>
-                          </div>
-                          {program.hnd && (
-                            <div className="flex items-center gap-2 text-purple-400 mt-3">
-                              <Award className="w-4 h-4" />
-                              <span className="text-xs">HND Available (2 Years)</span>
-                            </div>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="mt-12 bg-gradient-to-r from-purple-900/40 to-blue-900/40 rounded-xl p-6 border border-purple-500/30"
-              >
-                <h3 className="text-xl font-bold text-purple-300 mb-4 flex items-center gap-2" style={{ fontFamily: "'Orbitron', sans-serif" }}>
-                  <Layers className="w-5 h-5" />
-                  Certification Pathway
-                </h3>
-                <div className="grid md:grid-cols-3 gap-4 text-sm text-slate-300">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 border border-cyan-500/30">
-                      <span className="text-cyan-400 font-bold">1</span>
-                    </div>
-                    <p>Complete short courses to earn a Professional Certificate</p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 border border-cyan-500/30">
-                      <span className="text-cyan-400 font-bold">2</span>
-                    </div>
-                    <p>Two certificates qualify for direct entry into Diploma Programs</p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 border border-cyan-500/30">
-                      <span className="text-cyan-400 font-bold">3</span>
-                    </div>
-                    <p>Diploma graduates can progress to HND for advanced specialization</p>
-                  </div>
-                </div>
-              </motion.div>
-            </TabsContent>
 
             <TabsContent value="short">
               <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className="grid md:grid-cols-2 lg:grid-cols-4 gap-4"
+                className="grid md:grid-cols-3 gap-8"
               >
                 {shortCourses.map((course, index) => (
-                  <motion.div key={index} variants={itemVariants}>
-                    <Card className="bg-slate-800/50 border-slate-700/50 hover:border-cyan-500/50 transition-all duration-300 h-full group cursor-pointer" style={{ boxShadow: "0 0 15px rgba(0,255,255,0.03)" }}>
-                      <CardContent className="p-4">
+                  <motion.div key={index} variants={itemVariants} whileHover={{ y: -10, transition: { duration: 0.3 } }}>
+                    <Card 
+                      className={`bg-slate-800/50 ${course.borderColor} border-2 hover:border-opacity-100 transition-all duration-500 h-full group relative overflow-hidden`}
+                      style={{ boxShadow: `0 0 30px ${course.glowColor}` }}
+                    >
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-br opacity-5 group-hover:opacity-10 transition-opacity"
+                        style={{ backgroundImage: `linear-gradient(to bottom right, ${course.color.split(' ')[0].replace('from-', '')}, transparent)` }}
+                      />
+                      <CardHeader className="pb-2 relative">
                         <motion.div
-                          className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-purple-600/20 flex items-center justify-center mb-3 border border-cyan-500/20"
-                          whileHover={{ rotate: 15, scale: 1.1 }}
-                          transition={{ duration: 0.3 }}
+                          className={`w-16 h-16 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center mb-4 shadow-lg`}
+                          animate={floatAnimation}
+                          whileHover={{ rotate: 360, scale: 1.1 }}
+                          transition={{ duration: 0.5 }}
                         >
-                          <course.icon className="w-5 h-5 text-cyan-400" />
+                          <course.icon className="w-8 h-8 text-white" />
                         </motion.div>
-                        <p className="text-sm text-slate-300 group-hover:text-cyan-300 transition-colors font-medium">
+                        <CardTitle className="text-xl text-slate-100 group-hover:text-white transition-colors" style={{ fontFamily: "'Orbitron', sans-serif" }}>
                           {course.name}
-                        </p>
-                        <div className="flex items-center gap-2 mt-3 text-xs text-slate-500">
-                          <Clock className="w-3 h-3" />
-                          <span>2 Days</span>
-                          <span className="text-cyan-500">•</span>
-                          <span>$250</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-3">
+                          <motion.div 
+                            className="flex items-center gap-3 text-slate-300"
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: index * 0.1 + 0.2 }}
+                          >
+                            <Clock className="w-5 h-5 text-cyan-400" />
+                            <span>{course.duration}</span>
+                          </motion.div>
+                          <motion.div 
+                            className="flex items-center gap-3 text-slate-300"
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: index * 0.1 + 0.3 }}
+                          >
+                            <Users className="w-5 h-5 text-purple-400" />
+                            <span>{course.target}</span>
+                          </motion.div>
+                          <motion.div 
+                            className="flex items-center gap-3 text-slate-300"
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: index * 0.1 + 0.4 }}
+                          >
+                            <Building2 className="w-5 h-5 text-blue-400" />
+                            <span>{course.format}</span>
+                          </motion.div>
                         </div>
+                        <motion.div 
+                          className={`mt-6 pt-4 border-t border-slate-700/50`}
+                          animate={pulseAnimation}
+                        >
+                          <div className={`text-2xl font-bold bg-gradient-to-r ${course.color} bg-clip-text text-transparent`} style={{ fontFamily: "'Orbitron', sans-serif" }}>
+                            {course.price}
+                          </div>
+                        </motion.div>
                       </CardContent>
                     </Card>
                   </motion.div>
                 ))}
               </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="mt-12 grid md:grid-cols-3 gap-6"
-              >
-                <div className="bg-slate-800/50 rounded-xl p-6 border border-cyan-500/20">
-                  <Laptop className="w-8 h-8 text-cyan-400 mb-3" />
-                  <h4 className="font-bold text-slate-200 mb-2">Online</h4>
-                  <p className="text-sm text-slate-400">Delivered through AIIA Virtual Learning Environment with interactive sessions</p>
-                </div>
-                <div className="bg-slate-800/50 rounded-xl p-6 border border-purple-500/20">
-                  <Building2 className="w-8 h-8 text-purple-400 mb-3" />
-                  <h4 className="font-bold text-slate-200 mb-2">Physical (On-site)</h4>
-                  <p className="text-sm text-slate-400">Instructor-led training at AIIA training centres or partner institutions</p>
-                </div>
-                <div className="bg-slate-800/50 rounded-xl p-6 border border-blue-500/20">
-                  <Layers className="w-8 h-8 text-blue-400 mb-3" />
-                  <h4 className="font-bold text-slate-200 mb-2">Hybrid</h4>
-                  <p className="text-sm text-slate-400">Combines online lectures with physical practical sessions</p>
-                </div>
-              </motion.div>
             </TabsContent>
 
-            <TabsContent value="intensive">
+            <TabsContent value="certificates">
               <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className="space-y-8"
+                className="grid md:grid-cols-3 gap-8"
               >
-                {intensiveWorkshops.map((category, catIndex) => (
-                  <motion.div key={catIndex} variants={itemVariants}>
-                    <div className="flex items-center gap-3 mb-4">
-                      <motion.div
-                        className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-purple-600/20 flex items-center justify-center border border-cyan-500/30"
-                        animate={{ rotate: [0, 5, -5, 0] }}
-                        transition={{ duration: 4, repeat: Infinity }}
-                      >
-                        <category.icon className="w-5 h-5 text-cyan-400" />
-                      </motion.div>
-                      <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400" style={{ fontFamily: "'Orbitron', sans-serif" }}>
-                        {category.category}
-                      </h3>
-                    </div>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {category.courses.map((course, courseIndex) => (
-                        <Card key={courseIndex} className="bg-slate-800/50 border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300">
-                          <CardHeader className="pb-2">
-                            <CardTitle className="text-lg text-cyan-300">{course.name}</CardTitle>
-                            <p className="text-xs text-slate-400">{course.focus}</p>
-                          </CardHeader>
-                          <CardContent className="text-sm space-y-3">
-                            <div>
-                              <p className="text-cyan-500 font-semibold text-xs mb-1">Day 1:</p>
-                              <p className="text-slate-400 text-xs">{course.day1}</p>
-                            </div>
-                            <div>
-                              <p className="text-purple-500 font-semibold text-xs mb-1">Day 2:</p>
-                              <p className="text-slate-400 text-xs">{course.day2}</p>
-                            </div>
-                            <div className="pt-2 border-t border-slate-700/50">
-                              <p className="text-xs text-slate-500">
-                                <Users className="w-3 h-3 inline mr-1" />
-                                {course.idealFor}
-                              </p>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
+                {certificates.map((cert, index) => (
+                  <motion.div key={index} variants={itemVariants} whileHover={{ y: -10, transition: { duration: 0.3 } }}>
+                    <Card 
+                      className={`bg-slate-800/50 ${cert.borderColor} border-2 hover:border-opacity-100 transition-all duration-500 h-full group relative overflow-hidden`}
+                      style={{ boxShadow: `0 0 30px ${cert.glowColor}` }}
+                    >
+                      <CardHeader className="pb-2 relative">
+                        <motion.div
+                          className={`w-16 h-16 rounded-xl bg-gradient-to-br ${cert.color} flex items-center justify-center mb-4 shadow-lg`}
+                          animate={floatAnimation}
+                          whileHover={{ rotate: 360, scale: 1.1 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <cert.icon className="w-8 h-8 text-white" />
+                        </motion.div>
+                        <CardTitle className="text-xl text-slate-100 group-hover:text-white transition-colors" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+                          {cert.name}
+                        </CardTitle>
+                        <p className="text-sm text-cyan-400/80">{cert.subtitle}</p>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-3">
+                          <motion.div 
+                            className="flex items-center gap-3 text-slate-300"
+                            whileHover={{ x: 5 }}
+                          >
+                            <Calendar className="w-5 h-5 text-cyan-400" />
+                            <span>{cert.duration}</span>
+                          </motion.div>
+                          <motion.div 
+                            className="flex items-center gap-3 text-slate-300"
+                            whileHover={{ x: 5 }}
+                          >
+                            <Globe className="w-5 h-5 text-purple-400" />
+                            <span>{cert.format}</span>
+                          </motion.div>
+                          <motion.div 
+                            className="flex items-center gap-3 text-slate-300"
+                            whileHover={{ x: 5 }}
+                          >
+                            <Layers className="w-5 h-5 text-blue-400" />
+                            <span>{cert.modules}</span>
+                          </motion.div>
+                          <motion.div 
+                            className="flex items-center gap-3 text-slate-300"
+                            whileHover={{ x: 5 }}
+                          >
+                            <CheckCircle2 className="w-5 h-5 text-green-400" />
+                            <span>{cert.requirement}</span>
+                          </motion.div>
+                        </div>
+                        <motion.div 
+                          className="mt-6 pt-4 border-t border-slate-700/50"
+                          animate={pulseAnimation}
+                        >
+                          <div className={`text-2xl font-bold bg-gradient-to-r ${cert.color} bg-clip-text text-transparent`} style={{ fontFamily: "'Orbitron', sans-serif" }}>
+                            {cert.price}
+                          </div>
+                        </motion.div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="diplomas">
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"
+              >
+                {diplomas.map((diploma, index) => (
+                  <motion.div key={index} variants={itemVariants} whileHover={{ y: -10, transition: { duration: 0.3 } }}>
+                    <Card 
+                      className={`bg-slate-800/50 ${diploma.borderColor} border-2 hover:border-opacity-100 transition-all duration-500 h-full group relative overflow-hidden`}
+                      style={{ boxShadow: `0 0 30px ${diploma.glowColor}` }}
+                    >
+                      <CardHeader className="pb-2 relative">
+                        <motion.div
+                          className={`w-20 h-20 rounded-xl bg-gradient-to-br ${diploma.color} flex items-center justify-center mb-4 shadow-lg`}
+                          animate={floatAnimation}
+                          whileHover={{ rotate: 360, scale: 1.1 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <diploma.icon className="w-10 h-10 text-white" />
+                        </motion.div>
+                        <CardTitle className="text-2xl text-slate-100 group-hover:text-white transition-colors" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+                          {diploma.name}
+                        </CardTitle>
+                        <p className="text-sm text-purple-400/80">{diploma.subtitle}</p>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <motion.div 
+                            className="flex items-center gap-3 text-slate-300"
+                            whileHover={{ scale: 1.05 }}
+                          >
+                            <Calendar className="w-5 h-5 text-cyan-400" />
+                            <span>{diploma.duration}</span>
+                          </motion.div>
+                          <motion.div 
+                            className="flex items-center gap-3 text-slate-300"
+                            whileHover={{ scale: 1.05 }}
+                          >
+                            <Globe className="w-5 h-5 text-purple-400" />
+                            <span>{diploma.format}</span>
+                          </motion.div>
+                          <motion.div 
+                            className="flex items-center gap-3 text-slate-300"
+                            whileHover={{ scale: 1.05 }}
+                          >
+                            <Layers className="w-5 h-5 text-blue-400" />
+                            <span>{diploma.modules}</span>
+                          </motion.div>
+                          <motion.div 
+                            className="flex items-center gap-3 text-slate-300"
+                            whileHover={{ scale: 1.05 }}
+                          >
+                            <CheckCircle2 className="w-5 h-5 text-green-400" />
+                            <span>{diploma.requirement}</span>
+                          </motion.div>
+                        </div>
+                        <motion.div 
+                          className="mt-6 pt-4 border-t border-slate-700/50"
+                          animate={pulseAnimation}
+                        >
+                          <div className={`text-3xl font-bold bg-gradient-to-r ${diploma.color} bg-clip-text text-transparent`} style={{ fontFamily: "'Orbitron', sans-serif" }}>
+                            {diploma.price}
+                          </div>
+                        </motion.div>
+                      </CardContent>
+                    </Card>
                   </motion.div>
                 ))}
               </motion.div>
@@ -474,59 +489,80 @@ export default function Enrollment() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="mt-16 bg-gradient-to-r from-cyan-900/30 to-purple-900/30 rounded-2xl p-8 border border-cyan-500/20 text-center"
+            className="mt-16 bg-gradient-to-r from-cyan-900/30 to-purple-900/30 rounded-2xl p-8 border border-cyan-500/20 text-center relative overflow-hidden"
             style={{ boxShadow: "0 0 40px rgba(0,255,255,0.1)" }}
           >
             <motion.div
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <Laptop className="w-12 h-12 text-purple-400 mx-auto mb-4" />
+              className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500"
+              animate={{ backgroundPosition: ["0%", "100%", "0%"] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            />
+            
+            <motion.div animate={pulseAnimation}>
+              <Brain className="w-16 h-16 text-cyan-400 mx-auto mb-4" />
             </motion.div>
-            <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-2" style={{ fontFamily: "'Orbitron', sans-serif" }}>
-              E-Training Platform Coming Soon!
+            <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 mb-2" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+              Start Your AI Journey Today
             </h3>
-            <p className="text-slate-400 mb-6 max-w-2xl mx-auto">
-              Free introductory courses will be available online. Stay tuned for our digital learning experience.
+            <p className="text-slate-400 mb-8 max-w-2xl mx-auto">
+              Join the next generation of AI professionals. Applications for March 2026 intake are now open.
             </p>
 
             <div className="grid md:grid-cols-3 gap-6 mt-8 text-left">
-              <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
-                <h4 className="font-bold text-cyan-300 mb-2 flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  Requirements
-                </h4>
+              <motion.div 
+                className="bg-slate-800/50 rounded-lg p-6 border border-slate-700/50"
+                whileHover={{ scale: 1.02, borderColor: "rgba(0,255,255,0.5)" }}
+              >
+                <motion.div animate={floatAnimation}>
+                  <FileText className="w-8 h-8 text-cyan-400 mb-3" />
+                </motion.div>
+                <h4 className="font-bold text-cyan-300 mb-2">Requirements</h4>
                 <ul className="text-sm text-slate-400 space-y-1">
-                  <li>• O Level Certificate</li>
-                  <li>• A Level Certificate</li>
-                  <li>• University Degree (if any)</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-green-400" /> O Level Certificate</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-green-400" /> A Level Certificate</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-green-400" /> University Degree (if any)</li>
                 </ul>
-              </div>
-              <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
-                <h4 className="font-bold text-cyan-300 mb-2 flex items-center gap-2">
-                  <Mail className="w-4 h-4" />
-                  Apply Now
-                </h4>
-                <a href="mailto:admin@aiinstituteafrica.com" className="text-cyan-400 hover:text-cyan-300 text-sm">
+              </motion.div>
+              <motion.div 
+                className="bg-slate-800/50 rounded-lg p-6 border border-slate-700/50"
+                whileHover={{ scale: 1.02, borderColor: "rgba(168,85,247,0.5)" }}
+              >
+                <motion.div animate={floatAnimation}>
+                  <Mail className="w-8 h-8 text-purple-400 mb-3" />
+                </motion.div>
+                <h4 className="font-bold text-purple-300 mb-2">Apply Now</h4>
+                <a href="mailto:admin@aiinstituteafrica.com" className="text-cyan-400 hover:text-cyan-300 text-sm transition-colors">
                   admin@aiinstituteafrica.com
                 </a>
-              </div>
-              <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
-                <h4 className="font-bold text-cyan-300 mb-2 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  Location
-                </h4>
+              </motion.div>
+              <motion.div 
+                className="bg-slate-800/50 rounded-lg p-6 border border-slate-700/50"
+                whileHover={{ scale: 1.02, borderColor: "rgba(236,72,153,0.5)" }}
+              >
+                <motion.div animate={floatAnimation}>
+                  <MapPin className="w-8 h-8 text-pink-400 mb-3" />
+                </motion.div>
+                <h4 className="font-bold text-pink-300 mb-2">Location</h4>
                 <p className="text-sm text-slate-400">
                   275 Corner Herbert Chitepo & 6th Street, Harare, Zimbabwe
                 </p>
-              </div>
+              </motion.div>
             </div>
 
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mt-8">
+            <motion.div 
+              className="mt-8"
+              whileHover={{ scale: 1.05 }} 
+              whileTap={{ scale: 0.95 }}
+            >
               <Link href="/contact">
-                <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold tracking-wider uppercase px-8" style={{ fontFamily: "'Orbitron', sans-serif", boxShadow: "0 0 20px rgba(0,255,255,0.3)" }}>
-                  <ArrowRight className="w-4 h-4 mr-2" />
-                  Get Started Today
+                <Button 
+                  className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold tracking-wider uppercase px-10 py-6 text-lg" 
+                  style={{ fontFamily: "'Orbitron', sans-serif", boxShadow: "0 0 30px rgba(0,255,255,0.4)" }}
+                >
+                  <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1, repeat: Infinity }}>
+                    <ArrowRight className="w-5 h-5 mr-2" />
+                  </motion.div>
+                  Enroll Now
                 </Button>
               </Link>
             </motion.div>
