@@ -143,6 +143,28 @@ export const studentLeads = pgTable("student_leads", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const programApplications = pgTable("program_applications", {
+  id: serial("id").primaryKey(),
+  referenceNumber: text("reference_number").unique().notNull(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").notNull(),
+  graduateStatus: text("graduate_status", {
+    enum: ["graduate", "non_graduate"]
+  }).notNull(),
+  selectedPrograms: jsonb("selected_programs").notNull(),
+  documentPath: text("document_path"),
+  status: text("status", {
+    enum: ["pending", "under_review", "accepted", "rejected"]
+  }).notNull().default("pending"),
+  adminNotes: text("admin_notes"),
+  reviewedBy: integer("reviewed_by").references(() => admins.id),
+  reviewedAt: timestamp("reviewed_at"),
+  emailSent: boolean("email_sent").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Schema validations
 export const insertContactSchema = createInsertSchema(contacts);
 export const selectContactSchema = createSelectSchema(contacts);
@@ -176,6 +198,19 @@ export const insertStudentLeadSchema = createInsertSchema(studentLeads, {
 });
 export const selectStudentLeadSchema = createSelectSchema(studentLeads);
 
+export const insertProgramApplicationSchema = createInsertSchema(programApplications, {
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  graduateStatus: z.enum(["graduate", "non_graduate"]),
+  selectedPrograms: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    category: z.string().optional(),
+  })).min(1, "Select at least one program"),
+});
+export const selectProgramApplicationSchema = createSelectSchema(programApplications);
+
 // Type definitions
 export type InsertContact = typeof contacts.$inferInsert;
 export type SelectContact = typeof contacts.$inferSelect;
@@ -195,6 +230,8 @@ export type InsertAdmin = typeof admins.$inferInsert;
 export type SelectAdmin = typeof admins.$inferSelect;
 export type InsertStudentLead = typeof studentLeads.$inferInsert;
 export type SelectStudentLead = typeof studentLeads.$inferSelect;
+export type InsertProgramApplication = typeof programApplications.$inferInsert;
+export type SelectProgramApplication = typeof programApplications.$inferSelect;
 
 // Additional validation schemas
 export const userRegistrationSchema = z.object({
