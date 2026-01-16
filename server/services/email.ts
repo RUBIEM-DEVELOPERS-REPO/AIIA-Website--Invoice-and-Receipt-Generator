@@ -155,3 +155,174 @@ export async function sendPasswordResetEmail(
 ): Promise<boolean> {
   return sendRegistrationEmail(params); // Use the same email sending mechanism
 }
+
+export function generateApplicationConfirmationEmail(
+  firstName: string,
+  lastName: string,
+  referenceNumber: string,
+  selectedPrograms: Array<{ name: string; category?: string }>,
+) {
+  const programList = selectedPrograms
+    .map((p) => `<li>${p.name}${p.category ? ` (${p.category})` : ""}</li>`)
+    .join("");
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <img src="cid:preloader" alt="AI Institute Africa Logo" style="max-width: 200px; height: auto; margin-bottom: 20px;" />
+      <h2 style="color: #0891b2;">Application Received</h2>
+      <p>Dear ${firstName} ${lastName},</p>
+      <p>Thank you for applying to AI Institute Africa! We have received your application for the March 2026 intake.</p>
+      <div style="background-color: #f0fdfa; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #0891b2;">
+        <p style="margin: 0 0 10px 0;"><strong>Reference Number:</strong> ${referenceNumber}</p>
+        <p style="margin: 0;"><strong>Programs Applied:</strong></p>
+        <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+          ${programList}
+        </ul>
+      </div>
+      <p><strong>What happens next?</strong></p>
+      <ol style="line-height: 1.8;">
+        <li>Our admissions team will review your application</li>
+        <li>You will receive an email notification once a decision is made</li>
+        <li>If accepted, you will receive enrollment instructions</li>
+      </ol>
+      <p>If you have any questions, please contact us at <a href="mailto:admin@aiinstituteafrica.com">admin@aiinstituteafrica.com</a></p>
+      <p style="margin-top: 30px;">Best regards,<br><strong>AI Institute Africa Admissions Team</strong></p>
+    </div>
+  `;
+
+  const text = `
+Application Received
+
+Dear ${firstName} ${lastName},
+
+Thank you for applying to AI Institute Africa! We have received your application for the March 2026 intake.
+
+Reference Number: ${referenceNumber}
+Programs Applied:
+${selectedPrograms.map((p) => `- ${p.name}${p.category ? ` (${p.category})` : ""}`).join("\n")}
+
+What happens next?
+1. Our admissions team will review your application
+2. You will receive an email notification once a decision is made
+3. If accepted, you will receive enrollment instructions
+
+If you have any questions, please contact us at admin@aiinstituteafrica.com
+
+Best regards,
+AI Institute Africa Admissions Team
+  `;
+
+  return { html, text };
+}
+
+export function generateApplicationStatusEmail(
+  firstName: string,
+  lastName: string,
+  referenceNumber: string,
+  status: "accepted" | "rejected",
+  adminNotes?: string,
+) {
+  const isAccepted = status === "accepted";
+  const statusColor = isAccepted ? "#22c55e" : "#ef4444";
+  const statusText = isAccepted ? "Accepted" : "Not Accepted";
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <img src="cid:preloader" alt="AI Institute Africa Logo" style="max-width: 200px; height: auto; margin-bottom: 20px;" />
+      <h2 style="color: ${statusColor};">Application ${statusText}</h2>
+      <p>Dear ${firstName} ${lastName},</p>
+      <p>We have reviewed your application (Reference: <strong>${referenceNumber}</strong>) for AI Institute Africa.</p>
+      <div style="background-color: ${isAccepted ? "#f0fdf4" : "#fef2f2"}; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid ${statusColor};">
+        <p style="margin: 0; font-size: 18px;"><strong>Status: ${statusText}</strong></p>
+        ${adminNotes ? `<p style="margin: 15px 0 0 0;"><strong>Notes:</strong> ${adminNotes}</p>` : ""}
+      </div>
+      ${
+        isAccepted
+          ? `
+        <p><strong>Congratulations!</strong> You have been accepted into our program. Here are your next steps:</p>
+        <ol style="line-height: 1.8;">
+          <li>Review the enrollment package that will be sent separately</li>
+          <li>Complete the payment for your selected program(s)</li>
+          <li>Submit any additional required documents</li>
+        </ol>
+        <p>Our team will contact you shortly with further details about the enrollment process.</p>
+      `
+          : `
+        <p>We appreciate your interest in AI Institute Africa. While we were unable to accept your application at this time, we encourage you to:</p>
+        <ul style="line-height: 1.8;">
+          <li>Review the admission requirements for future intakes</li>
+          <li>Consider our shorter programs that may have different requirements</li>
+          <li>Contact us for feedback on how to strengthen your application</li>
+        </ul>
+      `
+      }
+      <p>If you have any questions, please contact us at <a href="mailto:admin@aiinstituteafrica.com">admin@aiinstituteafrica.com</a></p>
+      <p style="margin-top: 30px;">Best regards,<br><strong>AI Institute Africa Admissions Team</strong></p>
+    </div>
+  `;
+
+  const text = `
+Application ${statusText}
+
+Dear ${firstName} ${lastName},
+
+We have reviewed your application (Reference: ${referenceNumber}) for AI Institute Africa.
+
+Status: ${statusText}
+${adminNotes ? `Notes: ${adminNotes}` : ""}
+
+${
+    isAccepted
+      ? `Congratulations! You have been accepted into our program. Our team will contact you shortly with further details about the enrollment process.`
+      : `We appreciate your interest in AI Institute Africa. While we were unable to accept your application at this time, we encourage you to review the admission requirements for future intakes.`
+  }
+
+If you have any questions, please contact us at admin@aiinstituteafrica.com
+
+Best regards,
+AI Institute Africa Admissions Team
+  `;
+
+  return { html, text };
+}
+
+export function generateAdminNotificationEmail(
+  applicantName: string,
+  referenceNumber: string,
+  email: string,
+  selectedPrograms: Array<{ name: string; category?: string }>,
+) {
+  const programList = selectedPrograms
+    .map((p) => `<li>${p.name}${p.category ? ` (${p.category})` : ""}</li>`)
+    .join("");
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #0891b2;">New Program Application</h2>
+      <p>A new program application has been submitted and requires review.</p>
+      <div style="background-color: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 8px;">
+        <p style="margin: 0 0 10px 0;"><strong>Reference:</strong> ${referenceNumber}</p>
+        <p style="margin: 0 0 10px 0;"><strong>Applicant:</strong> ${applicantName}</p>
+        <p style="margin: 0 0 10px 0;"><strong>Email:</strong> ${email}</p>
+        <p style="margin: 0;"><strong>Programs:</strong></p>
+        <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+          ${programList}
+        </ul>
+      </div>
+      <p>Please log in to the admin panel to review and process this application.</p>
+    </div>
+  `;
+
+  const text = `
+New Program Application
+
+Reference: ${referenceNumber}
+Applicant: ${applicantName}
+Email: ${email}
+Programs: ${selectedPrograms.map((p) => p.name).join(", ")}
+
+Please log in to the admin panel to review and process this application.
+  `;
+
+  return { html, text };
+}

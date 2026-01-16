@@ -37,6 +37,7 @@ import EventsPage from "@/pages/admin/events";
 import ArticlesPage from "@/pages/admin/articles";
 import LocalArticlesPage from "@/pages/admin/local-articles";
 import MarketingEmailPage from "@/pages/admin/marketing-email";
+import ApplicationsPage from "@/pages/admin/applications";
 import { ChatAssistant } from "@/components/ui/chat-assistant";
 import { EnrollmentPopup, useEnrollmentPopup } from "@/components/ui/enrollment-popup";
 
@@ -116,6 +117,11 @@ function Router() {
           <ProtectedAdminRoute
             path="/admin/marketing-email"
             component={MarketingEmailPage}
+            requiredRole={["super_admin", "content_admin", "member_admin"]}
+          />
+          <ProtectedAdminRoute
+            path="/admin/applications"
+            component={ApplicationsPage}
             requiredRole={["super_admin", "content_admin", "member_admin"]}
           />
 

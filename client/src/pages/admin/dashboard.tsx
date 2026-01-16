@@ -190,6 +190,12 @@ export default function AdminDashboard() {
                     Send Marketing Email
                   </Link>
                 </Button>
+                <Button asChild className="w-full" variant="outline">
+                  <Link href="/admin/applications">
+                    <FileText className="mr-2 h-4 w-4" />
+                    Program Applications
+                  </Link>
+                </Button>
                 <Button variant="outline" className="w-full">
                   <Bell className="mr-2 h-4 w-4" />
                   Send Notifications

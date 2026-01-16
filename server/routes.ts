@@ -1,4 +1,5 @@
 import type { Express, Request, Response, NextFunction } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import { db } from "@db";
 import { 
@@ -10,6 +11,7 @@ import {
   articles,
   localArticles, 
   studentLeads,
+  programApplications,
   eventCreationSchema, 
   insertArticleSchema,
   insertLocalArticleSchema,
@@ -29,7 +31,13 @@ import { verify_document } from "./service";
 import path from "path";
 import fs from "fs";
 import { eq, inArray, sql, asc, desc } from "drizzle-orm";
-import { sendRegistrationEmail, generateRegistrationEmailContent } from "./services/email";
+import { 
+  sendRegistrationEmail, 
+  generateRegistrationEmailContent,
+  generateApplicationConfirmationEmail,
+  generateApplicationStatusEmail,
+  generateAdminNotificationEmail
+} from "./services/email";
 
 // Ensure uploads directory exists and is writable
 const uploadsDir = path.join(process.cwd(), "client", "src", "lib", "uploads");
@@ -1128,6 +1136,227 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error("Error deleting local article:", error);
       res.status(500).json({ message: "Failed to delete local article" });
+    }
+  });
+
+  // Configure multer for application documents - stored in server/uploads for proper serving
+  const applicationDocsDir = path.join(process.cwd(), "uploads", "applications");
+  if (!fs.existsSync(applicationDocsDir)) {
+    fs.mkdirSync(applicationDocsDir, { recursive: true, mode: 0o755 });
+  }
+
+  const applicationDocStorage = multer.diskStorage({
+    destination: (_req, _file, cb) => {
+      if (!fs.existsSync(applicationDocsDir)) {
+        fs.mkdirSync(applicationDocsDir, { recursive: true, mode: 0o755 });
+      }
+      cb(null, applicationDocsDir);
+    },
+    filename: (_req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const ext = path.extname(file.originalname);
+      cb(null, `application-${uniqueSuffix}${ext}`);
+    },
+  });
+
+  // Serve application documents statically
+  app.use("/uploads/applications", express.static(applicationDocsDir));
+
+  const uploadApplicationDoc = multer({
+    storage: applicationDocStorage,
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter: (_req, file, cb) => {
+      const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "application/pdf"];
+      if (!allowedTypes.includes(file.mimetype)) {
+        cb(new Error("Only PDF, PNG, and JPG files are allowed") as any, false);
+        return;
+      }
+      cb(null, true);
+    },
+  }).single("document");
+
+  // Generate unique reference number
+  function generateReferenceNumber(): string {
+    const prefix = "AIIA";
+    const year = new Date().getFullYear();
+    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+    return `${prefix}-${year}-${random}`;
+  }
+
+  // Program application submission endpoint
+  app.post("/api/program-applications", (req: Request, res: Response) => {
+    uploadApplicationDoc(req, res, async (err) => {
+      if (err) {
+        console.error("File upload error:", err);
+        return res.status(400).json({ message: err.message || "File upload failed" });
+      }
+
+      try {
+        const { firstName, lastName, email, graduateStatus, selectedPrograms } = req.body;
+
+        if (!firstName || !lastName || !email || !graduateStatus || !selectedPrograms) {
+          return res.status(400).json({ message: "All required fields must be filled" });
+        }
+
+        let programs;
+        try {
+          programs = JSON.parse(selectedPrograms);
+        } catch {
+          return res.status(400).json({ message: "Invalid program selection format" });
+        }
+
+        if (!Array.isArray(programs) || programs.length === 0) {
+          return res.status(400).json({ message: "Select at least one program" });
+        }
+
+        const referenceNumber = generateReferenceNumber();
+        const documentPath = req.file ? `/uploads/applications/${req.file.filename}` : null;
+
+        // Save to database
+        const [application] = await db.insert(programApplications).values({
+          referenceNumber,
+          firstName,
+          lastName,
+          email,
+          graduateStatus,
+          selectedPrograms: programs,
+          documentPath,
+          status: "pending",
+          emailSent: false,
+        }).returning();
+
+        // Send confirmation email to applicant
+        const confirmationEmail = generateApplicationConfirmationEmail(
+          firstName,
+          lastName,
+          referenceNumber,
+          programs
+        );
+
+        const emailSent = await sendRegistrationEmail({
+          to: email,
+          subject: "Application Received - AI Institute Africa",
+          html: confirmationEmail.html,
+          text: confirmationEmail.text,
+        });
+
+        // Update email sent status
+        if (emailSent) {
+          await db.update(programApplications)
+            .set({ emailSent: true })
+            .where(eq(programApplications.id, application.id));
+        }
+
+        // Send notification to admin
+        const adminEmail = generateAdminNotificationEmail(
+          `${firstName} ${lastName}`,
+          referenceNumber,
+          email,
+          programs
+        );
+
+        await sendRegistrationEmail({
+          to: "admin@aiinstituteafrica.com",
+          subject: `New Program Application - ${referenceNumber}`,
+          html: adminEmail.html,
+          text: adminEmail.text,
+        });
+
+        res.status(201).json({
+          message: "Application submitted successfully",
+          referenceNumber,
+          emailSent,
+        });
+      } catch (error) {
+        console.error("Error submitting application:", error);
+        res.status(500).json({ message: "Failed to submit application" });
+      }
+    });
+  });
+
+  // Admin: Get all program applications
+  app.get("/api/admin/program-applications", isAdmin, async (_req: Request, res: Response) => {
+    try {
+      const applications = await db.select()
+        .from(programApplications)
+        .orderBy(desc(programApplications.createdAt));
+      res.json(applications);
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      res.status(500).json({ message: "Failed to fetch applications" });
+    }
+  });
+
+  // Admin: Get single application
+  app.get("/api/admin/program-applications/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const applicationId = parseInt(req.params.id);
+      const [application] = await db.select()
+        .from(programApplications)
+        .where(eq(programApplications.id, applicationId));
+
+      if (!application) {
+        return res.status(404).json({ message: "Application not found" });
+      }
+
+      res.json(application);
+    } catch (error) {
+      console.error("Error fetching application:", error);
+      res.status(500).json({ message: "Failed to fetch application" });
+    }
+  });
+
+  // Admin: Update application status (accept/reject)
+  app.patch("/api/admin/program-applications/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const applicationId = parseInt(req.params.id);
+      const { status, adminNotes } = req.body;
+
+      if (!["pending", "under_review", "accepted", "rejected"].includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+
+      const [application] = await db.select()
+        .from(programApplications)
+        .where(eq(programApplications.id, applicationId));
+
+      if (!application) {
+        return res.status(404).json({ message: "Application not found" });
+      }
+
+      // Update the application
+      const [updated] = await db.update(programApplications)
+        .set({
+          status,
+          adminNotes,
+          reviewedAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(programApplications.id, applicationId))
+        .returning();
+
+      // Send status email if accepted or rejected
+      if (status === "accepted" || status === "rejected") {
+        const statusEmail = generateApplicationStatusEmail(
+          application.firstName,
+          application.lastName,
+          application.referenceNumber,
+          status,
+          adminNotes
+        );
+
+        await sendRegistrationEmail({
+          to: application.email,
+          subject: `Application ${status === "accepted" ? "Accepted" : "Update"} - AI Institute Africa`,
+          html: statusEmail.html,
+          text: statusEmail.text,
+        });
+      }
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating application:", error);
+      res.status(500).json({ message: "Failed to update application" });
     }
   });
 
