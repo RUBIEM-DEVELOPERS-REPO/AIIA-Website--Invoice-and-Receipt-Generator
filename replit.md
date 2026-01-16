@@ -131,6 +131,14 @@ Changelog:
   * Auto-popup modal with conference details and registration contacts
   * Integrated contact information from flyer (phone numbers and email)
   * Responsive design with professional styling and call-to-action buttons
+- January 16, 2026. Added Program Application Management System:
+  * Database table for program applications with status tracking
+  * Application submission endpoint with file upload support
+  * Automated email confirmation to applicants upon submission
+  * Admin notification emails for new applications
+  * Admin page (/admin/applications) for reviewing and managing applications
+  * Accept/reject functionality with email notifications to applicants
+  * Dashboard link to program applications page
 ```
 
 ## User Preferences
