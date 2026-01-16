@@ -35,7 +35,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
+import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -919,9 +921,13 @@ export default function Enrollment() {
 
       {/* ENROLLMENT MODAL */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+            <X className="h-5 w-5" />
+            <span className="sr-only">Close</span>
+          </DialogClose>
           <DialogHeader>
-            <DialogTitle>Program Enrollment</DialogTitle>
+            <DialogTitle className="text-xl">Program Enrollment</DialogTitle>
           </DialogHeader>
 
           {errorMsg && (
@@ -964,26 +970,27 @@ export default function Enrollment() {
           </div>
 
           <div className="mt-4">
-            <Label className="block mb-2">Choose 1 or more programs *</Label>
-            <div className="grid gap-2 max-h-64 overflow-auto pr-1">
+            <Label className="block mb-2 text-base font-semibold">Choose 1 or more programs *</Label>
+            <div className="grid gap-3 max-h-80 overflow-auto pr-1">
               {programOptions.map((p) => (
                 <label
                   key={p.id}
-                  className="flex items-start gap-3 rounded-md border p-3 cursor-pointer"
+                  className="flex items-start gap-4 rounded-lg border p-4 cursor-pointer hover:bg-accent/50 transition-colors"
                 >
                   <Checkbox
                     checked={form.selectedProgramIds.includes(p.id)}
                     onCheckedChange={() => toggleProgram(p.id)}
+                    className="mt-1"
                   />
-                  <div className="flex gap-3">
+                  <div className="flex gap-4 flex-1">
                     <img
                       src={p.image}
                       alt={p.name}
-                      className="w-20 h-14 object-cover rounded"
+                      className="w-32 h-24 object-contain rounded-lg border bg-white"
                     />
-                    <div>
-                      <div className="font-medium">{p.name}</div>
-                      <div className="text-xs text-muted-foreground">
+                    <div className="flex-1">
+                      <div className="font-semibold text-base">{p.name}</div>
+                      <div className="text-sm text-muted-foreground mt-1">
                         {p.category}
                       </div>
                     </div>
