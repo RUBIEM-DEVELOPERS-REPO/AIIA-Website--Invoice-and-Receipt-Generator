@@ -1,41 +1,183 @@
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Clock, ExternalLink } from "lucide-react";
+import { Calendar, MapPin, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import logoImage from "@/lib/logos/preloader.png";
 
+// shadcn/ui
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+
+import { summitImages } from "@/lib/event_images";
+
+/**
+ * SUMMIT IMAGES MAPPING (from your provided files)
+ * summitImages.zim2        -> IMG-20260115-WA0121.jpg
+ * summitImages.techForum   -> IMG-20260111-WA0030.jpg
+ * summitImages.aiEducation -> IMG-20260111-WA0010.jpg
+ */
 const upcomingEvents = [
   {
-    id: 1,
-    title: "AI Training for Delegates",
-    description: "A 2-Day Free AI Training to be held in Harare in September 2025 (exact venue and date to be announced). This training will be facilitated by experts from academia and industry.",
-    date: "September 2025",
-    location: "Harare (venue to be announced)",
-    time: "To be announced",
-    status: "Registration Opening Soon",
-    expectedAttendees: 150,
-    highlights: [
-      "Expert facilitators from academia and industry",
-      "Comprehensive 2-day curriculum",
-      "Free training for all delegates",
-      "Practical AI applications and case studies"
-    ],
-    registrationUrl: "#",
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=500",
+    id: "zim2",
+    title: "Zimbabwe 2.0 – AI for National Transformation 2026",
+    description:
+      "Intelligence as National Infrastructure: Designing Zimbabwe’s AI-Driven Future for Global Competitiveness.",
+    date: "April 2026",
+    location: "Nyanga",
+    time: "TBA",
+    status: "Open",
+    image: summitImages.zim2,
   },
-];
+  {
+    id: "techforum",
+    title: "AI Tech Forum Zimbabwe 2026",
+    description: "Mastering AI Systems: Building Zimbabwe’s Intelligence Edge.",
+    date: "April 2026",
+    location: "Nyanga",
+    time: "TBA",
+    status: "Open",
+    image: summitImages.techForum,
+  },
+  {
+    id: "aiedu",
+    title: "AI Education Africa 2026",
+    description:
+      "Empowering Learners and Educators — Transforming Education Through AI.",
+    date: "August 2026",
+    location: "Nyanga",
+    time: "TBA",
+    status: "Open",
+    image: summitImages.aiEducation,
+  },
+] as const;
+
+type SummitFormState = {
+  fullName: string;
+  email: string;
+  phone: string;
+  country: string;
+  organization: string;
+  roleTitle: string;
+  notes: string;
+  selectedSummitIds: string[];
+  agreeTerms: boolean;
+};
 
 export default function UpcomingEvents() {
+  const [open, setOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const [form, setForm] = useState<SummitFormState>({
+    fullName: "",
+    email: "",
+    phone: "",
+    country: "",
+    organization: "",
+    roleTitle: "",
+    notes: "",
+    selectedSummitIds: [],
+    agreeTerms: false,
+  });
+
+  const eventsById = useMemo(() => {
+    const m = new Map<string, (typeof upcomingEvents)[number]>();
+    upcomingEvents.forEach((e) => m.set(e.id, e));
+    return m;
+  }, []);
+
+  const openRegister = (preselectId?: string) => {
+    setSuccessMsg(null);
+    setErrorMsg(null);
+
+    setForm((prev) => {
+      const current = new Set(prev.selectedSummitIds);
+      if (preselectId) current.add(preselectId);
+      return { ...prev, selectedSummitIds: Array.from(current) };
+    });
+
+    setOpen(true);
+  };
+
+  const toggleSummit = (id: string) => {
+    setForm((prev) => {
+      const s = new Set(prev.selectedSummitIds);
+      if (s.has(id)) s.delete(id);
+      else s.add(id);
+      return { ...prev, selectedSummitIds: Array.from(s) };
+    });
+  };
+
+  const validate = () => {
+    if (!form.fullName.trim()) return "Full name is required.";
+    if (!form.email.trim() || !form.email.includes("@"))
+      return "Valid email is required.";
+    if (!form.phone.trim()) return "Phone number is required.";
+    if (!form.country.trim()) return "Country is required.";
+    if (form.selectedSummitIds.length < 1) return "Select at least one summit.";
+    if (!form.agreeTerms)
+      return "You must agree to the Terms & Privacy Policy.";
+    return null;
+  };
+
+  const submit = async () => {
+    setErrorMsg(null);
+    setSuccessMsg(null);
+
+    const err = validate();
+    if (err) {
+      setErrorMsg(err);
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const payload = {
+        ...form,
+        selectedSummits: form.selectedSummitIds.map((id) => eventsById.get(id)),
+      };
+
+      const res = await fetch("/api/summit-applications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || "Failed to submit.");
+
+      setSuccessMsg(`Application received! Reference: ${data.referenceNumber}`);
+      setForm((prev) => ({
+        ...prev,
+        notes: "",
+        selectedSummitIds: [],
+        agreeTerms: false,
+      }));
+    } catch (e: any) {
+      setErrorMsg(e?.message || "Something went wrong.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
+      transition: { duration: 0.6, ease: "easeOut" },
     },
   };
 
@@ -43,10 +185,7 @@ export default function UpcomingEvents() {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.1,
-      },
+      transition: { staggerChildren: 0.2, delayChildren: 0.1 },
     },
   };
 
@@ -71,8 +210,18 @@ export default function UpcomingEvents() {
               Upcoming Events
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-4xl mx-auto">
-              Join us at our upcoming AI events, workshops, and conferences designed to advance AI research and education across Africa.
+              Join us at our upcoming AI summits, forums, and conferences across
+              Africa.
             </p>
+
+            <div className="mt-6 flex justify-center">
+              <Button
+                onClick={() => openRegister()}
+                className="bg-primary hover:bg-primary/90 text-white"
+              >
+                Register for Events
+              </Button>
+            </div>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
@@ -84,12 +233,12 @@ export default function UpcomingEvents() {
                 animate="visible"
                 className="h-full"
               >
-                <Card className="h-full hover:shadow-xl transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50">
-                  <div className="relative h-48 rounded-t-lg overflow-hidden">
+                <Card className="h-full hover:shadow-xl transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+                  <div className="relative h-56">
                     <img
                       src={event.image}
                       alt={event.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <Badge
@@ -129,17 +278,9 @@ export default function UpcomingEvents() {
                     <div className="pt-4">
                       <Button
                         className="w-full bg-primary hover:bg-primary/90 text-white"
-                        asChild
+                        onClick={() => openRegister(event.id)}
                       >
-                        <a
-                          href={event.registrationUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2"
-                        >
-                          Register Now
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
+                        Register
                       </Button>
                     </div>
                   </CardContent>
@@ -149,23 +290,160 @@ export default function UpcomingEvents() {
           </div>
 
           {upcomingEvents.length === 0 && (
-            <motion.div
-              variants={fadeInUp}
-              className="text-center py-16"
-            >
+            <motion.div variants={fadeInUp} className="text-center py-16">
               <div className="max-w-md mx-auto">
                 <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   No Upcoming Events
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  We're planning exciting events for the future. Stay tuned for announcements!
+                  We're planning exciting events for the future. Stay tuned for
+                  announcements!
                 </p>
               </div>
             </motion.div>
           )}
         </div>
       </motion.section>
+
+      {/* SUMMIT REGISTRATION MODAL */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Summit Registration</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-5">
+            {errorMsg && (
+              <div className="rounded-md border border-red-300 bg-red-50 text-red-700 px-3 py-2 text-sm">
+                {errorMsg}
+              </div>
+            )}
+            {successMsg && (
+              <div className="rounded-md border border-green-300 bg-green-50 text-green-800 px-3 py-2 text-sm">
+                {successMsg}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="fullName">Full Name *</Label>
+                <Input
+                  id="fullName"
+                  value={form.fullName}
+                  onChange={(e) =>
+                    setForm({ ...form, fullName: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email *</Label>
+                <Input
+                  id="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="phone">Phone *</Label>
+                <Input
+                  id="phone"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="country">Country *</Label>
+                <Input
+                  id="country"
+                  value={form.country}
+                  onChange={(e) =>
+                    setForm({ ...form, country: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="organization">Organization</Label>
+                <Input
+                  id="organization"
+                  value={form.organization}
+                  onChange={(e) =>
+                    setForm({ ...form, organization: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="roleTitle">Role/Title</Label>
+                <Input
+                  id="roleTitle"
+                  value={form.roleTitle}
+                  onChange={(e) =>
+                    setForm({ ...form, roleTitle: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label className="mb-2 block">Select 1 or more summits *</Label>
+              <div className="grid gap-2">
+                {upcomingEvents.map((ev) => (
+                  <label
+                    key={ev.id}
+                    className="flex items-start gap-3 rounded-md border p-3 cursor-pointer"
+                  >
+                    <Checkbox
+                      checked={form.selectedSummitIds.includes(ev.id)}
+                      onCheckedChange={() => toggleSummit(ev.id)}
+                    />
+                    <div>
+                      <div className="font-medium">{ev.title}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {ev.date} • {ev.location}
+                      </div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="notes">Notes (optional)</Label>
+              <Textarea
+                id="notes"
+                rows={3}
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+              />
+            </div>
+
+            <label className="flex items-start gap-3">
+              <Checkbox
+                checked={form.agreeTerms}
+                onCheckedChange={(v) =>
+                  setForm({ ...form, agreeTerms: Boolean(v) })
+                }
+              />
+              <span className="text-sm">
+                I agree to the Terms & Privacy Policy *
+              </span>
+            </label>
+          </div>
+
+          <DialogFooter className="mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={submitting}
+            >
+              Cancel
+            </Button>
+            <Button onClick={submit} disabled={submitting}>
+              {submitting ? "Submitting..." : "Submit Application"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
