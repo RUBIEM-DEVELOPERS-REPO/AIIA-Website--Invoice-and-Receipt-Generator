@@ -347,7 +347,11 @@ export default function Enrollment() {
         fd.append("phone", form.phone);
         fd.append("email", form.email);
         fd.append("graduateStatus", form.graduateStatus);
-        fd.append("selectedProgramIds", JSON.stringify(form.individualProgramIds));
+        const selectedPrograms = form.individualProgramIds.map(id => {
+          const prog = individualProgramOptions.find(p => p.id === id);
+          return { id, name: prog?.name || id, category: "Individual Training" };
+        });
+        fd.append("selectedProgramIds", JSON.stringify(selectedPrograms));
         fd.append("document", form.individualDocument!);
       } else {
         fd.append("organizationName", form.organizationName);
@@ -356,7 +360,11 @@ export default function Enrollment() {
         fd.append("phone", form.corporatePhone);
         fd.append("email", form.corporateEmail);
         fd.append("numberOfAttendees", form.numberOfAttendees);
-        fd.append("selectedProgramIds", JSON.stringify(form.corporateProgramIds));
+        const selectedPrograms = form.corporateProgramIds.map(id => {
+          const prog = corporateProgramOptions.find(p => p.id === id);
+          return { id, name: prog?.name || id, category: "Corporate Training" };
+        });
+        fd.append("selectedProgramIds", JSON.stringify(selectedPrograms));
         fd.append("attendeesList", form.attendeesListFile!);
       }
 
