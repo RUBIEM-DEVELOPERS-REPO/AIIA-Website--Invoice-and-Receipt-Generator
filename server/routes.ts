@@ -1166,11 +1166,15 @@ export function registerRoutes(app: Express): Server {
     storage: applicationDocStorage,
     limits: { fileSize: 10 * 1024 * 1024 },
     fileFilter: (_req, file, cb) => {
-      const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "application/pdf", 
+      const allowedTypes = [
+        "image/png", "image/jpeg", "image/jpg", 
+        "application/pdf", 
         "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "text/csv"];
+        "text/csv",
+        "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ];
       if (!allowedTypes.includes(file.mimetype)) {
-        cb(new Error("Only PDF, PNG, JPG, Excel, and CSV files are allowed") as any, false);
+        cb(new Error("Only PDF, PNG, JPG, Word, Excel, and CSV files are allowed") as any, false);
         return;
       }
       cb(null, true);
