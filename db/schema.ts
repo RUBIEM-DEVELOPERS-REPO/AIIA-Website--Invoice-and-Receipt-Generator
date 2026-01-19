@@ -146,12 +146,18 @@ export const studentLeads = pgTable("student_leads", {
 export const programApplications = pgTable("program_applications", {
   id: serial("id").primaryKey(),
   referenceNumber: text("reference_number").unique().notNull(),
+  trainingType: text("training_type", {
+    enum: ["individual", "corporate"]
+  }).notNull().default("individual"),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   email: text("email").notNull(),
+  phone: text("phone"),
   graduateStatus: text("graduate_status", {
     enum: ["graduate", "non_graduate"]
-  }).notNull(),
+  }),
+  organizationName: text("organization_name"),
+  numberOfAttendees: integer("number_of_attendees"),
   selectedPrograms: jsonb("selected_programs").notNull(),
   documentPath: text("document_path"),
   status: text("status", {
@@ -202,7 +208,11 @@ export const insertProgramApplicationSchema = createInsertSchema(programApplicat
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
-  graduateStatus: z.enum(["graduate", "non_graduate"]),
+  trainingType: z.enum(["individual", "corporate"]).optional(),
+  graduateStatus: z.enum(["graduate", "non_graduate"]).nullable().optional(),
+  phone: z.string().optional().nullable(),
+  organizationName: z.string().optional().nullable(),
+  numberOfAttendees: z.number().optional().nullable(),
   selectedPrograms: z.array(z.object({
     id: z.string(),
     name: z.string(),

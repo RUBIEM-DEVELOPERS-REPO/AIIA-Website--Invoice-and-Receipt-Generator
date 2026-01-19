@@ -25,9 +25,10 @@ import { summitImages } from "@/lib/event_images";
 
 /**
  * SUMMIT IMAGES MAPPING (from your provided files)
- * summitImages.zim2        -> IMG-20260115-WA0121.jpg
- * summitImages.techForum   -> IMG-20260111-WA0030.jpg
- * summitImages.aiEducation -> IMG-20260111-WA0010.jpg
+ * summitImages.zim2          -> IMG-20260115-WA0121.jpg
+ * summitImages.techForum     -> IMG-20260111-WA0030.jpg
+ * summitImages.aiEducation   -> IMG-20260111-WA0010.jpg
+ * summitImages.aiAfricaSummit-> IMG-20260109-WA0245.jpg
  */
 const upcomingEvents = [
   {
@@ -52,12 +53,23 @@ const upcomingEvents = [
     image: summitImages.techForum,
   },
   {
+    id: "ai-africa-summit",
+    title: "AI Africa Summit 2026",
+    description:
+      "Africa 2.0: Ubuntu Algorithms for AI-Augmented Transformation.",
+    date: "June 2026",
+    location: "Victoria Falls",
+    time: "TBA",
+    status: "Open",
+    image: summitImages.aiAfricaSummit,
+  },
+  {
     id: "aiedu",
     title: "AI Education Africa 2026",
     description:
       "Empowering Learners and Educators — Transforming Education Through AI.",
     date: "August 2026",
-    location: "Nyanga",
+    location: "Harare",
     time: "TBA",
     status: "Open",
     image: summitImages.aiEducation,
@@ -212,8 +224,7 @@ export default function UpcomingEvents() {
               Upcoming Events
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-4xl mx-auto">
-              Join us at our upcoming AI summits, forums, and conferences across
-              Africa.
+              Join us at our upcoming AI summits, forums, and conferences across Africa.
             </p>
 
             <div className="mt-6 flex justify-center">
@@ -235,7 +246,7 @@ export default function UpcomingEvents() {
                 animate="visible"
                 className="h-full"
               >
-                <Card className="h-full hover:shadow-xl transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+                <Card className="h-full hover:shadow-xl transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 overflow-hidden flex flex-col">
                   <div className="relative h-72">
                     <img
                       src={event.image}
@@ -257,7 +268,7 @@ export default function UpcomingEvents() {
                     </CardTitle>
                   </CardHeader>
 
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 flex-1 flex flex-col">
                     <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
                       {event.description}
                     </p>
@@ -277,7 +288,8 @@ export default function UpcomingEvents() {
                       </div>
                     </div>
 
-                    <div className="pt-4">
+                    {/* aligned button */}
+                    <div className="pt-4 mt-auto">
                       <Button
                         className="w-full bg-primary hover:bg-primary/90 text-white"
                         onClick={() => openRegister(event.id)}
@@ -299,8 +311,7 @@ export default function UpcomingEvents() {
                   No Upcoming Events
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  We're planning exciting events for the future. Stay tuned for
-                  announcements!
+                  We're planning exciting events for the future. Stay tuned for announcements!
                 </p>
               </div>
             </motion.div>
@@ -311,10 +322,11 @@ export default function UpcomingEvents() {
       {/* SUMMIT REGISTRATION MODAL */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
             <X className="h-5 w-5" />
             <span className="sr-only">Close</span>
           </DialogClose>
+
           <DialogHeader>
             <DialogTitle className="text-xl">Summit Registration</DialogTitle>
           </DialogHeader>
@@ -337,9 +349,7 @@ export default function UpcomingEvents() {
                 <Input
                   id="fullName"
                   value={form.fullName}
-                  onChange={(e) =>
-                    setForm({ ...form, fullName: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, fullName: e.target.value })}
                 />
               </div>
               <div>
@@ -363,9 +373,7 @@ export default function UpcomingEvents() {
                 <Input
                   id="country"
                   value={form.country}
-                  onChange={(e) =>
-                    setForm({ ...form, country: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, country: e.target.value })}
                 />
               </div>
               <div>
@@ -373,9 +381,7 @@ export default function UpcomingEvents() {
                 <Input
                   id="organization"
                   value={form.organization}
-                  onChange={(e) =>
-                    setForm({ ...form, organization: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, organization: e.target.value })}
                 />
               </div>
               <div>
@@ -383,9 +389,7 @@ export default function UpcomingEvents() {
                 <Input
                   id="roleTitle"
                   value={form.roleTitle}
-                  onChange={(e) =>
-                    setForm({ ...form, roleTitle: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, roleTitle: e.target.value })}
                 />
               </div>
             </div>
@@ -394,10 +398,7 @@ export default function UpcomingEvents() {
               <Label className="mb-2 block">Select 1 or more summits *</Label>
               <div className="grid gap-2">
                 {upcomingEvents.map((ev) => (
-                  <label
-                    key={ev.id}
-                    className="flex items-start gap-3 rounded-md border p-3 cursor-pointer"
-                  >
+                  <label key={ev.id} className="flex items-start gap-3 rounded-md border p-3 cursor-pointer">
                     <Checkbox
                       checked={form.selectedSummitIds.includes(ev.id)}
                       onCheckedChange={() => toggleSummit(ev.id)}
@@ -426,22 +427,14 @@ export default function UpcomingEvents() {
             <label className="flex items-start gap-3">
               <Checkbox
                 checked={form.agreeTerms}
-                onCheckedChange={(v) =>
-                  setForm({ ...form, agreeTerms: Boolean(v) })
-                }
+                onCheckedChange={(v) => setForm({ ...form, agreeTerms: Boolean(v) })}
               />
-              <span className="text-sm">
-                I agree to the Terms & Privacy Policy *
-              </span>
+              <span className="text-sm">I agree to the Terms & Privacy Policy *</span>
             </label>
           </div>
 
           <DialogFooter className="mt-4">
-            <Button
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={submitting}
-            >
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={submitting}>
               Cancel
             </Button>
             <Button onClick={submit} disabled={submitting}>

@@ -1166,14 +1166,16 @@ export function registerRoutes(app: Express): Server {
     storage: applicationDocStorage,
     limits: { fileSize: 10 * 1024 * 1024 },
     fileFilter: (_req, file, cb) => {
-      const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "application/pdf"];
+      const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "application/pdf", 
+        "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "text/csv"];
       if (!allowedTypes.includes(file.mimetype)) {
-        cb(new Error("Only PDF, PNG, and JPG files are allowed") as any, false);
+        cb(new Error("Only PDF, PNG, JPG, Excel, and CSV files are allowed") as any, false);
         return;
       }
       cb(null, true);
     },
-  }).single("document");
+  }).any();
 
   // Generate unique reference number
   function generateReferenceNumber(): string {
@@ -1192,15 +1194,30 @@ export function registerRoutes(app: Express): Server {
       }
 
       try {
-        const { firstName, lastName, email, graduateStatus, selectedPrograms } = req.body;
+        const { 
+          trainingType,
+          firstName, lastName, email, graduateStatus, 
+          organizationName, contactFirstName, contactLastName, numberOfAttendees,
+          phone,
+          selectedProgramIds 
+        } = req.body;
 
-        if (!firstName || !lastName || !email || !graduateStatus || !selectedPrograms) {
+        const isCorporate = trainingType === "corporate";
+        const applicantFirstName = isCorporate ? contactFirstName : firstName;
+        const applicantLastName = isCorporate ? contactLastName : lastName;
+        const applicantEmail = email;
+
+        if (!applicantFirstName || !applicantLastName || !applicantEmail || !selectedProgramIds) {
           return res.status(400).json({ message: "All required fields must be filled" });
+        }
+
+        if (!isCorporate && !graduateStatus) {
+          return res.status(400).json({ message: "Graduate status is required" });
         }
 
         let programs;
         try {
-          programs = JSON.parse(selectedPrograms);
+          programs = JSON.parse(selectedProgramIds);
         } catch {
           return res.status(400).json({ message: "Invalid program selection format" });
         }
@@ -1210,15 +1227,21 @@ export function registerRoutes(app: Express): Server {
         }
 
         const referenceNumber = generateReferenceNumber();
-        const documentPath = req.file ? `/uploads/applications/${req.file.filename}` : null;
+        const files = req.files as Express.Multer.File[] | undefined;
+        const uploadedFile = files && files.length > 0 ? files[0] : null;
+        const documentPath = uploadedFile ? `/uploads/applications/${uploadedFile.filename}` : null;
 
         // Save to database
         const [application] = await db.insert(programApplications).values({
           referenceNumber,
-          firstName,
-          lastName,
-          email,
-          graduateStatus,
+          firstName: applicantFirstName,
+          lastName: applicantLastName,
+          email: applicantEmail,
+          phone: phone || null,
+          graduateStatus: isCorporate ? null : graduateStatus,
+          trainingType: trainingType || "individual",
+          organizationName: isCorporate ? organizationName : null,
+          numberOfAttendees: isCorporate && numberOfAttendees ? parseInt(numberOfAttendees) : null,
           selectedPrograms: programs,
           documentPath,
           status: "pending",
@@ -1227,8 +1250,8 @@ export function registerRoutes(app: Express): Server {
 
         // Send confirmation email to applicant
         const confirmationEmail = generateApplicationConfirmationEmail(
-          firstName,
-          lastName,
+          applicantFirstName,
+          applicantLastName,
           referenceNumber,
           programs
         );

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   GraduationCap,
@@ -9,14 +9,11 @@ import {
   Building2,
   Sparkles,
   ArrowRight,
-  Mail,
-  MapPin,
   Calendar,
   Award,
   Layers,
   Target,
   Briefcase,
-  FileText,
   Zap,
   Star,
   CheckCircle2,
@@ -45,42 +42,23 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { programImages } from "@/lib/programs";
 
 /**
- * PROGRAM IMAGES MAPPING (from your provided files)
- * programImages.catalogue       -> IMG-20260115-WA0114.jpg
- * programImages.basic           -> IMG-20260115-WA0115.jpg
- * programImages.nongrad         -> IMG-20260115-WA0116.jpg
- * programImages.gradCert        -> IMG-20260115-WA0117.jpg
- * programImages.advanced        -> IMG-20260115-WA0118.jpg
- * programImages.masterOrgs      -> IMG-20260115-WA0119.jpg
- * programImages.aiDiploma       -> IMG-20260115-WA0120.jpg
- * programImages.postgradDiploma -> IMG-20260115-WA0063.jpg
+ * PROGRAM IMAGES MAPPING (your instruction)
+ * programImages.masterOrgs      -> IMG-20260115-WA0114.jpg
+ * programImages.basic           -> IMG-20260115-WA0116.jpg
+ * programImages.aiDiploma       -> IMG-20260115-WA0117.jpg
+ * programImages.postgradDiploma -> IMG-20260115-WA0118.jpg
+ * programImages.nongrad         -> IMG-20260115-WA0119.jpg
+ * programImages.gradCert        -> IMG-20260115-WA0063.jpg
+ * programImages.advanced        -> IMG-20260115-WA0120.jpg
  */
 
-/**
- * Used by enrollment multi-select
- */
-const programOptions = [
-  { id: "dir", name: "Master AI for Directors", category: "Short Course", image: programImages.masterOrgs },
-  { id: "exec", name: "Master AI for Executives", category: "Short Course", image: programImages.masterOrgs },
-  { id: "prof", name: "Master AI for Professionals", category: "Short Course", image: programImages.masterOrgs },
-
-  { id: "basic", name: "Basic AI Certification", category: "Certificate", image: programImages.basic },
-  { id: "nongrad", name: "Non-Graduate AI Certificate", category: "Certificate", image: programImages.nongrad },
-  { id: "gradcert", name: "Graduate AI Certificate Program", category: "Certificate", image: programImages.gradCert },
-  { id: "advanced", name: "Advanced AI Certification", category: "Certificate", image: programImages.advanced },
-
-  { id: "aidip", name: "AI Diploma Program", category: "Diploma", image: programImages.aiDiploma },
-  { id: "postgrad", name: "Postgrad AI Diploma Program", category: "Diploma", image: programImages.postgradDiploma },
-] as const;
-
-const shortCourses = [
+const corporatePrograms = [
   {
     id: "dir",
     name: "Master AI for Directors",
     duration: "1.5 Days",
     target: "Directors and C-suite",
     format: "Physical training",
-    price: "USD 310 / person",
     icon: Target,
     color: "from-amber-500 to-orange-600",
     borderColor: "border-amber-500/30",
@@ -93,7 +71,6 @@ const shortCourses = [
     duration: "2 Days",
     target: "Executives and Management",
     format: "Physical training",
-    price: "USD 280 / person",
     icon: Briefcase,
     color: "from-cyan-500 to-blue-600",
     borderColor: "border-cyan-500/30",
@@ -106,14 +83,13 @@ const shortCourses = [
     duration: "3 Days",
     target: "Professional development",
     format: "Physical and Online training",
-    price: "USD 280 / person",
     icon: Users,
     color: "from-purple-500 to-pink-600",
     borderColor: "border-purple-500/30",
     glowColor: "rgba(168,85,247,0.3)",
     image: programImages.masterOrgs,
   },
-];
+] as const;
 
 const certificates = [
   {
@@ -176,7 +152,7 @@ const certificates = [
     glowColor: "rgba(139,92,246,0.3)",
     image: programImages.advanced,
   },
-];
+] as const;
 
 const diplomas = [
   {
@@ -209,45 +185,47 @@ const diplomas = [
     glowColor: "rgba(14,165,233,0.3)",
     image: programImages.aiDiploma,
   },
-];
+] as const;
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
-};
+const individualProgramOptions = [
+  { id: "gradcert", name: "Graduate AI Certificate Program", image: programImages.gradCert },
+  { id: "nongrad", name: "Non-Graduate AI Certificate", image: programImages.nongrad },
+  { id: "basic", name: "Basic AI Certification", image: programImages.basic },
+  { id: "advanced", name: "Advanced AI Certification", image: programImages.advanced },
+  { id: "postgrad", name: "Postgrad AI Diploma Program", image: programImages.postgradDiploma },
+  { id: "aidip", name: "AI Diploma Program", image: programImages.aiDiploma },
+] as const;
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 30, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-};
+const corporateProgramOptions = [
+  { id: "dir", name: "Master AI for Directors", image: programImages.masterOrgs },
+  { id: "exec", name: "Master AI for Executives", image: programImages.masterOrgs },
+  { id: "prof", name: "Master AI for Professionals", image: programImages.masterOrgs },
+] as const;
 
-const floatAnimation = {
-  y: [0, -10, 0],
-  transition: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-};
+type TrainingType = "individual" | "corporate";
+type GraduateStatus = "graduate" | "non_graduate";
 
-const pulseAnimation = {
-  scale: [1, 1.05, 1],
-  transition: { duration: 2, repeat: Infinity, ease: "easeInOut" },
-};
+type EnrollmentFormState = {
+  trainingType: TrainingType;
 
-const rotateAnimation = {
-  rotate: [0, 360],
-  transition: { duration: 20, repeat: Infinity, ease: "linear" },
-};
-
-type ProgramForm = {
+  // individual
   firstName: string;
   lastName: string;
+  phone: string;
   email: string;
-  graduateStatus: "graduate" | "non_graduate";
-  selectedProgramIds: string[];
-  document: File | null;
+  graduateStatus: GraduateStatus;
+  individualProgramIds: string[];
+  individualDocument: File | null;
+
+  // corporate
+  organizationName: string;
+  contactFirstName: string;
+  contactLastName: string;
+  corporatePhone: string;
+  corporateEmail: string;
+  numberOfAttendees: string;
+  corporateProgramIds: string[];
+  attendeesListFile: File | null;
 };
 
 export default function Enrollment() {
@@ -256,54 +234,95 @@ export default function Enrollment() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const [form, setForm] = useState<ProgramForm>({
+  const [form, setForm] = useState<EnrollmentFormState>({
+    trainingType: "individual",
+
     firstName: "",
     lastName: "",
+    phone: "",
     email: "",
     graduateStatus: "graduate",
-    selectedProgramIds: [],
-    document: null,
+    individualProgramIds: [],
+    individualDocument: null,
+
+    organizationName: "",
+    contactFirstName: "",
+    contactLastName: "",
+    corporatePhone: "",
+    corporateEmail: "",
+    numberOfAttendees: "",
+    corporateProgramIds: [],
+    attendeesListFile: null,
   });
 
-  const programsById = useMemo(() => {
-    const m = new Map<string, (typeof programOptions)[number]>();
-    programOptions.forEach((p) => m.set(p.id, p));
-    return m;
-  }, []);
-
   const openEnroll = (preselectId?: string) => {
-    setErrorMsg(null);
     setSuccessMsg(null);
+    setErrorMsg(null);
+
+    const isCorporate = preselectId && ["dir", "exec", "prof"].includes(preselectId);
+
     setForm((prev) => {
-      const ids = new Set(prev.selectedProgramIds);
-      if (preselectId) ids.add(preselectId);
-      return { ...prev, selectedProgramIds: Array.from(ids) };
+      const next = { ...prev };
+
+      if (isCorporate) {
+        next.trainingType = "corporate";
+        const s = new Set(next.corporateProgramIds);
+        s.add(preselectId!);
+        next.corporateProgramIds = Array.from(s);
+      } else if (preselectId) {
+        next.trainingType = "individual";
+        const s = new Set(next.individualProgramIds);
+        s.add(preselectId);
+        next.individualProgramIds = Array.from(s);
+      }
+
+      return next;
     });
+
     setOpen(true);
   };
 
-  const toggleProgram = (id: string) => {
+  const toggleIndividualProgram = (id: string) => {
     setForm((prev) => {
-      const s = new Set(prev.selectedProgramIds);
-      if (s.has(id)) s.delete(id);
-      else s.add(id);
-      return { ...prev, selectedProgramIds: Array.from(s) };
+      const s = new Set(prev.individualProgramIds);
+      s.has(id) ? s.delete(id) : s.add(id);
+      return { ...prev, individualProgramIds: Array.from(s) };
+    });
+  };
+
+  const toggleCorporateProgram = (id: string) => {
+    setForm((prev) => {
+      const s = new Set(prev.corporateProgramIds);
+      s.has(id) ? s.delete(id) : s.add(id);
+      return { ...prev, corporateProgramIds: Array.from(s) };
     });
   };
 
   const validate = () => {
-    if (!form.firstName.trim()) return "Name is required.";
-    if (!form.lastName.trim()) return "Surname is required.";
-    if (!form.email.trim() || !form.email.includes("@"))
-      return "Valid email is required.";
-    if (form.selectedProgramIds.length < 1)
-      return "Select at least one program.";
-
-    if (!form.document) {
-      return form.graduateStatus === "graduate"
-        ? "Upload Educational Certificate."
-        : "Upload Advanced Level Results or Employer’s Letter.";
+    if (form.trainingType === "individual") {
+      if (!form.firstName.trim()) return "Name is required.";
+      if (!form.lastName.trim()) return "Surname is required.";
+      if (!form.phone.trim()) return "Phone number is required.";
+      if (!form.email.trim() || !form.email.includes("@")) return "Valid email is required.";
+      if (form.individualProgramIds.length < 1) return "Select at least one program.";
+      if (!form.individualDocument) {
+        return form.graduateStatus === "graduate"
+          ? "Upload Certificate (Graduate)."
+          : "Upload Employer’s Letter or A Level Certificate (Non-Graduate).";
+      }
+      return null;
     }
+
+    if (!form.organizationName.trim()) return "Organization name is required.";
+    if (!form.contactFirstName.trim()) return "Contact person name is required.";
+    if (!form.contactLastName.trim()) return "Contact person surname is required.";
+    if (!form.corporatePhone.trim()) return "Phone number is required.";
+    if (!form.corporateEmail.trim() || !form.corporateEmail.includes("@")) return "Valid email is required.";
+    if (!form.numberOfAttendees.trim()) return "Number of attendees is required.";
+    const n = Number(form.numberOfAttendees);
+    if (!Number.isFinite(n) || n <= 0) return "Number of attendees must be a positive number.";
+    if (form.corporateProgramIds.length < 1) return "Select at least one corporate program.";
+    if (!form.attendeesListFile) return "Upload the list of attendees.";
     return null;
   };
 
@@ -319,18 +338,27 @@ export default function Enrollment() {
 
     setSubmitting(true);
     try {
-      const selectedPrograms = form.selectedProgramIds
-        .map((id) => programsById.get(id))
-        .filter(Boolean);
-
       const fd = new FormData();
-      fd.append("firstName", form.firstName);
-      fd.append("lastName", form.lastName);
-      fd.append("email", form.email);
-      fd.append("graduateStatus", form.graduateStatus);
-      fd.append("selectedProgramIds", JSON.stringify(form.selectedProgramIds));
-      fd.append("selectedPrograms", JSON.stringify(selectedPrograms));
-      fd.append("document", form.document!);
+      fd.append("trainingType", form.trainingType);
+
+      if (form.trainingType === "individual") {
+        fd.append("firstName", form.firstName);
+        fd.append("lastName", form.lastName);
+        fd.append("phone", form.phone);
+        fd.append("email", form.email);
+        fd.append("graduateStatus", form.graduateStatus);
+        fd.append("selectedProgramIds", JSON.stringify(form.individualProgramIds));
+        fd.append("document", form.individualDocument!);
+      } else {
+        fd.append("organizationName", form.organizationName);
+        fd.append("contactFirstName", form.contactFirstName);
+        fd.append("contactLastName", form.contactLastName);
+        fd.append("phone", form.corporatePhone);
+        fd.append("email", form.corporateEmail);
+        fd.append("numberOfAttendees", form.numberOfAttendees);
+        fd.append("selectedProgramIds", JSON.stringify(form.corporateProgramIds));
+        fd.append("attendeesList", form.attendeesListFile!);
+      }
 
       const res = await fetch("/api/program-applications", {
         method: "POST",
@@ -343,8 +371,21 @@ export default function Enrollment() {
       setSuccessMsg(`Application received! Reference: ${data.referenceNumber}`);
       setForm((prev) => ({
         ...prev,
-        selectedProgramIds: [],
-        document: null,
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        graduateStatus: "graduate",
+        individualProgramIds: [],
+        individualDocument: null,
+        organizationName: "",
+        contactFirstName: "",
+        contactLastName: "",
+        corporatePhone: "",
+        corporateEmail: "",
+        numberOfAttendees: "",
+        corporateProgramIds: [],
+        attendeesListFile: null,
       }));
     } catch (e: any) {
       setErrorMsg(e?.message || "Something went wrong.");
@@ -365,569 +406,262 @@ export default function Enrollment() {
       <img
         src={src}
         alt={alt}
-        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+        className="w-full h-full object-contain bg-white opacity-95 group-hover:opacity-100 transition-opacity"
       />
     );
   };
 
+  const pulseAnimation = {
+    scale: [1, 1.05, 1],
+    transition: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
-
-      <motion.div
-        className="absolute top-10 left-10 w-2 h-2 bg-cyan-400 rounded-full"
-        animate={{ x: [0, 100, 0], y: [0, 50, 0], opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 5, repeat: Infinity }}
-      />
-      <motion.div
-        className="absolute top-40 right-20 w-3 h-3 bg-purple-400 rounded-full"
-        animate={{ x: [0, -80, 0], y: [0, 80, 0], opacity: [0.3, 1, 0.3] }}
-        transition={{ duration: 7, repeat: Infinity }}
-      />
-      <motion.div
-        className="absolute bottom-40 left-1/4 w-2 h-2 bg-pink-400 rounded-full"
-        animate={{ x: [0, 60, 0], y: [0, -40, 0], opacity: [0.4, 1, 0.4] }}
-        transition={{ duration: 6, repeat: Infinity }}
-      />
-
       <section className="relative py-20 overflow-hidden">
-        <motion.div
-          className="absolute top-20 left-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl"
-          animate={{ x: [0, 50, 0], y: [0, -30, 0], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
-          animate={{ x: [0, -40, 0], y: [0, 40, 0], opacity: [0.2, 0.4, 0.2] }}
-          transition={{ duration: 10, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute top-1/2 left-1/2 w-64 h-64 bg-pink-500/5 rounded-full blur-3xl"
-          animate={rotateAnimation}
-        />
-
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-10"
-          >
-            <motion.div
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold mb-6 tracking-wider uppercase"
-              animate={{
-                boxShadow: [
-                  "0 0 20px rgba(0,255,255,0.3)",
-                  "0 0 40px rgba(0,255,255,0.5)",
-                  "0 0 20px rgba(0,255,255,0.3)",
-                ],
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-              style={{ fontFamily: "'Orbitron', sans-serif" }}
-            >
-              <motion.div
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              >
-                <Zap className="w-4 h-4" />
-              </motion.div>
-              March 2026 Intake Now Open
-            </motion.div>
-
-            <motion.h1
+          <div className="text-center mb-10">
+            <h1
               className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 mb-4"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
-              animate={{ backgroundPosition: ["0%", "100%", "0%"] }}
-              transition={{ duration: 5, repeat: Infinity }}
             >
               AI Course Catalogue
-            </motion.h1>
+            </h1>
 
-            <motion.p
-              className="text-xl text-cyan-200/70 max-w-3xl mx-auto"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              Empowering Africa through Artificial Intelligence Education and
-              Innovation
-            </motion.p>
+            <p className="text-xl text-cyan-200/70 max-w-3xl mx-auto">
+              Empowering Africa through Artificial Intelligence Education and Innovation
+            </p>
 
             <div className="mt-6 flex justify-center">
               <Button
                 onClick={() => openEnroll()}
                 className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold tracking-wider uppercase px-8 py-6"
-                style={{
-                  fontFamily: "'Orbitron', sans-serif",
-                  boxShadow: "0 0 30px rgba(0,255,255,0.35)",
-                }}
+                style={{ fontFamily: "'Orbitron', sans-serif" }}
               >
                 Enroll Now
               </Button>
             </div>
-          </motion.div>
+          </div>
 
-          <Tabs defaultValue="short" className="w-full">
+          <Tabs defaultValue="corporate" className="w-full">
             <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 bg-slate-800/50 border border-cyan-500/20 mb-8">
-              <TabsTrigger
-                value="short"
-                className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300"
-                style={{ fontFamily: "'Orbitron', sans-serif" }}
-              >
-                <motion.div whileHover={{ rotate: 15 }}>
-                  <Clock className="w-4 h-4 mr-2" />
-                </motion.div>
-                Short Courses
+              <TabsTrigger value="corporate" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300">
+                <Building2 className="w-4 h-4 mr-2" />
+                Corporate Courses
               </TabsTrigger>
-              <TabsTrigger
-                value="certificates"
-                className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300"
-                style={{ fontFamily: "'Orbitron', sans-serif" }}
-              >
-                <motion.div whileHover={{ rotate: 15 }}>
-                  <Award className="w-4 h-4 mr-2" />
-                </motion.div>
+
+              <TabsTrigger value="certificates" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300">
+                <Award className="w-4 h-4 mr-2" />
                 Certificates
               </TabsTrigger>
-              <TabsTrigger
-                value="diplomas"
-                className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300"
-                style={{ fontFamily: "'Orbitron', sans-serif" }}
-              >
-                <motion.div whileHover={{ rotate: 15 }}>
-                  <GraduationCap className="w-4 h-4 mr-2" />
-                </motion.div>
+
+              <TabsTrigger value="diplomas" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300">
+                <GraduationCap className="w-4 h-4 mr-2" />
                 Diplomas
               </TabsTrigger>
             </TabsList>
 
-            {/* SHORT COURSES */}
-            <TabsContent value="short">
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="grid md:grid-cols-3 gap-8"
-              >
-                {shortCourses.map((course, index) => (
-                  <motion.div
+            {/* CORPORATE COURSES (NO PRICES) */}
+            <TabsContent value="corporate">
+              <div className="grid md:grid-cols-3 gap-8">
+                {corporatePrograms.map((course) => (
+                  <Card
                     key={course.id}
-                    variants={itemVariants}
-                    whileHover={{ y: -10, transition: { duration: 0.3 } }}
+                    className={`bg-slate-800/50 ${course.borderColor} border-2 h-full group overflow-hidden flex flex-col`}
+                    style={{ boxShadow: `0 0 30px ${course.glowColor}` }}
                   >
-                    <Card
-                      className={`bg-slate-800/50 ${course.borderColor} border-2 hover:border-opacity-100 transition-all duration-500 h-full group relative overflow-hidden`}
-                      style={{ boxShadow: `0 0 30px ${course.glowColor}` }}
-                    >
-                      <div className="relative h-44 w-full overflow-hidden border-b border-slate-700/40">
-                        <Poster src={course.image} alt={course.name} />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="relative h-52 w-full overflow-hidden border-b border-slate-700/40">
+                      <Poster src={course.image} alt={course.name} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    </div>
+
+                    <CardHeader className="pb-2">
+                      <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center mb-4 shadow-lg`}>
+                        <course.icon className="w-8 h-8 text-white" />
+                      </div>
+                      <CardTitle className="text-xl text-slate-100">{course.name}</CardTitle>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4 flex-1 flex flex-col">
+                      <div className="space-y-2 text-slate-300">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-5 h-5 text-cyan-400" />
+                          <span>{course.duration}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Users className="w-5 h-5 text-purple-400" />
+                          <span>{course.target}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Building2 className="w-5 h-5 text-blue-400" />
+                          <span>{course.format}</span>
+                        </div>
                       </div>
 
-                      <CardHeader className="pb-2 relative">
-                        <motion.div
-                          className={`w-16 h-16 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center mb-4 shadow-lg`}
-                          animate={floatAnimation}
-                          whileHover={{ rotate: 360, scale: 1.1 }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          <course.icon className="w-8 h-8 text-white" />
-                        </motion.div>
-                        <CardTitle
-                          className="text-xl text-slate-100 group-hover:text-white transition-colors"
-                          style={{ fontFamily: "'Orbitron', sans-serif" }}
-                        >
-                          {course.name}
-                        </CardTitle>
-                      </CardHeader>
-
-                      <CardContent className="space-y-4">
-                        <div className="space-y-3">
-                          <motion.div
-                            className="flex items-center gap-3 text-slate-300"
-                            initial={{ x: -20, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: index * 0.1 + 0.2 }}
-                          >
-                            <Clock className="w-5 h-5 text-cyan-400" />
-                            <span>{course.duration}</span>
-                          </motion.div>
-
-                          <motion.div
-                            className="flex items-center gap-3 text-slate-300"
-                            initial={{ x: -20, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: index * 0.1 + 0.3 }}
-                          >
-                            <Users className="w-5 h-5 text-purple-400" />
-                            <span>{course.target}</span>
-                          </motion.div>
-
-                          <motion.div
-                            className="flex items-center gap-3 text-slate-300"
-                            initial={{ x: -20, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: index * 0.1 + 0.4 }}
-                          >
-                            <Building2 className="w-5 h-5 text-blue-400" />
-                            <span>{course.format}</span>
-                          </motion.div>
-                        </div>
-
-                        <motion.div
-                          className={`mt-6 pt-4 border-t border-slate-700/50`}
-                          animate={pulseAnimation}
-                        >
-                          <div
-                            className={`text-2xl font-bold bg-gradient-to-r ${course.color} bg-clip-text text-transparent`}
-                            style={{ fontFamily: "'Orbitron', sans-serif" }}
-                          >
-                            {course.price}
-                          </div>
-                        </motion.div>
-
+                      <div className="mt-auto pt-4">
                         <Button
                           className="w-full bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-500/30"
                           onClick={() => openEnroll(course.id)}
                         >
                           Enroll
                         </Button>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
-              </motion.div>
+              </div>
             </TabsContent>
 
-            {/* CERTIFICATES */}
+            {/* CERTIFICATES (PRICES KEPT) */}
             <TabsContent value="certificates">
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="grid md:grid-cols-3 gap-8"
-              >
+              <div className="grid md:grid-cols-3 gap-8">
                 {certificates.map((cert) => (
-                  <motion.div
+                  <Card
                     key={cert.id}
-                    variants={itemVariants}
-                    whileHover={{ y: -10, transition: { duration: 0.3 } }}
+                    className={`bg-slate-800/50 ${cert.borderColor} border-2 h-full group overflow-hidden flex flex-col`}
+                    style={{ boxShadow: `0 0 30px ${cert.glowColor}` }}
                   >
-                    <Card
-                      className={`bg-slate-800/50 ${cert.borderColor} border-2 hover:border-opacity-100 transition-all duration-500 h-full group relative overflow-hidden`}
-                      style={{ boxShadow: `0 0 30px ${cert.glowColor}` }}
-                    >
-                      <div className="relative h-44 w-full overflow-hidden border-b border-slate-700/40">
-                        <Poster src={cert.image} alt={cert.name} />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="relative h-52 w-full overflow-hidden border-b border-slate-700/40">
+                      <Poster src={cert.image} alt={cert.name} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    </div>
+
+                    <CardHeader className="pb-2">
+                      <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${cert.color} flex items-center justify-center mb-4 shadow-lg`}>
+                        <cert.icon className="w-8 h-8 text-white" />
+                      </div>
+                      <CardTitle className="text-xl text-slate-100">{cert.name}</CardTitle>
+                      <p className="text-sm text-cyan-400/80">{cert.subtitle}</p>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4 flex-1 flex flex-col">
+                      <div className="space-y-2 text-slate-300">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-5 h-5 text-cyan-400" />
+                          <span>{cert.duration}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Globe className="w-5 h-5 text-purple-400" />
+                          <span>{cert.format}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Layers className="w-5 h-5 text-blue-400" />
+                          <span>{cert.modules}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-5 h-5 text-green-400" />
+                          <span>{cert.requirement}</span>
+                        </div>
                       </div>
 
-                      <CardHeader className="pb-2 relative">
-                        <motion.div
-                          className={`w-16 h-16 rounded-xl bg-gradient-to-br ${cert.color} flex items-center justify-center mb-4 shadow-lg`}
-                          animate={floatAnimation}
-                          whileHover={{ rotate: 360, scale: 1.1 }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          <cert.icon className="w-8 h-8 text-white" />
-                        </motion.div>
-
-                        <CardTitle
-                          className="text-xl text-slate-100 group-hover:text-white transition-colors"
-                          style={{ fontFamily: "'Orbitron', sans-serif" }}
-                        >
-                          {cert.name}
-                        </CardTitle>
-                        <p className="text-sm text-cyan-400/80">
-                          {cert.subtitle}
-                        </p>
-                      </CardHeader>
-
-                      <CardContent className="space-y-4">
-                        <div className="space-y-3">
-                          <motion.div
-                            className="flex items-center gap-3 text-slate-300"
-                            whileHover={{ x: 5 }}
-                          >
-                            <Calendar className="w-5 h-5 text-cyan-400" />
-                            <span>{cert.duration}</span>
-                          </motion.div>
-                          <motion.div
-                            className="flex items-center gap-3 text-slate-300"
-                            whileHover={{ x: 5 }}
-                          >
-                            <Globe className="w-5 h-5 text-purple-400" />
-                            <span>{cert.format}</span>
-                          </motion.div>
-                          <motion.div
-                            className="flex items-center gap-3 text-slate-300"
-                            whileHover={{ x: 5 }}
-                          >
-                            <Layers className="w-5 h-5 text-blue-400" />
-                            <span>{cert.modules}</span>
-                          </motion.div>
-                          <motion.div
-                            className="flex items-center gap-3 text-slate-300"
-                            whileHover={{ x: 5 }}
-                          >
-                            <CheckCircle2 className="w-5 h-5 text-green-400" />
-                            <span>{cert.requirement}</span>
-                          </motion.div>
+                      {/* price kept */}
+                      <div className="mt-4 pt-4 border-t border-slate-700/50" style={{ marginTop: "auto" }}>
+                        <div className={`text-2xl font-bold bg-gradient-to-r ${cert.color} bg-clip-text text-transparent`}>
+                          {cert.price}
                         </div>
-
-                        <motion.div
-                          className="mt-6 pt-4 border-t border-slate-700/50"
-                          animate={pulseAnimation}
-                        >
-                          <div
-                            className={`text-2xl font-bold bg-gradient-to-r ${cert.color} bg-clip-text text-transparent`}
-                            style={{ fontFamily: "'Orbitron', sans-serif" }}
+                        <div className="mt-4">
+                          <Button
+                            className="w-full bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-500/30"
+                            onClick={() => openEnroll(cert.id)}
                           >
-                            {cert.price}
-                          </div>
-                        </motion.div>
-
-                        <Button
-                          className="w-full bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-500/30"
-                          onClick={() => openEnroll(cert.id)}
-                        >
-                          Enroll
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
+                            Enroll
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
-              </motion.div>
+              </div>
             </TabsContent>
 
-            {/* DIPLOMAS */}
+            {/* DIPLOMAS (PRICES KEPT) */}
             <TabsContent value="diplomas">
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"
-              >
+              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 {diplomas.map((diploma) => (
-                  <motion.div
+                  <Card
                     key={diploma.id}
-                    variants={itemVariants}
-                    whileHover={{ y: -10, transition: { duration: 0.3 } }}
+                    className={`bg-slate-800/50 ${diploma.borderColor} border-2 h-full group overflow-hidden flex flex-col`}
+                    style={{ boxShadow: `0 0 30px ${diploma.glowColor}` }}
                   >
-                    <Card
-                      className={`bg-slate-800/50 ${diploma.borderColor} border-2 hover:border-opacity-100 transition-all duration-500 h-full group relative overflow-hidden`}
-                      style={{ boxShadow: `0 0 30px ${diploma.glowColor}` }}
-                    >
-                      <div className="relative h-44 w-full overflow-hidden border-b border-slate-700/40">
-                        <Poster src={diploma.image} alt={diploma.name} />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="relative h-52 w-full overflow-hidden border-b border-slate-700/40">
+                      <Poster src={diploma.image} alt={diploma.name} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    </div>
+
+                    <CardHeader className="pb-2">
+                      <div className={`w-20 h-20 rounded-xl bg-gradient-to-br ${diploma.color} flex items-center justify-center mb-4 shadow-lg`}>
+                        <diploma.icon className="w-10 h-10 text-white" />
+                      </div>
+                      <CardTitle className="text-2xl text-slate-100">{diploma.name}</CardTitle>
+                      <p className="text-sm text-purple-400/80">{diploma.subtitle}</p>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4 flex-1 flex flex-col">
+                      <div className="grid grid-cols-2 gap-4 text-slate-300">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-5 h-5 text-cyan-400" />
+                          <span>{diploma.duration}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Globe className="w-5 h-5 text-purple-400" />
+                          <span>{diploma.format}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Layers className="w-5 h-5 text-blue-400" />
+                          <span>{diploma.modules}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-5 h-5 text-green-400" />
+                          <span>{diploma.requirement}</span>
+                        </div>
                       </div>
 
-                      <CardHeader className="pb-2 relative">
-                        <motion.div
-                          className={`w-20 h-20 rounded-xl bg-gradient-to-br ${diploma.color} flex items-center justify-center mb-4 shadow-lg`}
-                          animate={floatAnimation}
-                          whileHover={{ rotate: 360, scale: 1.1 }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          <diploma.icon className="w-10 h-10 text-white" />
-                        </motion.div>
-
-                        <CardTitle
-                          className="text-2xl text-slate-100 group-hover:text-white transition-colors"
-                          style={{ fontFamily: "'Orbitron', sans-serif" }}
-                        >
-                          {diploma.name}
-                        </CardTitle>
-                        <p className="text-sm text-purple-400/80">
-                          {diploma.subtitle}
-                        </p>
-                      </CardHeader>
-
-                      <CardContent className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <motion.div
-                            className="flex items-center gap-3 text-slate-300"
-                            whileHover={{ scale: 1.05 }}
-                          >
-                            <Calendar className="w-5 h-5 text-cyan-400" />
-                            <span>{diploma.duration}</span>
-                          </motion.div>
-                          <motion.div
-                            className="flex items-center gap-3 text-slate-300"
-                            whileHover={{ scale: 1.05 }}
-                          >
-                            <Globe className="w-5 h-5 text-purple-400" />
-                            <span>{diploma.format}</span>
-                          </motion.div>
-                          <motion.div
-                            className="flex items-center gap-3 text-slate-300"
-                            whileHover={{ scale: 1.05 }}
-                          >
-                            <Layers className="w-5 h-5 text-blue-400" />
-                            <span>{diploma.modules}</span>
-                          </motion.div>
-                          <motion.div
-                            className="flex items-center gap-3 text-slate-300"
-                            whileHover={{ scale: 1.05 }}
-                          >
-                            <CheckCircle2 className="w-5 h-5 text-green-400" />
-                            <span>{diploma.requirement}</span>
-                          </motion.div>
+                      {/* price kept */}
+                      <div className="mt-4 pt-4 border-t border-slate-700/50" style={{ marginTop: "auto" }}>
+                        <div className={`text-3xl font-bold bg-gradient-to-r ${diploma.color} bg-clip-text text-transparent`}>
+                          {diploma.price}
                         </div>
 
-                        <motion.div
-                          className="mt-6 pt-4 border-t border-slate-700/50"
-                          animate={pulseAnimation}
-                        >
-                          <div
-                            className={`text-3xl font-bold bg-gradient-to-r ${diploma.color} bg-clip-text text-transparent`}
-                            style={{ fontFamily: "'Orbitron', sans-serif" }}
+                        <div className="mt-4">
+                          <Button
+                            className="w-full bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-500/30"
+                            onClick={() => openEnroll(diploma.id)}
                           >
-                            {diploma.price}
-                          </div>
-                        </motion.div>
-
-                        <Button
-                          className="w-full bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-500/30"
-                          onClick={() => openEnroll(diploma.id)}
-                        >
-                          Enroll
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
+                            Enroll
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
-              </motion.div>
+              </div>
             </TabsContent>
           </Tabs>
 
-          {/* Bottom CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="mt-16 bg-gradient-to-r from-cyan-900/30 to-purple-900/30 rounded-2xl p-8 border border-cyan-500/20 text-center relative overflow-hidden"
-            style={{ boxShadow: "0 0 40px rgba(0,255,255,0.1)" }}
-          >
-            <motion.div
-              className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500"
-              animate={{ backgroundPosition: ["0%", "100%", "0%"] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            />
-
-            <motion.div animate={pulseAnimation}>
-              <Brain className="w-16 h-16 text-cyan-400 mx-auto mb-4" />
-            </motion.div>
-            <h3
-              className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 mb-2"
-              style={{ fontFamily: "'Orbitron', sans-serif" }}
-            >
-              Start Your AI Journey Today
-            </h3>
-            <p className="text-slate-400 mb-8 max-w-2xl mx-auto">
-              Applications for March 2026 intake are now open.
-            </p>
-
-            <div className="grid md:grid-cols-3 gap-6 mt-8 text-left">
-              <motion.div
-                className="bg-slate-800/50 rounded-lg p-6 border border-slate-700/50"
-                whileHover={{ scale: 1.02, borderColor: "rgba(0,255,255,0.5)" }}
-              >
-                <motion.div animate={floatAnimation}>
-                  <FileText className="w-8 h-8 text-cyan-400 mb-3" />
-                </motion.div>
-                <h4 className="font-bold text-cyan-300 mb-2">Documents</h4>
-                <ul className="text-sm text-slate-400 space-y-1">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3 h-3 text-green-400" /> Graduate:
-                    Educational Certificate
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3 h-3 text-green-400" /> Non-graduate:
-                    A Level Results / Employer’s Letter
-                  </li>
-                </ul>
-              </motion.div>
-
-              <motion.div
-                className="bg-slate-800/50 rounded-lg p-6 border border-slate-700/50"
-                whileHover={{
-                  scale: 1.02,
-                  borderColor: "rgba(168,85,247,0.5)",
-                }}
-              >
-                <motion.div animate={floatAnimation}>
-                  <Mail className="w-8 h-8 text-purple-400 mb-3" />
-                </motion.div>
-                <h4 className="font-bold text-purple-300 mb-2">Email</h4>
-                <a
-                  href="mailto:admin@aiinstituteafrica.com"
-                  className="text-cyan-400 hover:text-cyan-300 text-sm transition-colors"
-                >
-                  admin@aiinstituteafrica.com
-                </a>
-              </motion.div>
-
-              <motion.div
-                className="bg-slate-800/50 rounded-lg p-6 border border-slate-700/50"
-                whileHover={{
-                  scale: 1.02,
-                  borderColor: "rgba(236,72,153,0.5)",
-                }}
-              >
-                <motion.div animate={floatAnimation}>
-                  <MapPin className="w-8 h-8 text-pink-400 mb-3" />
-                </motion.div>
-                <h4 className="font-bold text-pink-300 mb-2">Location</h4>
-                <p className="text-sm text-slate-400">
-                  275 Corner Herbert Chitepo & 6th Street, Harare, Zimbabwe
-                </p>
-              </motion.div>
-            </div>
-
-            <motion.div
-              className="mt-8 flex justify-center gap-3 flex-wrap"
-              whileHover={{ scale: 1.02 }}
-            >
-              <Button
-                onClick={() => openEnroll()}
-                className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold tracking-wider uppercase px-10 py-6 text-lg"
-                style={{
-                  fontFamily: "'Orbitron', sans-serif",
-                  boxShadow: "0 0 30px rgba(0,255,255,0.4)",
-                }}
-              >
-                <motion.div
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1, repeat: Infinity }}
-                >
-                  <ArrowRight className="w-5 h-5 mr-2" />
-                </motion.div>
-                Enroll Now
-              </Button>
-
-              <Link href="/contact">
-                <Button
-                  variant="outline"
-                  className="border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/10"
-                >
-                  Contact Us
-                </Button>
-              </Link>
-            </motion.div>
+          <motion.div className="mt-16 text-center" animate={pulseAnimation}>
+            <Brain className="w-16 h-16 text-cyan-400 mx-auto mb-4" />
           </motion.div>
+
+          <div className="mt-4 flex justify-center gap-3 flex-wrap">
+            <Link href="/contact">
+              <Button variant="outline" className="border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/10">
+                Contact Us
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* ENROLLMENT MODAL */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100">
             <X className="h-5 w-5" />
             <span className="sr-only">Close</span>
           </DialogClose>
+
           <DialogHeader>
-            <DialogTitle className="text-xl">Program Enrollment</DialogTitle>
+            <DialogTitle className="text-xl">Training Application</DialogTitle>
           </DialogHeader>
 
           {errorMsg && (
@@ -941,123 +675,170 @@ export default function Enrollment() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label>Name *</Label>
-              <Input
-                value={form.firstName}
-                onChange={(e) =>
-                  setForm({ ...form, firstName: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <Label>Surname *</Label>
-              <Input
-                value={form.lastName}
-                onChange={(e) =>
-                  setForm({ ...form, lastName: e.target.value })
-                }
-              />
-            </div>
-            <div className="md:col-span-2">
-              <Label>Email *</Label>
-              <Input
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-              />
+          {/* Training Type */}
+          <div className="mt-2">
+            <Label className="block mb-2 font-semibold">Choose Individual AI Training or Corporate AI Training *</Label>
+            <div className="flex flex-wrap gap-4">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  checked={form.trainingType === "individual"}
+                  onChange={() => setForm((prev) => ({ ...prev, trainingType: "individual" }))}
+                />
+                Individual AI Training
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  checked={form.trainingType === "corporate"}
+                  onChange={() => setForm((prev) => ({ ...prev, trainingType: "corporate" }))}
+                />
+                Corporate AI Training
+              </label>
             </div>
           </div>
 
-          <div className="mt-4">
-            <Label className="block mb-2 text-base font-semibold">Choose 1 or more programs *</Label>
-            <div className="grid gap-3 max-h-80 overflow-auto pr-1">
-              {programOptions.map((p) => (
-                <label
-                  key={p.id}
-                  className="flex items-start gap-4 rounded-lg border p-4 cursor-pointer hover:bg-accent/50 transition-colors"
-                >
-                  <Checkbox
-                    checked={form.selectedProgramIds.includes(p.id)}
-                    onCheckedChange={() => toggleProgram(p.id)}
-                    className="mt-1"
-                  />
-                  <div className="flex gap-4 flex-1">
-                    <img
-                      src={p.image}
-                      alt={p.name}
-                      className="w-32 h-24 object-contain rounded-lg border bg-white"
-                    />
-                    <div className="flex-1">
-                      <div className="font-semibold text-base">{p.name}</div>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        {p.category}
+          {/* INDIVIDUAL */}
+          {form.trainingType === "individual" && (
+            <div className="space-y-5 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label>Name *</Label>
+                  <Input value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Surname *</Label>
+                  <Input value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Phone No. *</Label>
+                  <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Email *</Label>
+                  <Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                </div>
+              </div>
+
+              <div>
+                <Label className="mb-2 block font-semibold">Choose Program(s) *</Label>
+                <div className="grid gap-2">
+                  {individualProgramOptions.map((p) => (
+                    <label key={p.id} className="flex items-start gap-3 rounded-md border p-3 cursor-pointer hover:bg-accent/40 transition-colors">
+                      <Checkbox checked={form.individualProgramIds.includes(p.id)} onCheckedChange={() => toggleIndividualProgram(p.id)} />
+                      <div className="flex gap-3">
+                        <img src={p.image} alt={p.name} className="w-24 h-16 object-contain bg-white border rounded" />
+                        <div className="font-medium">{p.name}</div>
                       </div>
-                    </div>
-                  </div>
-                </label>
-              ))}
-            </div>
-          </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
 
-          <div className="mt-4">
-            <Label className="block mb-2">Graduate status *</Label>
-            <div className="flex gap-4">
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={form.graduateStatus === "graduate"}
-                  onChange={() =>
-                    setForm({
-                      ...form,
-                      graduateStatus: "graduate",
-                      document: null,
-                    })
-                  }
+              <div>
+                <Label className="block mb-2 font-semibold">Choose Graduate or Non-Graduate *</Label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      checked={form.graduateStatus === "graduate"}
+                      onChange={() => setForm({ ...form, graduateStatus: "graduate", individualDocument: null })}
+                    />
+                    Graduate
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      checked={form.graduateStatus === "non_graduate"}
+                      onChange={() => setForm({ ...form, graduateStatus: "non_graduate", individualDocument: null })}
+                    />
+                    Non-Graduate
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <Label className="font-semibold">
+                  {form.graduateStatus === "graduate"
+                    ? "Upload Certificate *"
+                    : "Upload Employer’s letter or A Level Certificate *"}
+                </Label>
+                <Input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(e) => setForm({ ...form, individualDocument: e.target.files?.[0] || null })}
                 />
-                Graduate
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={form.graduateStatus === "non_graduate"}
-                  onChange={() =>
-                    setForm({
-                      ...form,
-                      graduateStatus: "non_graduate",
-                      document: null,
-                    })
-                  }
+              </div>
+            </div>
+          )}
+
+          {/* CORPORATE */}
+          {form.trainingType === "corporate" && (
+            <div className="space-y-5 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <Label>Organization’s Name *</Label>
+                  <Input value={form.organizationName} onChange={(e) => setForm({ ...form, organizationName: e.target.value })} />
+                </div>
+
+                <div>
+                  <Label>Contact Person’s Name *</Label>
+                  <Input value={form.contactFirstName} onChange={(e) => setForm({ ...form, contactFirstName: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Surname *</Label>
+                  <Input value={form.contactLastName} onChange={(e) => setForm({ ...form, contactLastName: e.target.value })} />
+                </div>
+
+                <div>
+                  <Label>Phone No. *</Label>
+                  <Input value={form.corporatePhone} onChange={(e) => setForm({ ...form, corporatePhone: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Email *</Label>
+                  <Input value={form.corporateEmail} onChange={(e) => setForm({ ...form, corporateEmail: e.target.value })} />
+                </div>
+
+                <div className="md:col-span-2">
+                  <Label>Number of Attendees *</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={form.numberOfAttendees}
+                    onChange={(e) => setForm({ ...form, numberOfAttendees: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label className="mb-2 block font-semibold">Choose Corporate Program(s) *</Label>
+                <div className="grid gap-2">
+                  {corporateProgramOptions.map((p) => (
+                    <label key={p.id} className="flex items-start gap-3 rounded-md border p-3 cursor-pointer hover:bg-accent/40 transition-colors">
+                      <Checkbox checked={form.corporateProgramIds.includes(p.id)} onCheckedChange={() => toggleCorporateProgram(p.id)} />
+                      <div className="flex gap-3">
+                        <img src={p.image} alt={p.name} className="w-24 h-16 object-contain bg-white border rounded" />
+                        <div className="font-medium">{p.name}</div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label className="font-semibold">Upload the list of attendees *</Label>
+                <Input
+                  type="file"
+                  accept=".pdf,.xlsx,.xls,.csv,.doc,.docx,.txt"
+                  onChange={(e) => setForm({ ...form, attendeesListFile: e.target.files?.[0] || null })}
                 />
-                Non-Graduate
-              </label>
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="mt-4">
-            <Label>
-              {form.graduateStatus === "graduate"
-                ? "Upload Educational Certificate *"
-                : "Upload Advanced Level Results or Employer’s Letter *"}
-            </Label>
-            <Input
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png"
-              onChange={(e) =>
-                setForm({ ...form, document: e.target.files?.[0] || null })
-              }
-            />
-            <div className="text-xs text-muted-foreground mt-1">
-              Accepted formats: PDF / JPG / PNG
-            </div>
-          </div>
-
-          <DialogFooter className="mt-4">
-            <Button
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={submitting}
-            >
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={submitting}>
               Cancel
             </Button>
             <Button onClick={submit} disabled={submitting}>
