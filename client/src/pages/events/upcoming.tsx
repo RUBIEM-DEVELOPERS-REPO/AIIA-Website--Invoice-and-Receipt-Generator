@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Clock } from "lucide-react";
+import { Calendar, MapPin, Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,21 +15,32 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 
-import { summitImages } from "@/lib/event_images";
-
 /**
- * SUMMIT IMAGES MAPPING (from your provided files)
- * summitImages.zim2          -> IMG-20260115-WA0121.jpg
- * summitImages.techForum     -> IMG-20260111-WA0030.jpg
- * summitImages.aiEducation   -> IMG-20260111-WA0010.jpg
- * summitImages.aiAfricaSummit-> IMG-20260109-WA0245.jpg
+ * ✅ Using the uploaded posters directly (no summitImages import)
+ * 1000276385.jpg -> Zimbabwe 2.0
+ * 1000276381.jpg -> AI Tech Forum Zimbabwe
+ * 1000276386.jpg -> AI Africa Summit
+ * 1000276383.jpg -> AI Education Africa
+ *
+ * Put these files in your project, e.g:
+ * client/src/assets/events/
+ *  - 1000276385.jpg
+ *  - 1000276381.jpg
+ *  - 1000276386.jpg
+ *  - 1000276383.jpg
+ *
+ * Then these imports will work.
  */
+import zim2Poster from "@/lib/event_images/1000276385.jpg";
+import techForumPoster from "@/lib/event_images/1000276381.jpg";
+import aiAfricaSummitPoster from "@/lib/event_images/1000276386.jpg";
+import aiEducationPoster from "@/lib/event_images/1000276383.jpg";
+
 const upcomingEvents = [
   {
     id: "zim2",
@@ -40,7 +51,7 @@ const upcomingEvents = [
     location: "Nyanga",
     time: "TBA",
     status: "Open",
-    image: summitImages.zim2,
+    image: zim2Poster,
   },
   {
     id: "techforum",
@@ -50,18 +61,17 @@ const upcomingEvents = [
     location: "Nyanga",
     time: "TBA",
     status: "Open",
-    image: summitImages.techForum,
+    image: techForumPoster,
   },
   {
     id: "ai-africa-summit",
     title: "AI Africa Summit 2026",
-    description:
-      "Africa 2.0: Ubuntu Algorithms for AI-Augmented Transformation.",
+    description: "Africa 2.0: Ubuntu Algorithms for AI-Augmented Transformation.",
     date: "June 2026",
     location: "Victoria Falls",
     time: "TBA",
     status: "Open",
-    image: summitImages.aiAfricaSummit,
+    image: aiAfricaSummitPoster,
   },
   {
     id: "aiedu",
@@ -72,7 +82,7 @@ const upcomingEvents = [
     location: "Harare",
     time: "TBA",
     status: "Open",
-    image: summitImages.aiEducation,
+    image: aiEducationPoster,
   },
 ] as const;
 
@@ -224,7 +234,8 @@ export default function UpcomingEvents() {
               Upcoming Events
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-4xl mx-auto">
-              Join us at our upcoming AI summits, forums, and conferences across Africa.
+              Join us at our upcoming AI summits, forums, and conferences across
+              Africa.
             </p>
 
             <div className="mt-6 flex justify-center">
@@ -252,6 +263,7 @@ export default function UpcomingEvents() {
                       src={event.image}
                       alt={event.title}
                       className="w-full h-full object-contain bg-white"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <Badge
@@ -288,7 +300,6 @@ export default function UpcomingEvents() {
                       </div>
                     </div>
 
-                    {/* aligned button */}
                     <div className="pt-4 mt-auto">
                       <Button
                         className="w-full bg-primary hover:bg-primary/90 text-white"
@@ -311,7 +322,8 @@ export default function UpcomingEvents() {
                   No Upcoming Events
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  We're planning exciting events for the future. Stay tuned for announcements!
+                  We're planning exciting events for the future. Stay tuned for
+                  announcements!
                 </p>
               </div>
             </motion.div>
@@ -349,7 +361,9 @@ export default function UpcomingEvents() {
                 <Input
                   id="fullName"
                   value={form.fullName}
-                  onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, fullName: e.target.value })
+                  }
                 />
               </div>
               <div>
@@ -373,7 +387,9 @@ export default function UpcomingEvents() {
                 <Input
                   id="country"
                   value={form.country}
-                  onChange={(e) => setForm({ ...form, country: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, country: e.target.value })
+                  }
                 />
               </div>
               <div>
@@ -381,7 +397,9 @@ export default function UpcomingEvents() {
                 <Input
                   id="organization"
                   value={form.organization}
-                  onChange={(e) => setForm({ ...form, organization: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, organization: e.target.value })
+                  }
                 />
               </div>
               <div>
@@ -389,7 +407,9 @@ export default function UpcomingEvents() {
                 <Input
                   id="roleTitle"
                   value={form.roleTitle}
-                  onChange={(e) => setForm({ ...form, roleTitle: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, roleTitle: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -398,7 +418,10 @@ export default function UpcomingEvents() {
               <Label className="mb-2 block">Select 1 or more summits *</Label>
               <div className="grid gap-2">
                 {upcomingEvents.map((ev) => (
-                  <label key={ev.id} className="flex items-start gap-3 rounded-md border p-3 cursor-pointer">
+                  <label
+                    key={ev.id}
+                    className="flex items-start gap-3 rounded-md border p-3 cursor-pointer"
+                  >
                     <Checkbox
                       checked={form.selectedSummitIds.includes(ev.id)}
                       onCheckedChange={() => toggleSummit(ev.id)}
@@ -427,14 +450,22 @@ export default function UpcomingEvents() {
             <label className="flex items-start gap-3">
               <Checkbox
                 checked={form.agreeTerms}
-                onCheckedChange={(v) => setForm({ ...form, agreeTerms: Boolean(v) })}
+                onCheckedChange={(v) =>
+                  setForm({ ...form, agreeTerms: Boolean(v) })
+                }
               />
-              <span className="text-sm">I agree to the Terms & Privacy Policy *</span>
+              <span className="text-sm">
+                I agree to the Terms & Privacy Policy *
+              </span>
             </label>
           </div>
 
           <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setOpen(false)} disabled={submitting}>
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={submitting}
+            >
               Cancel
             </Button>
             <Button onClick={submit} disabled={submitting}>
