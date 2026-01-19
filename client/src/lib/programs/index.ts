@@ -1,35 +1,32 @@
-// client/src/lib/programs/index.ts
-
 /**
- * IMAGE MAPPING (per your instruction)
- * IMG-20260115-WA0114 -> Master AI programs for corporates
- * IMG-20260115-WA0116 -> Basic AI Certification
- * IMG-20260115-WA0117 -> AI Diploma
- * IMG-20260115-WA0118 -> Postgrad AI Diploma
- * IMG-20260115-WA0119 -> Non-Graduate Certificate
- * IMG-20260115-WA0063 -> Graduate AI Certificate
- * IMG-20260115-WA0120 -> Advanced AI Certification
+ * IMAGE MAPPING – AIIA PROGRAM FLYERS (LATEST)
+ *
+ * AIIA FLYERS LATES-2  -> Basic AI Certification
+ * AIIA FLYERS LATES-5  -> AI Diploma Program
+ * AIIA FLYERS LATES-6  -> Graduate AI Certificate
+ * AIIA FLYERS LATES-7  -> Postgrad AI Diploma
+ * AIIA FLYERS LATES-10 -> Non-Graduate AI Certificate
+ * AIIA FLYERS LATES-12 -> Advanced AI Certification
+ * AIIA FLYERS LATES-13 -> Master AI Training Programs for Organisations
+ * AIIA FLYERS LATES-16 -> AI Certifications & Diplomas (Overview)
  */
 
-import masterOrgs from "./IMG-20260115-WA0114.jpg";
-import basic from "./IMG-20260115-WA0116.jpg";
-import aiDiploma from "./IMG-20260115-WA0117.jpg";
-import postgradDiploma from "./IMG-20260115-WA0118.jpg";
-import nongrad from "./IMG-20260115-WA0119.jpg";
-import gradCert from "./IMG-20260115-WA0063.jpg";
-import advanced from "./IMG-20260115-WA0120.jpg";
-
-// (Optional) keep catalogue if you still use it elsewhere
-// If you don't have a catalogue poster anymore, remove this line and key.
-// import catalogue from "./IMG-20260115-WA0115.jpg";
+import basicAiCert from "./AIIA FLYERS LATES-2.jpg";
+import aiDiploma from "./AIIA FLYERS LATES-5.jpg";
+import graduateAiCert from "./AIIA FLYERS LATES-6.jpg";
+import postgradAiDiploma from "./AIIA FLYERS LATES-7.jpg";
+import nonGraduateAiCert from "./AIIA FLYERS LATES-10.jpg";
+import advancedAiCert from "./AIIA FLYERS LATES-12.jpg";
+import masterAiOrgs from "./AIIA FLYERS LATES-13.jpg";
+import certificationsOverview from "./AIIA FLYERS LATES-16.jpg";
 
 export const programImages = {
-  masterOrgs,
-  basic,
+  basicAiCert,
   aiDiploma,
-  postgradDiploma,
-  nongrad,
-  gradCert,
-  advanced,
-  // catalogue,
+  graduateAiCert,
+  postgradAiDiploma,
+  nonGraduateAiCert,
+  advancedAiCert,
+  masterAiOrgs,
+  certificationsOverview,
 };
