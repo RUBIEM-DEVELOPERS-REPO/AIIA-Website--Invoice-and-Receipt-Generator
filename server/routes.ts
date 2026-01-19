@@ -1464,5 +1464,79 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Summit/Event registration endpoint
+  app.post("/api/summit-applications", async (req: Request, res: Response) => {
+    try {
+      const { fullName, email, phone, country, organization, notes, selectedSummits } = req.body;
+
+      if (!fullName || !email || !phone || !country) {
+        return res.status(400).json({ message: "All required fields must be filled" });
+      }
+
+      if (!selectedSummits || !Array.isArray(selectedSummits) || selectedSummits.length === 0) {
+        return res.status(400).json({ message: "Select at least one summit" });
+      }
+
+      const referenceNumber = `SUMMIT-${Date.now().toString(36).toUpperCase()}`;
+
+      // Format summit names for email
+      const summitNames = selectedSummits.map((s: any) => s?.title || "Event").join(", ");
+
+      // Send confirmation email to applicant
+      const confirmationHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #0891b2;">Event Registration Confirmed</h2>
+          <p>Dear ${fullName},</p>
+          <p>Thank you for registering for our upcoming event(s). Your registration has been received.</p>
+          <div style="background-color: #f0fdfa; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #0891b2;">
+            <p style="margin: 0 0 10px 0;"><strong>Reference Number:</strong> ${referenceNumber}</p>
+            <p style="margin: 0;"><strong>Events Registered:</strong> ${summitNames}</p>
+          </div>
+          <p>We will send you more details as the event date approaches.</p>
+          <p style="margin-top: 30px;">Best regards,<br><strong>AI Institute Africa Team</strong></p>
+        </div>
+      `;
+
+      await sendRegistrationEmail({
+        to: email,
+        subject: "Event Registration Confirmed - AI Institute Africa",
+        html: confirmationHtml,
+        text: `Event Registration Confirmed\n\nDear ${fullName},\n\nThank you for registering. Reference: ${referenceNumber}\nEvents: ${summitNames}`,
+      });
+
+      // Send notification to admin
+      const adminHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #0891b2;">New Event Registration</h2>
+          <div style="background-color: #f0fdfa; padding: 20px; margin: 20px 0; border-radius: 8px;">
+            <p><strong>Reference:</strong> ${referenceNumber}</p>
+            <p><strong>Name:</strong> ${fullName}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>Country:</strong> ${country}</p>
+            <p><strong>Organization:</strong> ${organization || "N/A"}</p>
+            <p><strong>Notes:</strong> ${notes || "N/A"}</p>
+            <p><strong>Events:</strong> ${summitNames}</p>
+          </div>
+        </div>
+      `;
+
+      await sendRegistrationEmail({
+        to: "admin@aiinstituteafrica.com",
+        subject: `New Event Registration - ${referenceNumber}`,
+        html: adminHtml,
+        text: `New Registration: ${fullName}, ${email}, Events: ${summitNames}`,
+      });
+
+      res.json({
+        message: "Registration successful",
+        referenceNumber,
+      });
+    } catch (error) {
+      console.error("Error submitting summit application:", error);
+      res.status(500).json({ message: "Failed to submit registration" });
+    }
+  });
+
   return httpServer;
 }
