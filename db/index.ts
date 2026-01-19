@@ -21,10 +21,16 @@ export const pool = new Pool({
   max: 10,
 });
 
-// Add error handler to the pool
-pool.on('error', (err: Error) => {
-  console.error('Unexpected error on idle database client', err.stack);
-  process.exit(-1);
+// Add error handler to the pool - handle Neon connection drops gracefully
+pool.on('error', (err: Error & { code?: string }) => {
+  // Neon serverless databases may terminate idle connections
+  // Code 57P01 = admin_shutdown (normal for serverless)
+  if (err.code === '57P01') {
+    console.log('Database connection closed by server (normal for serverless). Will reconnect on next query.');
+    return;
+  }
+  console.error('Unexpected error on idle database client:', err.message);
+  // Don't exit on connection errors - let the pool handle reconnection
 });
 
 // Export configured drizzle instance
