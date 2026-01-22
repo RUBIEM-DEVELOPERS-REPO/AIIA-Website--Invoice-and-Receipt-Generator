@@ -301,11 +301,21 @@ export function generateAdminNotificationEmail(
   applicantName: string,
   referenceNumber: string,
   email: string,
-  selectedPrograms: Array<{ name: string; category?: string }>,
+  selectedPrograms: Array<string | { name: string; category?: string }>,
 ) {
+  // Handle both string IDs and object formats
   const programList = selectedPrograms
-    .map((p) => `<li>${p.name}${p.category ? ` (${p.category})` : ""}</li>`)
+    .map((p) => {
+      if (typeof p === 'string') {
+        return `<li>${p}</li>`;
+      }
+      return `<li>${p.name}${p.category ? ` (${p.category})` : ""}</li>`;
+    })
     .join("");
+
+  const programNames = selectedPrograms
+    .map((p) => typeof p === 'string' ? p : p.name)
+    .join(", ");
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -330,7 +340,7 @@ New Program Application
 Reference: ${referenceNumber}
 Applicant: ${applicantName}
 Email: ${email}
-Programs: ${selectedPrograms.map((p) => p.name).join(", ")}
+Programs: ${programNames}
 
 Please log in to the admin panel to review and process this application.
   `;
