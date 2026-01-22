@@ -1274,20 +1274,33 @@ export function registerRoutes(app: Express): Server {
             .where(eq(programApplications.id, application.id));
         }
 
-        // Send notification to admin
+        // Send notification to admin(s)
         const adminEmail = generateAdminNotificationEmail(
-          `${firstName} ${lastName}`,
+          `${applicantFirstName} ${applicantLastName}`,
           referenceNumber,
           email,
           programs
         );
 
-        await sendRegistrationEmail({
-          to: "admin@aiinstituteafrica.com",
-          subject: `New Program Application - ${referenceNumber}`,
-          html: adminEmail.html,
-          text: adminEmail.text,
-        });
+        // Check if any IOBZ program is selected
+        const isIobzProgram = programs.some((p: string) => 
+          p.toLowerCase().includes('iobz') || p === 'iobz_applied'
+        );
+
+        // Determine recipients based on program type
+        const adminRecipients = isIobzProgram 
+          ? ["admin@aiinstituteafrica.com", "marvellous@iobz.co.zw", "munyika@iobz.co.zw"]
+          : ["admin@aiinstituteafrica.com"];
+
+        // Send to all recipients
+        for (const recipient of adminRecipients) {
+          await sendRegistrationEmail({
+            to: recipient,
+            subject: `New Program Application - ${referenceNumber}`,
+            html: adminEmail.html,
+            text: adminEmail.text,
+          });
+        }
 
         res.status(201).json({
           message: "Application submitted successfully",
