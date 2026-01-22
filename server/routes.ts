@@ -1289,7 +1289,7 @@ export function registerRoutes(app: Express): Server {
 
         // Determine recipients based on program type
         const adminRecipients = isIobzProgram 
-          ? ["admin@aiinstituteafrica.com", "marvellous@iobz.co.zw", "munyika@iobz.co.zw"]
+          ? ["admin@aiinstituteafrica.com", "marvellous@iobz.co.zw", "munyika@iobz.co.zw", "blessingisheanesu65@gmail.com"]
           : ["admin@aiinstituteafrica.com"];
 
         // Prepare attachment if document was uploaded
