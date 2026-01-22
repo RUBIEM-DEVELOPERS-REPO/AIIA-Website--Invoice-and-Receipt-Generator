@@ -1274,12 +1274,28 @@ export function registerRoutes(app: Express): Server {
             .where(eq(programApplications.id, application.id));
         }
 
+        // Map program IDs to human-readable names
+        const programNameMap: Record<string, string> = {
+          "iobz_applied": "IoBZ AI Training for Bankers",
+          "gradcert": "Graduate AI Certificate Program",
+          "nongrad": "Non-Graduate AI Certificate",
+          "basic": "Basic AI Certification",
+          "advanced": "Advanced AI Certification",
+          "postgrad": "Postgrad AI Diploma Program",
+          "aidip": "AI Diploma Program",
+          "dir": "Master AI for Directors",
+          "exec": "Master AI for Executives",
+          "prof": "Master AI for Professionals",
+        };
+
+        const programNames = programs.map((p: string) => programNameMap[p] || p);
+
         // Send notification to admin(s)
         const adminEmail = generateAdminNotificationEmail(
           `${applicantFirstName} ${applicantLastName}`,
           referenceNumber,
           email,
-          programs
+          programNames
         );
 
         // Check if any IOBZ program is selected
