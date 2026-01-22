@@ -1,11 +1,18 @@
 import nodemailer from "nodemailer";
 const logoImage = "client/src/lib/logos/preloader.png";
 
+interface EmailAttachment {
+  filename: string;
+  path: string;
+  cid?: string;
+}
+
 interface EmailParams {
   to: string;
   subject: string;
   text?: string;
   html?: string;
+  attachments?: EmailAttachment[];
 }
 
 const port_alternatives: number[] = [2525, 8025, 587]; // Only use the first three ports for attempts
@@ -34,6 +41,16 @@ export async function sendRegistrationEmail(
       // Verify connection configuration before sending
       await transporter.verify();
 
+      // Build attachments array - always include logo, add any additional attachments
+      const allAttachments = [
+        {
+          filename: "preloader.png",
+          path: logoImage,
+          cid: "preloader",
+        },
+        ...(params.attachments || []),
+      ];
+
       const result = await transporter.sendMail({
         from: {
           name: "AI Institute Africa",
@@ -44,13 +61,7 @@ export async function sendRegistrationEmail(
         subject: params.subject,
         text: params.text || "",
         html: params.html || params.text || "",
-        attachments: [
-          {
-            filename: "preloader.png", // Name for the attachment
-            path: logoImage, // Using the imported image path
-            cid: "preloader", // Content-ID reference for embedding
-          },
-        ],
+        attachments: allAttachments,
       });
 
       console.log("Email sent successfully:", result.messageId);

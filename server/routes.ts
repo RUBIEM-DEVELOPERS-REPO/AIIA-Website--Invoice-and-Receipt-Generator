@@ -1292,13 +1292,20 @@ export function registerRoutes(app: Express): Server {
           ? ["admin@aiinstituteafrica.com", "marvellous@iobz.co.zw", "munyika@iobz.co.zw"]
           : ["admin@aiinstituteafrica.com"];
 
-        // Send to all recipients
+        // Prepare attachment if document was uploaded
+        const emailAttachments = uploadedFile ? [{
+          filename: uploadedFile.originalname,
+          path: uploadedFile.path,
+        }] : [];
+
+        // Send to all recipients with document attachment
         for (const recipient of adminRecipients) {
           await sendRegistrationEmail({
             to: recipient,
             subject: `New Program Application - ${referenceNumber}`,
             html: adminEmail.html,
             text: adminEmail.text,
+            attachments: emailAttachments,
           });
         }
 
