@@ -18,7 +18,6 @@ import {
   CheckCircle2,
   Globe,
   Image as ImageIcon,
-  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -573,135 +572,144 @@ export default function Enrollment() {
               </div>
 
             {/* ✅ IOBZ SECTION (after AIIA programs) */}
-            <div className="mt-10">
-              <Card className="bg-slate-800/40 border border-cyan-500/20 overflow-hidden">
-                <div className="grid md:grid-cols-2 gap-0">
-                  <div className="relative h-72 md:h-full bg-white">
-                    <img
-                      src={programImages.iobzAppliedAi}
-                      alt="Applied AI for Business Professionals"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
+              {/* ✅ IOBZ SECTION (after AIIA programs) */}
+              <div className="mt-12">
+                <Card className="bg-slate-800/40 border border-cyan-500/20 overflow-hidden">
+                  <div className="grid lg:grid-cols-5 gap-0">
+                    {/* Poster side */}
+                    <div className="lg:col-span-2 bg-gradient-to-br from-slate-900/40 to-slate-800/20 p-5">
+                      <div className="rounded-xl border border-slate-700/50 bg-white/95 shadow-sm overflow-hidden">
+                        {/* Fixed aspect ratio so image NEVER stretches */}
+                        <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[4/5]">
+                          <img
+                            src={programImages.iobzAppliedAi}
+                            alt="Applied AI for Business Professionals"
+                            className="absolute inset-0 w-full h-full object-contain p-2"
+                          />
+                        </div>
+                      </div>
 
-                  <div className="p-6 md:p-8">
-                    <div className="flex items-center gap-3 mb-4">
-                      <img
-                        src={programImages.iobzLogo}
-                        alt="Institute of Bankers of Zimbabwe"
-                        className="h-10 w-auto object-contain bg-white rounded px-2 py-1"
-                      />
-                      <div>
-                        <div className="text-sm text-cyan-300/80">Partner Program</div>
-                        <h3 className="text-2xl font-bold text-slate-100">
-                          {iobzAppliedAiContent.title}
-                        </h3>
-                        <div className="text-sm text-slate-300">
-                          {iobzAppliedAiContent.partner}
+                      {/* Small caption / badge row */}
+                      <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-200/90">
+                        <span className="px-3 py-1 rounded-full bg-slate-700/40 border border-slate-600/40">
+                          Partner Program
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-slate-700/40 border border-slate-600/40">
+                          Corporate Application
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content side */}
+                    <div className="lg:col-span-3 p-6 md:p-8">
+                      <div className="flex items-start gap-3 mb-4">
+                        <div className="shrink-0 rounded-md bg-white p-2 border border-slate-200">
+                          <img
+                            src={programImages.iobzLogo}
+                            alt="Institute of Bankers of Zimbabwe"
+                            className="h-10 w-auto object-contain"
+                          />
+                        </div>
+
+                        <div className="min-w-0">
+                          <div className="text-sm text-cyan-300/80">Partner Program</div>
+                          <h3 className="text-2xl font-bold text-slate-100 leading-tight">
+                            {iobzAppliedAiContent.title}
+                          </h3>
+                          <div className="text-sm text-slate-300 mt-1">
+                            {iobzAppliedAiContent.partner}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Summary */}
+                      <p className="text-slate-300 leading-relaxed mb-6">
+                        {iobzAppliedAiContent.summary}
+                      </p>
+
+                      {/* Quick facts */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-300 mb-6">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-pink-400" />
+                          <span>
+                            <span className="font-semibold text-slate-100">Audience:</span>{" "}
+                            {iobzAppliedAiContent.audience}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-cyan-400" />
+                          <span>
+                            <span className="font-semibold text-slate-100">Duration:</span>{" "}
+                            {iobzAppliedAiContent.duration}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-purple-400" />
+                          <span>
+                            <span className="font-semibold text-slate-100">Venue:</span>{" "}
+                            {iobzAppliedAiContent.venue}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Award className="w-4 h-4 text-green-400" />
+                          <span>
+                            <span className="font-semibold text-slate-100">Award:</span>{" "}
+                            {iobzAppliedAiContent.award}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Outcomes */}
+                      <div className="mb-6">
+                        <h4 className="text-slate-100 font-semibold mb-2">Key outcomes</h4>
+                        <ul className="grid sm:grid-cols-2 gap-2 text-sm text-slate-300">
+                          {iobzAppliedAiContent.outcomes.slice(0, 4).map((item) => (
+                            <li key={item} className="flex items-start gap-2">
+                              <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Modules */}
+                      <div className="mb-7">
+                        <h4 className="text-slate-100 font-semibold mb-2">
+                          Programme modules (high level)
+                        </h4>
+                        <div className="flex flex-wrap gap-2 text-sm text-slate-300">
+                          {iobzAppliedAiContent.modules.map((m) => (
+                            <span
+                              key={m}
+                              className="px-3 py-1 rounded-full bg-slate-700/40 border border-slate-600/40"
+                            >
+                              {m}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* CTA */}
+                      <div className="space-y-3">
+                        <Button
+                          className="w-full bg-cyan-500 hover:bg-cyan-500/90 text-white"
+                          onClick={() => openEnroll("iobz_applied")}
+                        >
+                          Enroll / Apply (IoBZ)
+                        </Button>
+
+                        <div className="text-xs text-slate-400">
+                          Applications for this programme are routed to IoBZ and AIIA admin.
                         </div>
                       </div>
                     </div>
-
-                    {/* Summary */}
-                    <p className="text-slate-300 mb-5 leading-relaxed">
-                      {iobzAppliedAiContent.summary}
-                    </p>
-
-                    {/* Quick facts */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-300 mb-6">
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-pink-400" />
-                        <span>
-                          <span className="font-semibold text-slate-100">Audience:</span>{" "}
-                          {iobzAppliedAiContent.audience}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-cyan-400" />
-                        <span>
-                          <span className="font-semibold text-slate-100">Duration:</span>{" "}
-                          {iobzAppliedAiContent.duration}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-purple-400" />
-                        <span>
-                          <span className="font-semibold text-slate-100">Venue:</span>{" "}
-                          {iobzAppliedAiContent.venue}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Award className="w-4 h-4 text-green-400" />
-                        <span>
-                          <span className="font-semibold text-slate-100">Award:</span>{" "}
-                          {iobzAppliedAiContent.award}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Objectives */}
-                    <div className="mb-6">
-                      <h4 className="text-slate-100 font-semibold mb-2">
-                        What you will learn
-                      </h4>
-                      <ul className="space-y-2 text-sm text-slate-300">
-                        {iobzAppliedAiContent.objectives.slice(0, 5).map((item) => (
-                          <li key={item} className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Outcomes */}
-                    <div className="mb-6">
-                      <h4 className="text-slate-100 font-semibold mb-2">Key outcomes</h4>
-                      <ul className="space-y-2 text-sm text-slate-300">
-                        {iobzAppliedAiContent.outcomes.slice(0, 4).map((item) => (
-                          <li key={item} className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-purple-300 mt-0.5" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Modules */}
-                    <div className="mb-7">
-                      <h4 className="text-slate-100 font-semibold mb-2">
-                        Programme modules (high level)
-                      </h4>
-                      <div className="flex flex-wrap gap-2 text-sm text-slate-300">
-                        {iobzAppliedAiContent.modules.map((m) => (
-                          <span
-                            key={m}
-                            className="px-3 py-1 rounded-full bg-slate-700/40 border border-slate-600/40"
-                          >
-                            {m}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Apply button */}
-                    <Button
-                      className="w-full bg-cyan-500 hover:bg-cyan-500/90 text-white"
-                      onClick={() => openEnroll("iobz_applied")}
-                    >
-                      Enroll / Apply (IoBZ)
-                    </Button>
-
-                    <div className="mt-3 text-xs text-slate-400">
-                      Applications for this programme are routed to IoBZ and AIIA admin.
-                    </div>
                   </div>
-                </div>
-              </Card>
-            </div>
+                </Card>
+              </div>
+
           </TabsContent>
 
 
