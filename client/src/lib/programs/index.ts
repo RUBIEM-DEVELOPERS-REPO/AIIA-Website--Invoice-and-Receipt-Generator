@@ -20,6 +20,10 @@ import advancedAiCert from "./AIIA FLYERS LATES-16.jpg"; // ✅ CHANGED
 import masterAiOrgs from "./AIIA FLYERS LATES-6.jpg";
 import certificationsOverview from "./AIIA FLYERS LATES-16.jpg"; // unchanged
 
+// ✅ IOBZ additions ONLY
+import iobzAppliedAi from "./IMG-20260121-WA0481(2).jpg";
+import iobzLogo from "./IOBZ-Logo-Final-271x300.webp";
+
 export const programImages = {
   basicAiCert,
   aiDiploma,
@@ -29,4 +33,8 @@ export const programImages = {
   advancedAiCert,
   masterAiOrgs,
   certificationsOverview,
+
+  // ✅ IOBZ
+  iobzAppliedAi,
+  iobzLogo,
 };
