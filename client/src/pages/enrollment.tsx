@@ -702,9 +702,7 @@ export default function Enrollment() {
                           Enroll / Apply (IoBZ)
                         </Button>
 
-                        <div className="text-xs text-slate-400">
-                          Applications for this programme are routed to IoBZ and AIIA admin.
-                        </div>
+                        
                       </div>
                     </div>
                   </div>

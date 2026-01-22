@@ -40,15 +40,14 @@ export const programImages = {
 };
 
 export const iobzAppliedAiContent = {
-  title: "Applied AI for Business Professionals",
+  title: "IoBZ AI Training for Bankers",
   partner: "Institute of Bankers of Zimbabwe (IOBZ)",
   audience: "Finance, HR, Marketing, Operations, Procurement & Management Professionals",
-  duration: "1 – 2 Days",
-  venue: "Convenient to Clients",
-  award: "University of Zimbabwe – Certificate of Completion",
-
+  duration: "3 Days",
+  venue: "TBA",
+  award: "Certificate of Completion",
   summary:
-    "Applied AI for Business Professionals equips non-technical professionals with practical skills to use AI safely, effectively, and responsibly in daily work. The programme focuses on real business use cases, productivity improvement, decision support, risk awareness, and ethical AI adoption in regulated environments.",
+    "Applied AI for Business Professionals equips banking professionals with knowledge and practical skills to use AI safely, effectively, and responsibly in daily work. ",
 
   objectives: [
     "Build AI literacy for business and professional environments",
