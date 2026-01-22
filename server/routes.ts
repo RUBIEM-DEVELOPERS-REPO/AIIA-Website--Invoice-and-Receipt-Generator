@@ -1252,12 +1252,29 @@ export function registerRoutes(app: Express): Server {
           emailSent: false,
         }).returning();
 
+        // Map program IDs to human-readable names
+        const programNameMap: Record<string, string> = {
+          "iobz_applied": "IoBZ AI Training for Bankers",
+          "gradcert": "Graduate AI Certificate Program",
+          "nongrad": "Non-Graduate AI Certificate",
+          "basic": "Basic AI Certification",
+          "advanced": "Advanced AI Certification",
+          "postgrad": "Postgrad AI Diploma Program",
+          "aidip": "AI Diploma Program",
+          "dir": "Master AI for Directors",
+          "exec": "Master AI for Executives",
+          "prof": "Master AI for Professionals",
+        };
+
+        const programObjects = programs.map((p: string) => ({ name: programNameMap[p] || p }));
+        const programNames = programs.map((p: string) => programNameMap[p] || p);
+
         // Send confirmation email to applicant
         const confirmationEmail = generateApplicationConfirmationEmail(
           applicantFirstName,
           applicantLastName,
           referenceNumber,
-          programs
+          programObjects
         );
 
         const emailSent = await sendRegistrationEmail({
@@ -1273,22 +1290,6 @@ export function registerRoutes(app: Express): Server {
             .set({ emailSent: true })
             .where(eq(programApplications.id, application.id));
         }
-
-        // Map program IDs to human-readable names
-        const programNameMap: Record<string, string> = {
-          "iobz_applied": "IoBZ AI Training for Bankers",
-          "gradcert": "Graduate AI Certificate Program",
-          "nongrad": "Non-Graduate AI Certificate",
-          "basic": "Basic AI Certification",
-          "advanced": "Advanced AI Certification",
-          "postgrad": "Postgrad AI Diploma Program",
-          "aidip": "AI Diploma Program",
-          "dir": "Master AI for Directors",
-          "exec": "Master AI for Executives",
-          "prof": "Master AI for Professionals",
-        };
-
-        const programNames = programs.map((p: string) => programNameMap[p] || p);
 
         // Send notification to admin(s)
         const adminEmail = generateAdminNotificationEmail(
