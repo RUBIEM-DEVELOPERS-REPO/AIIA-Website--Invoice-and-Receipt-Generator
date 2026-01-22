@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   Globe,
   Image as ImageIcon,
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,6 +40,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { programImages } from "@/lib/programs";
+import { iobzAppliedAiContent } from "@/lib/programs";
 
 /**
  * ✅ YOUR LATEST IMAGE MAPPING
@@ -210,8 +212,6 @@ const individualProgramOptions = [
   { id: "advanced", name: "Advanced AI Certification", image: programImages.advancedAiCert },
   { id: "postgrad", name: "Postgrad AI Diploma Program", image: programImages.postgradAiDiploma },
   { id: "aidip", name: "AI Diploma Program", image: programImages.aiDiploma },
-  // ✅ IOBZ - also available for individual enrollment
-  { id: "iobz_applied", name: "IoBZ AI Training for Bankers", image: programImages.iobzAppliedAi },
 ] as const;
 
 const corporateProgramOptions = [
@@ -219,8 +219,8 @@ const corporateProgramOptions = [
   { id: "exec", name: "Master AI for Executives", image: programImages.masterAiOrgs },
   { id: "prof", name: "Master AI for Professionals", image: programImages.masterAiOrgs },
 
-  // ✅ IOBZ (available for both corporate and individual)
-  { id: "iobz_applied", name: "IoBZ AI Training for Bankers", image: programImages.iobzAppliedAi },
+  // ✅ IOBZ (must use corporate fields)
+  { id: "iobz_applied", name: "Applied AI for Business Professionals (IOBZ)", image: programImages.iobzAppliedAi },
 ] as const;
 
 type TrainingType = "individual" | "corporate";
@@ -579,7 +579,7 @@ export default function Enrollment() {
                   <div className="relative h-72 md:h-full bg-white">
                     <img
                       src={programImages.iobzAppliedAi}
-                      alt="IoBZ AI Training for Bankers"
+                      alt="Applied AI for Business Professionals"
                       className="w-full h-full object-contain"
                     />
                   </div>
@@ -594,42 +594,100 @@ export default function Enrollment() {
                       <div>
                         <div className="text-sm text-cyan-300/80">Partner Program</div>
                         <h3 className="text-2xl font-bold text-slate-100">
-                          IoBZ AI Training for Bankers
+                          {iobzAppliedAiContent.title}
                         </h3>
+                        <div className="text-sm text-slate-300">
+                          {iobzAppliedAiContent.partner}
+                        </div>
                       </div>
                     </div>
 
-                    <p className="text-slate-300 mb-4">
-                      This professional training programme is delivered through a strategic
-                      partnership between the{" "}
-                      <span className="text-cyan-200 font-semibold">
-                        Institute of Bankers of Zimbabwe (IoBZ)
-                      </span>{" "}
-                      and the{" "}
-                      <span className="text-cyan-200 font-semibold">
-                        Artificial Intelligence Institute Africa (AIIA)
-                      </span>.
-                      <br />
-                      <br />
-                      The programme, titled{" "}
-                      <span className="text-cyan-200 font-semibold">
-                        Master AI for Professionals
-                      </span>, is designed to equip banking and financial services
-                      professionals with practical, industry-relevant AI knowledge and skills.
+                    {/* Summary */}
+                    <p className="text-slate-300 mb-5 leading-relaxed">
+                      {iobzAppliedAiContent.summary}
                     </p>
 
-                    <div className="flex flex-wrap gap-2 text-sm text-slate-300 mb-6">
-                      <span className="px-3 py-1 rounded-full bg-slate-700/40 border border-slate-600/40">
-                        Banking & Financial Services Professionals
-                      </span>
-                      <span className="px-3 py-1 rounded-full bg-slate-700/40 border border-slate-600/40">
-                        Duration: 3 Days
-                      </span>
-                      <span className="px-3 py-1 rounded-full bg-slate-700/40 border border-slate-600/40">
-                        Physical & Online Training
-                      </span>
+                    {/* Quick facts */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-300 mb-6">
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-pink-400" />
+                        <span>
+                          <span className="font-semibold text-slate-100">Audience:</span>{" "}
+                          {iobzAppliedAiContent.audience}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-cyan-400" />
+                        <span>
+                          <span className="font-semibold text-slate-100">Duration:</span>{" "}
+                          {iobzAppliedAiContent.duration}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-purple-400" />
+                        <span>
+                          <span className="font-semibold text-slate-100">Venue:</span>{" "}
+                          {iobzAppliedAiContent.venue}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Award className="w-4 h-4 text-green-400" />
+                        <span>
+                          <span className="font-semibold text-slate-100">Award:</span>{" "}
+                          {iobzAppliedAiContent.award}
+                        </span>
+                      </div>
                     </div>
 
+                    {/* Objectives */}
+                    <div className="mb-6">
+                      <h4 className="text-slate-100 font-semibold mb-2">
+                        What you will learn
+                      </h4>
+                      <ul className="space-y-2 text-sm text-slate-300">
+                        {iobzAppliedAiContent.objectives.slice(0, 5).map((item) => (
+                          <li key={item} className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Outcomes */}
+                    <div className="mb-6">
+                      <h4 className="text-slate-100 font-semibold mb-2">Key outcomes</h4>
+                      <ul className="space-y-2 text-sm text-slate-300">
+                        {iobzAppliedAiContent.outcomes.slice(0, 4).map((item) => (
+                          <li key={item} className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-purple-300 mt-0.5" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Modules */}
+                    <div className="mb-7">
+                      <h4 className="text-slate-100 font-semibold mb-2">
+                        Programme modules (high level)
+                      </h4>
+                      <div className="flex flex-wrap gap-2 text-sm text-slate-300">
+                        {iobzAppliedAiContent.modules.map((m) => (
+                          <span
+                            key={m}
+                            className="px-3 py-1 rounded-full bg-slate-700/40 border border-slate-600/40"
+                          >
+                            {m}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Apply button */}
                     <Button
                       className="w-full bg-cyan-500 hover:bg-cyan-500/90 text-white"
                       onClick={() => openEnroll("iobz_applied")}
@@ -637,12 +695,14 @@ export default function Enrollment() {
                       Enroll / Apply (IoBZ)
                     </Button>
 
-                    
+                    <div className="mt-3 text-xs text-slate-400">
+                      Applications for this programme are routed to IoBZ and AIIA admin.
+                    </div>
                   </div>
                 </div>
               </Card>
             </div>
-            </TabsContent>
+          </TabsContent>
 
 
             {/* CERTIFICATES (PRICES KEPT) */}

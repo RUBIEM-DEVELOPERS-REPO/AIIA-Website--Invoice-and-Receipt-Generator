@@ -38,3 +38,49 @@ export const programImages = {
   iobzAppliedAi,
   iobzLogo,
 };
+
+export const iobzAppliedAiContent = {
+  title: "Applied AI for Business Professionals",
+  partner: "Institute of Bankers of Zimbabwe (IOBZ)",
+  audience: "Finance, HR, Marketing, Operations, Procurement & Management Professionals",
+  duration: "1 – 2 Days",
+  venue: "Convenient to Clients",
+  award: "University of Zimbabwe – Certificate of Completion",
+
+  summary:
+    "Applied AI for Business Professionals equips non-technical professionals with practical skills to use AI safely, effectively, and responsibly in daily work. The programme focuses on real business use cases, productivity improvement, decision support, risk awareness, and ethical AI adoption in regulated environments.",
+
+  objectives: [
+    "Build AI literacy for business and professional environments",
+    "Translate business problems into AI opportunities",
+    "Understand how AI systems work across their lifecycle",
+    "Assess AI value, risk, and feasibility",
+    "Apply responsible and ethical AI principles",
+    "Prepare professionals for AI-enabled work and decision-making",
+  ],
+
+  outcomes: [
+    "Confident use of AI tools in daily professional tasks",
+    "Ability to interpret AI outputs and limitations",
+    "Identification of AI use cases relevant to functional roles",
+    "Understanding of AI governance, ethics, and compliance",
+    "Contribution to AI-driven organisational transformation",
+  ],
+
+  modules: [
+    "AI Literacy for Professionals",
+    "Generative AI in Daily Work",
+    "Interpreting AI Outputs",
+    "Responsible & Secure AI Use",
+    "Applying AI to Your Function",
+  ],
+
+  applicationRouting: {
+    notifyEmails: [
+      "marvellous@iobz.co.zw",
+      "munyika@iobz.co.zw",
+      "admin@aiinstituteafrica.com",
+    ],
+    showCorporateFields: true,
+  },
+};
