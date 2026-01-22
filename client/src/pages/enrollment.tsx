@@ -210,6 +210,8 @@ const individualProgramOptions = [
   { id: "advanced", name: "Advanced AI Certification", image: programImages.advancedAiCert },
   { id: "postgrad", name: "Postgrad AI Diploma Program", image: programImages.postgradAiDiploma },
   { id: "aidip", name: "AI Diploma Program", image: programImages.aiDiploma },
+  // ✅ IOBZ - also available for individual enrollment
+  { id: "iobz_applied", name: "IoBZ AI Training for Bankers", image: programImages.iobzAppliedAi },
 ] as const;
 
 const corporateProgramOptions = [
@@ -217,8 +219,8 @@ const corporateProgramOptions = [
   { id: "exec", name: "Master AI for Executives", image: programImages.masterAiOrgs },
   { id: "prof", name: "Master AI for Professionals", image: programImages.masterAiOrgs },
 
-  // ✅ IOBZ (must use corporate fields)
-  { id: "iobz_applied", name: "Applied AI for Business Professionals (IOBZ)", image: programImages.iobzAppliedAi },
+  // ✅ IOBZ (available for both corporate and individual)
+  { id: "iobz_applied", name: "IoBZ AI Training for Bankers", image: programImages.iobzAppliedAi },
 ] as const;
 
 type TrainingType = "individual" | "corporate";
