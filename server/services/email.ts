@@ -332,7 +332,7 @@ export function generateAdminNotificationEmail(
         <p style="margin: 0 0 10px 0;"><strong>Email:</strong> ${email}</p>
         ${position ? `<p style="margin: 0 0 10px 0;"><strong>Position / Designation:</strong> ${position}</p>` : ''}
         ${organization ? `<p style="margin: 0 0 10px 0;"><strong>Bank / Organisation:</strong> ${organization}</p>` : ''}
-        <p style="margin: 0;"><strong>Programs:</strong></p>
+        <p style="margin: 0;"><strong>Program:</strong></p>
         <ul style="margin: 10px 0 0 0; padding-left: 20px;">
           ${programList}
         </ul>
@@ -350,7 +350,7 @@ Surname: ${lastName}
 Email: ${email}
 ${position ? `Position / Designation: ${position}` : ''}
 ${organization ? `Bank / Organisation: ${organization}` : ''}
-Programs: ${programNames}
+Program: ${programNames}
 
 Please log in to the admin panel to review and process this application.
   `;
