@@ -1202,13 +1202,14 @@ export function registerRoutes(app: Express): Server {
           trainingType,
           firstName, lastName, email, graduateStatus, 
           organizationName, contactFirstName, contactLastName, numberOfAttendees,
-          phone, position,
+          phone, position, bankOrganisation,
           selectedProgramIds 
         } = req.body;
 
         const isCorporate = trainingType === "corporate";
-        const applicantFirstName = isCorporate ? contactFirstName : firstName;
-        const applicantLastName = isCorporate ? contactLastName : lastName;
+        // For IOBZ, firstName/lastName are sent directly; for other corporate, use contactFirstName/contactLastName
+        const applicantFirstName = isCorporate ? (contactFirstName || firstName) : firstName;
+        const applicantLastName = isCorporate ? (contactLastName || lastName) : lastName;
         const applicantEmail = email;
 
         if (!applicantFirstName || !applicantLastName || !applicantEmail || !selectedProgramIds) {
@@ -1299,7 +1300,7 @@ export function registerRoutes(app: Express): Server {
           email,
           programNames,
           position || null,
-          isCorporate ? organizationName : null
+          isCorporate ? (organizationName || bankOrganisation) : null
         );
 
         // Check if any IOBZ program is selected
