@@ -62,7 +62,7 @@ const DEFAULT_NOTIFY_EMAILS = ["admin@aiinstituteafrica.com"];
 const IOBZ_NOTIFY_EMAILS = [
   "admin@aiinstituteafrica.com",
   "marvellous@iobz.co.zw",
-  "munyika@iobz.co.zw",
+  // ✅ removed: "munyika@iobz.co.zw"
 ];
 
 // --- IDs (corporate) ---
@@ -219,7 +219,7 @@ const corporateProgramOptions = [
   { id: "exec", name: "Master AI for Executives", image: programImages.masterAiOrgs },
   { id: "prof", name: "Master AI for Professionals", image: programImages.masterAiOrgs },
 
-  // ✅ IOBZ (must use corporate fields)
+  // ✅ IOBZ (special registration fields)
   { id: "iobz_applied", name: "Applied AI for Business Professionals (IOBZ)", image: programImages.iobzAppliedAi },
 ] as const;
 
@@ -239,14 +239,17 @@ type EnrollmentFormState = {
   individualDocument: File | null;
 
   // corporate
-  organizationName: string;
-  contactFirstName: string;
-  contactLastName: string;
+  organizationName: string; // AIIA corporate
+  contactFirstName: string; // used for AIIA corporate & IoBZ Name
+  contactLastName: string; // used for AIIA corporate & IoBZ Surname
   corporatePhone: string;
   corporateEmail: string;
-  numberOfAttendees: string;
   corporateProgramIds: string[];
-  attendeesListFile: File | null;
+  attendeesListFile: File | null; // AIIA corporate only
+
+  // IoBZ extra fields
+  iobzPosition: string;
+  iobzBankOrganisation: string;
 };
 
 export default function Enrollment() {
@@ -271,10 +274,16 @@ export default function Enrollment() {
     contactLastName: "",
     corporatePhone: "",
     corporateEmail: "",
-    numberOfAttendees: "",
     corporateProgramIds: [],
     attendeesListFile: null,
+
+    iobzPosition: "",
+    iobzBankOrganisation: "",
   });
+
+  const isIobz =
+    form.trainingType === "corporate" &&
+    form.corporateProgramIds.includes("iobz_applied");
 
   const openEnroll = (preselectId?: string) => {
     setSuccessMsg(null);
@@ -288,9 +297,14 @@ export default function Enrollment() {
       if (isCorporate) {
         next.trainingType = "corporate";
         if (preselectId) {
-          const s = new Set(next.corporateProgramIds);
-          s.add(preselectId);
-          next.corporateProgramIds = Array.from(s);
+          // If preselecting IoBZ, enforce only IoBZ selection
+          if (preselectId === "iobz_applied") {
+            next.corporateProgramIds = ["iobz_applied"];
+          } else {
+            const s = new Set(next.corporateProgramIds.filter((x) => x !== "iobz_applied"));
+            s.add(preselectId);
+            next.corporateProgramIds = Array.from(s);
+          }
         }
       } else if (preselectId) {
         next.trainingType = "individual";
@@ -315,7 +329,17 @@ export default function Enrollment() {
 
   const toggleCorporateProgram = (id: string) => {
     setForm((prev) => {
-      const s = new Set(prev.corporateProgramIds);
+      // Enforce exclusivity: IoBZ cannot be combined with other corporate programs
+      if (id === "iobz_applied") {
+        const isSelected = prev.corporateProgramIds.includes("iobz_applied");
+        return {
+          ...prev,
+          corporateProgramIds: isSelected ? [] : ["iobz_applied"],
+        };
+      }
+
+      // If selecting a non-IOBZ corporate program, ensure IoBZ is removed
+      const s = new Set(prev.corporateProgramIds.filter((x) => x !== "iobz_applied"));
       s.has(id) ? s.delete(id) : s.add(id);
       return { ...prev, corporateProgramIds: Array.from(s) };
     });
@@ -337,15 +361,26 @@ export default function Enrollment() {
     }
 
     // corporate
+    if (form.corporateProgramIds.length < 1) return "Select at least one corporate program.";
+
+    const isIobzSelected = form.corporateProgramIds.includes("iobz_applied");
+
+    if (isIobzSelected) {
+      if (!form.contactFirstName.trim()) return "Name is required.";
+      if (!form.contactLastName.trim()) return "Surname is required.";
+      if (!form.iobzPosition.trim()) return "Position / Designation is required.";
+      if (!form.iobzBankOrganisation.trim()) return "Bank/Organisation is required.";
+      if (!form.corporatePhone.trim()) return "Phone number is required.";
+      if (!form.corporateEmail.trim() || !form.corporateEmail.includes("@")) return "Valid email is required.";
+      return null;
+    }
+
+    // Non-IOBZ corporate (AIIA corporate)
     if (!form.organizationName.trim()) return "Organization name is required.";
     if (!form.contactFirstName.trim()) return "Contact person name is required.";
     if (!form.contactLastName.trim()) return "Contact person surname is required.";
     if (!form.corporatePhone.trim()) return "Phone number is required.";
     if (!form.corporateEmail.trim() || !form.corporateEmail.includes("@")) return "Valid email is required.";
-    if (!form.numberOfAttendees.trim()) return "Number of attendees is required.";
-    const n = Number(form.numberOfAttendees);
-    if (!Number.isFinite(n) || n <= 0) return "Number of attendees must be a positive number.";
-    if (form.corporateProgramIds.length < 1) return "Select at least one corporate program.";
     if (!form.attendeesListFile) return "Upload the list of attendees.";
     return null;
   };
@@ -388,12 +423,8 @@ export default function Enrollment() {
         fd.append("selectedPrograms", JSON.stringify(selectedPrograms));
         fd.append("document", form.individualDocument!);
       } else {
-        fd.append("organizationName", form.organizationName);
-        fd.append("contactFirstName", form.contactFirstName);
-        fd.append("contactLastName", form.contactLastName);
         fd.append("phone", form.corporatePhone);
         fd.append("email", form.corporateEmail);
-        fd.append("numberOfAttendees", form.numberOfAttendees);
 
         const selectedPrograms = form.corporateProgramIds.map((id) => {
           const prog = corporateProgramOptions.find((p) => p.id === id);
@@ -401,14 +432,24 @@ export default function Enrollment() {
         });
 
         // helpful flag for backend logic
-        fd.append(
-          "partner",
-          form.corporateProgramIds.includes("iobz_applied") ? "iobz" : "aiia"
-        );
+        fd.append("partner", form.corporateProgramIds.includes("iobz_applied") ? "iobz" : "aiia");
 
         fd.append("selectedProgramIds", JSON.stringify(form.corporateProgramIds));
         fd.append("selectedPrograms", JSON.stringify(selectedPrograms));
-        fd.append("attendeesList", form.attendeesListFile!);
+
+        if (form.corporateProgramIds.includes("iobz_applied")) {
+          // ✅ IoBZ payload fields requested
+          fd.append("firstName", form.contactFirstName);
+          fd.append("lastName", form.contactLastName);
+          fd.append("position", form.iobzPosition);
+          fd.append("bankOrganisation", form.iobzBankOrganisation);
+        } else {
+          // ✅ AIIA corporate payload fields
+          fd.append("organizationName", form.organizationName);
+          fd.append("contactFirstName", form.contactFirstName);
+          fd.append("contactLastName", form.contactLastName);
+          fd.append("attendeesList", form.attendeesListFile!);
+        }
       }
 
       const res = await fetch("/api/program-applications", {
@@ -430,14 +471,17 @@ export default function Enrollment() {
         graduateStatus: "graduate",
         individualProgramIds: [],
         individualDocument: null,
+
         organizationName: "",
         contactFirstName: "",
         contactLastName: "",
         corporatePhone: "",
         corporateEmail: "",
-        numberOfAttendees: "",
         corporateProgramIds: [],
         attendeesListFile: null,
+
+        iobzPosition: "",
+        iobzBankOrganisation: "",
       });
     } catch (e: any) {
       setErrorMsg(e?.message || "Something went wrong.");
@@ -537,7 +581,9 @@ export default function Enrollment() {
                     </div>
 
                     <CardHeader className="pb-2">
-                      <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center mb-4 shadow-lg`}>
+                      <div
+                        className={`w-16 h-16 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center mb-4 shadow-lg`}
+                      >
                         <course.icon className="w-8 h-8 text-white" />
                       </div>
                       <CardTitle className="text-xl text-slate-100">{course.name}</CardTitle>
@@ -572,7 +618,6 @@ export default function Enrollment() {
                 ))}
               </div>
 
-            {/* ✅ IOBZ SECTION (after AIIA programs) */}
               {/* ✅ IOBZ SECTION (after AIIA programs) */}
               <div className="mt-12">
                 <Card className="bg-slate-800/40 border border-cyan-500/20 overflow-hidden">
@@ -624,9 +669,7 @@ export default function Enrollment() {
                       </div>
 
                       {/* Summary */}
-                      <p className="text-slate-300 leading-relaxed mb-6">
-                        {iobzAppliedAiContent.summary}
-                      </p>
+                      <p className="text-slate-300 leading-relaxed mb-6">{iobzAppliedAiContent.summary}</p>
 
                       {/* Quick facts */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-300 mb-6">
@@ -642,7 +685,7 @@ export default function Enrollment() {
                           <Clock className="w-4 h-4 text-cyan-400" />
                           <span>
                             <span className="font-semibold text-slate-100">Duration:</span>{" "}
-                            {iobzAppliedAiContent.duration}
+                            2 Days
                           </span>
                         </div>
 
@@ -701,16 +744,12 @@ export default function Enrollment() {
                         >
                           Enroll / Apply (IoBZ)
                         </Button>
-
-                        
                       </div>
                     </div>
                   </div>
                 </Card>
               </div>
-
-          </TabsContent>
-
+            </TabsContent>
 
             {/* CERTIFICATES (PRICES KEPT) */}
             <TabsContent value="certificates">
@@ -727,7 +766,9 @@ export default function Enrollment() {
                     </div>
 
                     <CardHeader className="pb-2">
-                      <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${cert.color} flex items-center justify-center mb-4 shadow-lg`}>
+                      <div
+                        className={`w-16 h-16 rounded-xl bg-gradient-to-br ${cert.color} flex items-center justify-center mb-4 shadow-lg`}
+                      >
                         <cert.icon className="w-8 h-8 text-white" />
                       </div>
                       <CardTitle className="text-xl text-slate-100">{cert.name}</CardTitle>
@@ -788,7 +829,9 @@ export default function Enrollment() {
                     </div>
 
                     <CardHeader className="pb-2">
-                      <div className={`w-20 h-20 rounded-xl bg-gradient-to-br ${diploma.color} flex items-center justify-center mb-4 shadow-lg`}>
+                      <div
+                        className={`w-20 h-20 rounded-xl bg-gradient-to-br ${diploma.color} flex items-center justify-center mb-4 shadow-lg`}
+                      >
                         <diploma.icon className="w-10 h-10 text-white" />
                       </div>
                       <CardTitle className="text-2xl text-slate-100">{diploma.name}</CardTitle>
@@ -917,36 +960,28 @@ export default function Enrollment() {
                   <Label>Name *</Label>
                   <Input
                     value={form.firstName}
-                    onChange={(e) =>
-                      setForm({ ...form, firstName: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
                   />
                 </div>
                 <div>
                   <Label>Surname *</Label>
                   <Input
                     value={form.lastName}
-                    onChange={(e) =>
-                      setForm({ ...form, lastName: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
                   />
                 </div>
                 <div>
                   <Label>Phone No. *</Label>
                   <Input
                     value={form.phone}
-                    onChange={(e) =>
-                      setForm({ ...form, phone: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   />
                 </div>
                 <div>
                   <Label>Email *</Label>
                   <Input
                     value={form.email}
-                    onChange={(e) =>
-                      setForm({ ...form, email: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
                   />
                 </div>
               </div>
@@ -1033,81 +1068,118 @@ export default function Enrollment() {
           {/* CORPORATE */}
           {form.trainingType === "corporate" && (
             <div className="space-y-5 mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
-                  <Label>Organization’s Name *</Label>
-                  <Input
-                    value={form.organizationName}
-                    onChange={(e) =>
-                      setForm({ ...form, organizationName: e.target.value })
-                    }
-                  />
-                </div>
+              {!isIobz ? (
+                // ✅ AIIA corporate fields
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
+                    <Label>Organization’s Name *</Label>
+                    <Input
+                      value={form.organizationName}
+                      onChange={(e) => setForm({ ...form, organizationName: e.target.value })}
+                    />
+                  </div>
 
-                <div>
-                  <Label>Contact Person’s Name *</Label>
-                  <Input
-                    value={form.contactFirstName}
-                    onChange={(e) =>
-                      setForm({ ...form, contactFirstName: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <Label>Surname *</Label>
-                  <Input
-                    value={form.contactLastName}
-                    onChange={(e) =>
-                      setForm({ ...form, contactLastName: e.target.value })
-                    }
-                  />
-                </div>
+                  <div>
+                    <Label>Contact Person’s Name *</Label>
+                    <Input
+                      value={form.contactFirstName}
+                      onChange={(e) => setForm({ ...form, contactFirstName: e.target.value })}
+                    />
+                  </div>
 
-                <div>
-                  <Label>Phone No. *</Label>
-                  <Input
-                    value={form.corporatePhone}
-                    onChange={(e) =>
-                      setForm({ ...form, corporatePhone: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <Label>Email *</Label>
-                  <Input
-                    value={form.corporateEmail}
-                    onChange={(e) =>
-                      setForm({ ...form, corporateEmail: e.target.value })
-                    }
-                  />
-                </div>
+                  <div>
+                    <Label>Surname *</Label>
+                    <Input
+                      value={form.contactLastName}
+                      onChange={(e) => setForm({ ...form, contactLastName: e.target.value })}
+                    />
+                  </div>
 
-                <div className="md:col-span-2">
-                  <Label>Number of Attendees *</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={form.numberOfAttendees}
-                    onChange={(e) =>
-                      setForm({ ...form, numberOfAttendees: e.target.value })
-                    }
-                  />
+                  <div>
+                    <Label>Phone No. *</Label>
+                    <Input
+                      value={form.corporatePhone}
+                      onChange={(e) => setForm({ ...form, corporatePhone: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label>Email *</Label>
+                    <Input
+                      value={form.corporateEmail}
+                      onChange={(e) => setForm({ ...form, corporateEmail: e.target.value })}
+                    />
+                  </div>
+
+                  {/* ✅ Removed Number of Attendees (no longer shown/required) */}
                 </div>
-              </div>
+              ) : (
+                // ✅ IoBZ fields requested
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Name *</Label>
+                    <Input
+                      value={form.contactFirstName}
+                      onChange={(e) => setForm({ ...form, contactFirstName: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Surname *</Label>
+                    <Input
+                      value={form.contactLastName}
+                      onChange={(e) => setForm({ ...form, contactLastName: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Position / Designation *</Label>
+                    <Input
+                      value={form.iobzPosition}
+                      onChange={(e) => setForm({ ...form, iobzPosition: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Bank/Organisation *</Label>
+                    <Input
+                      value={form.iobzBankOrganisation}
+                      onChange={(e) => setForm({ ...form, iobzBankOrganisation: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Phone No. *</Label>
+                    <Input
+                      value={form.corporatePhone}
+                      onChange={(e) => setForm({ ...form, corporatePhone: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Email *</Label>
+                    <Input
+                      value={form.corporateEmail}
+                      onChange={(e) => setForm({ ...form, corporateEmail: e.target.value })}
+                    />
+                  </div>
+                </div>
+              )}
 
               <div>
-                <Label className="mb-2 block font-semibold">
-                  Choose Corporate Program(s) *
-                </Label>
+                <Label className="mb-2 block font-semibold">Choose Corporate Program(s) *</Label>
                 <div className="grid gap-2">
-                  {corporateProgramOptions.map((p) => (
+                  {(isIobz
+                    ? corporateProgramOptions.filter((p) => p.id === "iobz_applied")
+                    : corporateProgramOptions
+                  ).map((p) => (
                     <label
                       key={p.id}
                       className="flex items-start gap-3 rounded-md border p-3 cursor-pointer hover:bg-accent/40 transition-colors"
                     >
                       <Checkbox
                         checked={form.corporateProgramIds.includes(p.id)}
-                        onCheckedChange={() => toggleCorporateProgram(p.id)}
+                        disabled={isIobz} // ✅ if IoBZ chosen, only IoBZ program shown and fixed
+                        onCheckedChange={() => !isIobz && toggleCorporateProgram(p.id)}
                       />
                       <div className="flex gap-3">
                         <img
@@ -1122,21 +1194,22 @@ export default function Enrollment() {
                 </div>
               </div>
 
-              <div>
-                <Label className="font-semibold">
-                  Upload the list of attendees *
-                </Label>
-                <Input
-                  type="file"
-                  accept=".pdf,.xlsx,.xls,.csv,.doc,.docx,.txt"
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      attendeesListFile: e.target.files?.[0] || null,
-                    })
-                  }
-                />
-              </div>
+              {/* ✅ Only non-IOBZ corporate uploads attendee list */}
+              {!isIobz && (
+                <div>
+                  <Label className="font-semibold">Upload the list of attendees *</Label>
+                  <Input
+                    type="file"
+                    accept=".pdf,.xlsx,.xls,.csv,.doc,.docx,.txt"
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        attendeesListFile: e.target.files?.[0] || null,
+                      })
+                    }
+                  />
+                </div>
+              )}
             </div>
           )}
 

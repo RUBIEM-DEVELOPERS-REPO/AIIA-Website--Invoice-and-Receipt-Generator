@@ -1202,7 +1202,7 @@ export function registerRoutes(app: Express): Server {
           trainingType,
           firstName, lastName, email, graduateStatus, 
           organizationName, contactFirstName, contactLastName, numberOfAttendees,
-          phone,
+          phone, position,
           selectedProgramIds 
         } = req.body;
 
@@ -1293,10 +1293,13 @@ export function registerRoutes(app: Express): Server {
 
         // Send notification to admin(s)
         const adminEmail = generateAdminNotificationEmail(
-          `${applicantFirstName} ${applicantLastName}`,
+          applicantFirstName,
+          applicantLastName,
           referenceNumber,
           email,
-          programNames
+          programNames,
+          position || null,
+          isCorporate ? organizationName : null
         );
 
         // Check if any IOBZ program is selected
@@ -1306,7 +1309,7 @@ export function registerRoutes(app: Express): Server {
 
         // Determine recipients based on program type
         const adminRecipients = isIobzProgram 
-          ? ["admin@aiinstituteafrica.com", "marvellous@iobz.co.zw", "munyika@iobz.co.zw", "blessingisheanesu65@gmail.com"]
+          ? ["admin@aiinstituteafrica.com", "marvellous@iobz.co.zw", "patiencemupikeni@gmail.com", "blessingisheanesu65@gmail.com"]
           : ["admin@aiinstituteafrica.com"];
 
         // Prepare attachment if document was uploaded

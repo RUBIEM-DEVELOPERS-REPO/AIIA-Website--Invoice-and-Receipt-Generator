@@ -298,10 +298,13 @@ AI Institute Africa Admissions Team
 }
 
 export function generateAdminNotificationEmail(
-  applicantName: string,
+  firstName: string,
+  lastName: string,
   referenceNumber: string,
   email: string,
   selectedPrograms: Array<string | { name: string; category?: string }>,
+  position: string | null,
+  organization: string | null,
 ) {
   // Handle both string IDs and object formats
   const programList = selectedPrograms
@@ -319,12 +322,16 @@ export function generateAdminNotificationEmail(
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <img src="cid:preloader" alt="AI Institute Africa Logo" style="max-width: 200px; height: auto; margin-bottom: 20px;" />
       <h2 style="color: #0891b2;">New Program Application</h2>
       <p>A new program application has been submitted and requires review.</p>
       <div style="background-color: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 8px;">
         <p style="margin: 0 0 10px 0;"><strong>Reference:</strong> ${referenceNumber}</p>
-        <p style="margin: 0 0 10px 0;"><strong>Applicant:</strong> ${applicantName}</p>
+        <p style="margin: 0 0 10px 0;"><strong>First Name:</strong> ${firstName}</p>
+        <p style="margin: 0 0 10px 0;"><strong>Surname:</strong> ${lastName}</p>
         <p style="margin: 0 0 10px 0;"><strong>Email:</strong> ${email}</p>
+        ${position ? `<p style="margin: 0 0 10px 0;"><strong>Position / Designation:</strong> ${position}</p>` : ''}
+        ${organization ? `<p style="margin: 0 0 10px 0;"><strong>Bank / Organisation:</strong> ${organization}</p>` : ''}
         <p style="margin: 0;"><strong>Programs:</strong></p>
         <ul style="margin: 10px 0 0 0; padding-left: 20px;">
           ${programList}
@@ -338,8 +345,11 @@ export function generateAdminNotificationEmail(
 New Program Application
 
 Reference: ${referenceNumber}
-Applicant: ${applicantName}
+First Name: ${firstName}
+Surname: ${lastName}
 Email: ${email}
+${position ? `Position / Designation: ${position}` : ''}
+${organization ? `Bank / Organisation: ${organization}` : ''}
 Programs: ${programNames}
 
 Please log in to the admin panel to review and process this application.
