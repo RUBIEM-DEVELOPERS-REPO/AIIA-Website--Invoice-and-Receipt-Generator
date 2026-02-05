@@ -17,10 +17,11 @@ import { cn } from "@/lib/utils";
 const plans = [
   {
     name: "Free Membership",
-    description: "Congradulations you have qualified for our free membership plan to get you started with the institution",
+    description:
+      "Congradulations you have qualified for our free membership plan to get you started with the institution",
     price: { yearly: 0 },
     features: [
-      "Access to public research p",
+      "Access to public research papers",
       "Newsletter subscription",
       "Community forum access",
       "Get a Member verification code",
@@ -96,8 +97,10 @@ export default function PricingPlans() {
   const handlePlanSelection = (plan: (typeof plans)[0]) => {
     // Only allow selection if it's the free plan and spots are available
     // or if it's a paid plan and no spots are available
-    if ((plan.name === "Free Membership" && remainingSpots > 0) ||
-        (plan.name !== "Free Membership" && remainingSpots === 0)) {
+    if (
+      (plan.name === "Free Membership" && remainingSpots > 0) ||
+      (plan.name !== "Free Membership" && remainingSpots === 0)
+    ) {
       setSelectedPlan({
         name: plan.name,
         billing: billingCycle,
@@ -136,9 +139,10 @@ export default function PricingPlans() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {plans.map((plan, index) => {
             const isFreePlan = plan.name === "Free Membership";
-            const isActive = isLoading ? false : // Disable all while loading
-              (isFreePlan && remainingSpots > 0) || 
-              (!isFreePlan && remainingSpots === 0);
+            const isActive = isLoading
+              ? false // Disable all while loading
+              : (isFreePlan && remainingSpots > 0) ||
+                (!isFreePlan && remainingSpots === 0);
 
             return (
               <motion.div
@@ -147,12 +151,12 @@ export default function PricingPlans() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card 
+                <Card
                   className={cn(
                     "relative h-full transition-colors",
-                    isActive 
-                      ? "hover:border-primary/50" 
-                      : "opacity-50 cursor-not-allowed"
+                    isActive
+                      ? "hover:border-primary/50"
+                      : "opacity-50 cursor-not-allowed",
                   )}
                 >
                   <CardHeader>
@@ -184,7 +188,11 @@ export default function PricingPlans() {
                       onClick={() => handlePlanSelection(plan)}
                       disabled={!isActive}
                     >
-                      {isLoading ? "Loading..." : index === 0 ? "Get Started" : "Subscribe Now"}
+                      {isLoading
+                        ? "Loading..."
+                        : index === 0
+                          ? "Get Started"
+                          : "Subscribe Now"}
                     </Button>
                   </CardContent>
                 </Card>
