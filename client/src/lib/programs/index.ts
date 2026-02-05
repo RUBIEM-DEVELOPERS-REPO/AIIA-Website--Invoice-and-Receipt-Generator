@@ -21,7 +21,7 @@ import masterAiOrgs from "./AIIA FLYERS LATES-6.jpg";
 import certificationsOverview from "./AIIA FLYERS LATES-16.jpg"; // unchanged
 
 // ✅ IOBZ additions ONLY
-import iobzAppliedAi from "./IMG-20260121-WA0481(2).jpg";
+import iobzAppliedAi from "./iobz_training_flyer.jpeg";
 import iobzLogo from "./IOBZ-Logo-Final-271x300.webp";
 
 export const programImages = {
@@ -42,9 +42,10 @@ export const programImages = {
 export const iobzAppliedAiContent = {
   title: "IoBZ AI Training for Bankers",
   partner: "Institute of Bankers of Zimbabwe (IOBZ)",
-  audience: "Finance, HR, Marketing, Operations, Procurement & Management Professionals",
-  duration: "3 Days",
-  venue: "TBA",
+  audience:
+    "Non-Technical Finance, HR, Marketing, Operations, Procurement & Management Professionals",
+  duration: "2 Days",
+  venue: "BAZ Offices",
   award: "Certificate of Completion",
   summary:
     "Applied AI for Business Professionals equips banking professionals with knowledge and practical skills to use AI safely, effectively, and responsibly in daily work. ",
