@@ -22,24 +22,24 @@ import { Textarea } from "@/components/ui/textarea";
 
 /**
  * ✅ Using the uploaded posters directly (no summitImages import)
- * 1000276385.jpg -> Zimbabwe 2.0
- * 1000276381.jpg -> AI Tech Forum Zimbabwe
- * 1000276386.jpg -> AI Africa Summit
- * 1000276383.jpg -> AI Education Africa
+ * zim_2.0_summit.jpg -> Zimbabwe 2.0
+ * tech_forum_summit.jpg -> AI Tech Forum Zimbabwe
+ * ai_africa_summit.jpg -> AI Africa Summit
+ * ai_education_summit -> AI Education Africa
  *
  * Put these files in your project, e.g:
  * client/src/assets/events/
- *  - 1000276385.jpg
- *  - 1000276381.jpg
- *  - 1000276386.jpg
- *  - 1000276383.jpg
+ *  - zim_2.0_summit
+ *  - tech_forum_summit.jpg
+ *  - ai_africa_summit.jpg
+ *  - ai_education_summit.jpg
  *
  * Then these imports will work.
  */
-import zim2Poster from "@/lib/event_images/1000276385.jpg";
-import techForumPoster from "@/lib/event_images/1000276381.jpg";
-import aiAfricaSummitPoster from "@/lib/event_images/1000276386.jpg";
-import aiEducationPoster from "@/lib/event_images/1000276383.jpg";
+import zim2Poster from "@/lib/event_images/zim_2.0_summit.jpeg";
+import techForumPoster from "@/lib/event_images/tech_forum_summit.jpeg";
+import aiAfricaSummitPoster from "@/lib/event_images/ai_africa_summit.jpeg";
+import aiEducationPoster from "@/lib/event_images/ai_education_summit.jpeg";
 
 const upcomingEvents = [
   {
@@ -47,7 +47,7 @@ const upcomingEvents = [
     title: "Zimbabwe 2.0 – AI for National Transformation 2026",
     description:
       "Intelligence as National Infrastructure: Designing Zimbabwe’s AI-Driven Future for Global Competitiveness.",
-    date: "April 2026",
+    date: "May 2026",
     location: "Nyanga",
     time: "TBA",
     status: "Open",
@@ -57,7 +57,7 @@ const upcomingEvents = [
     id: "techforum",
     title: "AI Tech Forum Zimbabwe 2026",
     description: "Mastering AI Systems: Building Zimbabwe’s Intelligence Edge.",
-    date: "April 2026",
+    date: "May 2026",
     location: "Nyanga",
     time: "TBA",
     status: "Open",
@@ -66,8 +66,9 @@ const upcomingEvents = [
   {
     id: "ai-africa-summit",
     title: "AI Africa Summit 2026",
-    description: "Africa 2.0: Ubuntu Algorithms for AI-Augmented Transformation.",
-    date: "June 2026",
+    description:
+      "Africa 2.0: Ubuntu Algorithms for AI-Augmented Transformation.",
+    date: "August 2026",
     location: "Victoria Falls",
     time: "TBA",
     status: "Open",
@@ -78,7 +79,7 @@ const upcomingEvents = [
     title: "AI Education Africa 2026",
     description:
       "Empowering Learners and Educators — Transforming Education Through AI.",
-    date: "August 2026",
+    date: "October 2026",
     location: "Harare",
     time: "TBA",
     status: "Open",
