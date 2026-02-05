@@ -60,20 +60,24 @@ export function ChatAssistant() {
     setIsLoading(true); // Set loading to true
 
     try {
-      const response = await fetch("https://agents-9rvt.onrender.com/aiia", {
+      console.log("[Chat] Sending message:", input);
+      const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: input,
-          thread_id: null, // The API will generate a thread_id if not provided
-        }),
+        body: JSON.stringify({ message: input }),
       });
+
+      if (!response.ok) {
+        console.error("[Chat] Error response:", response.status);
+        throw new Error(`HTTP ${response.status}`);
+      }
 
       const data = await response.json();
 
       // Add assistant response
       setMessages((prev) => [...prev, { text: data.response, isUser: false }]);
     } catch (error) {
+      console.error("[Chat] Request failed:", error);
       setMessages((prev) => [
         ...prev,
         {
