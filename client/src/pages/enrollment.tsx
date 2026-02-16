@@ -46,8 +46,8 @@ import { iobzAppliedAiContent } from "@/lib/programs";
  * ✅ YOUR LATEST IMAGE MAPPING
  * programImages.masterAiOrgs      -> IMG-20260115-WA0114 (Master AI programs for corporates)
  * programImages.basicAiCert       -> IMG-20260115-WA0116 (Basic AI Certification)
- * programImages.aiDiploma         -> IMG-20260115-WA0117 (AI Diploma)
- * programImages.postgradAiDiploma -> IMG-20260115-WA0118 (Postgrad AI Diploma)
+ * programImages.aiDiploma         -> ai_diploma (AI Diploma)
+ * programImages.postgradAiDiploma -> postgrad_diploma (Postgrad AI Diploma)
  * programImages.nonGraduateAiCert -> IMG-20260115-WA0119 (Non-Graduate Certificate)
  * programImages.graduateAiCert    -> IMG-20260115-WA0063 (Graduate AI Certificate)
  * programImages.advancedAiCert    -> IMG-20260115-WA0120 (Advanced AI Certification)
@@ -181,7 +181,7 @@ const diplomas = [
     format: "Physical & Online",
     modules: "8 Modules",
     requirement: "Bachelor's Degree",
-    price: "USD 120 / Module",
+    price: "USD 130 / Module",
     icon: GraduationCap,
     color: "from-violet-500 to-purple-600",
     borderColor: "border-violet-500/30",
@@ -194,9 +194,9 @@ const diplomas = [
     subtitle: "Begin Your Career in Artificial Intelligence!",
     duration: "18 Months",
     format: "Online & Physical Classes",
-    modules: "12 Modules",
-    requirement: "5 O Level subjects",
-    price: "USD 135 / Module",
+    modules: "8 Modules",
+    requirement: "3 A Levels or Employer Letter",
+    price: "USD 150 / Module",
     icon: BookOpen,
     color: "from-sky-500 to-cyan-600",
     borderColor: "border-sky-500/30",
@@ -206,21 +206,57 @@ const diplomas = [
 ] as const;
 
 const individualProgramOptions = [
-  { id: "gradcert", name: "Graduate AI Certificate Program", image: programImages.graduateAiCert },
-  { id: "nongrad", name: "Non-Graduate AI Certificate", image: programImages.nonGraduateAiCert },
-  { id: "basic", name: "Basic AI Certification", image: programImages.basicAiCert },
-  { id: "advanced", name: "Advanced AI Certification", image: programImages.advancedAiCert },
-  { id: "postgrad", name: "Postgrad AI Diploma Program", image: programImages.postgradAiDiploma },
+  {
+    id: "gradcert",
+    name: "Graduate AI Certificate Program",
+    image: programImages.graduateAiCert,
+  },
+  {
+    id: "nongrad",
+    name: "Non-Graduate AI Certificate",
+    image: programImages.nonGraduateAiCert,
+  },
+  {
+    id: "basic",
+    name: "Basic AI Certification",
+    image: programImages.basicAiCert,
+  },
+  {
+    id: "advanced",
+    name: "Advanced AI Certification",
+    image: programImages.advancedAiCert,
+  },
+  {
+    id: "postgrad",
+    name: "Postgrad AI Diploma Program",
+    image: programImages.postgradAiDiploma,
+  },
   { id: "aidip", name: "AI Diploma Program", image: programImages.aiDiploma },
 ] as const;
 
 const corporateProgramOptions = [
-  { id: "dir", name: "Master AI for Directors", image: programImages.masterAiOrgs },
-  { id: "exec", name: "Master AI for Executives", image: programImages.masterAiOrgs },
-  { id: "prof", name: "Master AI for Professionals", image: programImages.masterAiOrgs },
+  {
+    id: "dir",
+    name: "Master AI for Directors",
+    image: programImages.masterAiOrgs,
+  },
+  {
+    id: "exec",
+    name: "Master AI for Executives",
+    image: programImages.masterAiOrgs,
+  },
+  {
+    id: "prof",
+    name: "Master AI for Professionals",
+    image: programImages.masterAiOrgs,
+  },
 
   // ✅ IOBZ (special registration fields)
-  { id: "iobz_applied", name: "Applied AI for Business Professionals (IOBZ)", image: programImages.iobzAppliedAi },
+  {
+    id: "iobz_applied",
+    name: "Applied AI for Business Professionals (IOBZ)",
+    image: programImages.iobzAppliedAi,
+  },
 ] as const;
 
 type TrainingType = "individual" | "corporate";
@@ -289,7 +325,9 @@ export default function Enrollment() {
     setSuccessMsg(null);
     setErrorMsg(null);
 
-    const isCorporate = Boolean(preselectId && (CORPORATE_IDS as readonly string[]).includes(preselectId));
+    const isCorporate = Boolean(
+      preselectId && (CORPORATE_IDS as readonly string[]).includes(preselectId),
+    );
 
     setForm((prev) => {
       const next = { ...prev };
@@ -301,7 +339,9 @@ export default function Enrollment() {
           if (preselectId === "iobz_applied") {
             next.corporateProgramIds = ["iobz_applied"];
           } else {
-            const s = new Set(next.corporateProgramIds.filter((x) => x !== "iobz_applied"));
+            const s = new Set(
+              next.corporateProgramIds.filter((x) => x !== "iobz_applied"),
+            );
             s.add(preselectId);
             next.corporateProgramIds = Array.from(s);
           }
@@ -339,7 +379,9 @@ export default function Enrollment() {
       }
 
       // If selecting a non-IOBZ corporate program, ensure IoBZ is removed
-      const s = new Set(prev.corporateProgramIds.filter((x) => x !== "iobz_applied"));
+      const s = new Set(
+        prev.corporateProgramIds.filter((x) => x !== "iobz_applied"),
+      );
       s.has(id) ? s.delete(id) : s.add(id);
       return { ...prev, corporateProgramIds: Array.from(s) };
     });
@@ -350,8 +392,10 @@ export default function Enrollment() {
       if (!form.firstName.trim()) return "Name is required.";
       if (!form.lastName.trim()) return "Surname is required.";
       if (!form.phone.trim()) return "Phone number is required.";
-      if (!form.email.trim() || !form.email.includes("@")) return "Valid email is required.";
-      if (form.individualProgramIds.length < 1) return "Select at least one program.";
+      if (!form.email.trim() || !form.email.includes("@"))
+        return "Valid email is required.";
+      if (form.individualProgramIds.length < 1)
+        return "Select at least one program.";
       if (!form.individualDocument) {
         return form.graduateStatus === "graduate"
           ? "Upload Certificate (Graduate)."
@@ -361,26 +405,33 @@ export default function Enrollment() {
     }
 
     // corporate
-    if (form.corporateProgramIds.length < 1) return "Select at least one corporate program.";
+    if (form.corporateProgramIds.length < 1)
+      return "Select at least one corporate program.";
 
     const isIobzSelected = form.corporateProgramIds.includes("iobz_applied");
 
     if (isIobzSelected) {
       if (!form.contactFirstName.trim()) return "Name is required.";
       if (!form.contactLastName.trim()) return "Surname is required.";
-      if (!form.iobzPosition.trim()) return "Position / Designation is required.";
-      if (!form.iobzBankOrganisation.trim()) return "Bank/Organisation is required.";
+      if (!form.iobzPosition.trim())
+        return "Position / Designation is required.";
+      if (!form.iobzBankOrganisation.trim())
+        return "Bank/Organisation is required.";
       if (!form.corporatePhone.trim()) return "Phone number is required.";
-      if (!form.corporateEmail.trim() || !form.corporateEmail.includes("@")) return "Valid email is required.";
+      if (!form.corporateEmail.trim() || !form.corporateEmail.includes("@"))
+        return "Valid email is required.";
       return null;
     }
 
     // Non-IOBZ corporate (AIIA corporate)
     if (!form.organizationName.trim()) return "Organization name is required.";
-    if (!form.contactFirstName.trim()) return "Contact person name is required.";
-    if (!form.contactLastName.trim()) return "Contact person surname is required.";
+    if (!form.contactFirstName.trim())
+      return "Contact person name is required.";
+    if (!form.contactLastName.trim())
+      return "Contact person surname is required.";
     if (!form.corporatePhone.trim()) return "Phone number is required.";
-    if (!form.corporateEmail.trim() || !form.corporateEmail.includes("@")) return "Valid email is required.";
+    if (!form.corporateEmail.trim() || !form.corporateEmail.includes("@"))
+      return "Valid email is required.";
     if (!form.attendeesListFile) return "Upload the list of attendees.";
     return null;
   };
@@ -402,7 +453,8 @@ export default function Enrollment() {
 
       // ✅ Decide recipients (backend should use this to email admins)
       const notifyEmails =
-        form.trainingType === "corporate" && form.corporateProgramIds.includes("iobz_applied")
+        form.trainingType === "corporate" &&
+        form.corporateProgramIds.includes("iobz_applied")
           ? IOBZ_NOTIFY_EMAILS
           : DEFAULT_NOTIFY_EMAILS;
 
@@ -417,9 +469,16 @@ export default function Enrollment() {
 
         const selectedPrograms = form.individualProgramIds.map((id) => {
           const prog = individualProgramOptions.find((p) => p.id === id);
-          return { id, name: prog?.name || id, category: "Individual Training" };
+          return {
+            id,
+            name: prog?.name || id,
+            category: "Individual Training",
+          };
         });
-        fd.append("selectedProgramIds", JSON.stringify(form.individualProgramIds));
+        fd.append(
+          "selectedProgramIds",
+          JSON.stringify(form.individualProgramIds),
+        );
         fd.append("selectedPrograms", JSON.stringify(selectedPrograms));
         fd.append("document", form.individualDocument!);
       } else {
@@ -432,9 +491,15 @@ export default function Enrollment() {
         });
 
         // helpful flag for backend logic
-        fd.append("partner", form.corporateProgramIds.includes("iobz_applied") ? "iobz" : "aiia");
+        fd.append(
+          "partner",
+          form.corporateProgramIds.includes("iobz_applied") ? "iobz" : "aiia",
+        );
 
-        fd.append("selectedProgramIds", JSON.stringify(form.corporateProgramIds));
+        fd.append(
+          "selectedProgramIds",
+          JSON.stringify(form.corporateProgramIds),
+        );
         fd.append("selectedPrograms", JSON.stringify(selectedPrograms));
 
         if (form.corporateProgramIds.includes("iobz_applied")) {
@@ -525,7 +590,8 @@ export default function Enrollment() {
             </h1>
 
             <p className="text-xl text-cyan-200/70 max-w-3xl mx-auto">
-              Empowering Africa through Artificial Intelligence Education and Innovation
+              Empowering Africa through Artificial Intelligence Education and
+              Innovation
             </p>
 
             <div className="mt-6 flex justify-center">
@@ -586,7 +652,9 @@ export default function Enrollment() {
                       >
                         <course.icon className="w-8 h-8 text-white" />
                       </div>
-                      <CardTitle className="text-xl text-slate-100">{course.name}</CardTitle>
+                      <CardTitle className="text-xl text-slate-100">
+                        {course.name}
+                      </CardTitle>
                     </CardHeader>
 
                     <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -658,7 +726,9 @@ export default function Enrollment() {
                         </div>
 
                         <div className="min-w-0">
-                          <div className="text-sm text-cyan-300/80">Partner Program</div>
+                          <div className="text-sm text-cyan-300/80">
+                            Partner Program
+                          </div>
                           <h3 className="text-2xl font-bold text-slate-100 leading-tight">
                             {iobzAppliedAiContent.title}
                           </h3>
@@ -669,14 +739,18 @@ export default function Enrollment() {
                       </div>
 
                       {/* Summary */}
-                      <p className="text-slate-300 leading-relaxed mb-6">{iobzAppliedAiContent.summary}</p>
+                      <p className="text-slate-300 leading-relaxed mb-6">
+                        {iobzAppliedAiContent.summary}
+                      </p>
 
                       {/* Quick facts */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-300 mb-6">
                         <div className="flex items-center gap-2">
                           <Users className="w-4 h-4 text-pink-400" />
                           <span>
-                            <span className="font-semibold text-slate-100">Audience:</span>{" "}
+                            <span className="font-semibold text-slate-100">
+                              Audience:
+                            </span>{" "}
                             {iobzAppliedAiContent.audience}
                           </span>
                         </div>
@@ -684,7 +758,9 @@ export default function Enrollment() {
                         <div className="flex items-center gap-2">
                           <Clock className="w-4 h-4 text-cyan-400" />
                           <span>
-                            <span className="font-semibold text-slate-100">Duration:</span>{" "}
+                            <span className="font-semibold text-slate-100">
+                              Duration:
+                            </span>{" "}
                             2 Days
                           </span>
                         </div>
@@ -692,7 +768,9 @@ export default function Enrollment() {
                         <div className="flex items-center gap-2">
                           <MapPin className="w-4 h-4 text-purple-400" />
                           <span>
-                            <span className="font-semibold text-slate-100">Venue:</span>{" "}
+                            <span className="font-semibold text-slate-100">
+                              Venue:
+                            </span>{" "}
                             {iobzAppliedAiContent.venue}
                           </span>
                         </div>
@@ -700,7 +778,9 @@ export default function Enrollment() {
                         <div className="flex items-center gap-2">
                           <Award className="w-4 h-4 text-green-400" />
                           <span>
-                            <span className="font-semibold text-slate-100">Award:</span>{" "}
+                            <span className="font-semibold text-slate-100">
+                              Award:
+                            </span>{" "}
                             {iobzAppliedAiContent.award}
                           </span>
                         </div>
@@ -708,14 +788,18 @@ export default function Enrollment() {
 
                       {/* Outcomes */}
                       <div className="mb-6">
-                        <h4 className="text-slate-100 font-semibold mb-2">Key outcomes</h4>
+                        <h4 className="text-slate-100 font-semibold mb-2">
+                          Key outcomes
+                        </h4>
                         <ul className="grid sm:grid-cols-2 gap-2 text-sm text-slate-300">
-                          {iobzAppliedAiContent.outcomes.slice(0, 4).map((item) => (
-                            <li key={item} className="flex items-start gap-2">
-                              <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5" />
-                              <span>{item}</span>
-                            </li>
-                          ))}
+                          {iobzAppliedAiContent.outcomes
+                            .slice(0, 4)
+                            .map((item) => (
+                              <li key={item} className="flex items-start gap-2">
+                                <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
                         </ul>
                       </div>
 
@@ -771,8 +855,12 @@ export default function Enrollment() {
                       >
                         <cert.icon className="w-8 h-8 text-white" />
                       </div>
-                      <CardTitle className="text-xl text-slate-100">{cert.name}</CardTitle>
-                      <p className="text-sm text-cyan-400/80">{cert.subtitle}</p>
+                      <CardTitle className="text-xl text-slate-100">
+                        {cert.name}
+                      </CardTitle>
+                      <p className="text-sm text-cyan-400/80">
+                        {cert.subtitle}
+                      </p>
                     </CardHeader>
 
                     <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -795,8 +883,13 @@ export default function Enrollment() {
                         </div>
                       </div>
 
-                      <div className="mt-4 pt-4 border-t border-slate-700/50" style={{ marginTop: "auto" }}>
-                        <div className={`text-2xl font-bold bg-gradient-to-r ${cert.color} bg-clip-text text-transparent`}>
+                      <div
+                        className="mt-4 pt-4 border-t border-slate-700/50"
+                        style={{ marginTop: "auto" }}
+                      >
+                        <div
+                          className={`text-2xl font-bold bg-gradient-to-r ${cert.color} bg-clip-text text-transparent`}
+                        >
                           {cert.price}
                         </div>
                         <div className="mt-4">
@@ -834,8 +927,12 @@ export default function Enrollment() {
                       >
                         <diploma.icon className="w-10 h-10 text-white" />
                       </div>
-                      <CardTitle className="text-2xl text-slate-100">{diploma.name}</CardTitle>
-                      <p className="text-sm text-purple-400/80">{diploma.subtitle}</p>
+                      <CardTitle className="text-2xl text-slate-100">
+                        {diploma.name}
+                      </CardTitle>
+                      <p className="text-sm text-purple-400/80">
+                        {diploma.subtitle}
+                      </p>
                     </CardHeader>
 
                     <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -858,8 +955,13 @@ export default function Enrollment() {
                         </div>
                       </div>
 
-                      <div className="mt-4 pt-4 border-t border-slate-700/50" style={{ marginTop: "auto" }}>
-                        <div className={`text-3xl font-bold bg-gradient-to-r ${diploma.color} bg-clip-text text-transparent`}>
+                      <div
+                        className="mt-4 pt-4 border-t border-slate-700/50"
+                        style={{ marginTop: "auto" }}
+                      >
+                        <div
+                          className={`text-3xl font-bold bg-gradient-to-r ${diploma.color} bg-clip-text text-transparent`}
+                        >
                           {diploma.price}
                         </div>
 
@@ -885,7 +987,10 @@ export default function Enrollment() {
 
           <div className="mt-4 flex justify-center gap-3 flex-wrap">
             <Link href="/contact">
-              <Button variant="outline" className="border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/10">
+              <Button
+                variant="outline"
+                className="border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/10"
+              >
                 Contact Us
               </Button>
             </Link>
@@ -960,34 +1065,44 @@ export default function Enrollment() {
                   <Label>Name *</Label>
                   <Input
                     value={form.firstName}
-                    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, firstName: e.target.value })
+                    }
                   />
                 </div>
                 <div>
                   <Label>Surname *</Label>
                   <Input
                     value={form.lastName}
-                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, lastName: e.target.value })
+                    }
                   />
                 </div>
                 <div>
                   <Label>Phone No. *</Label>
                   <Input
                     value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, phone: e.target.value })
+                    }
                   />
                 </div>
                 <div>
                   <Label>Email *</Label>
                   <Input
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
                   />
                 </div>
               </div>
 
               <div>
-                <Label className="mb-2 block font-semibold">Choose Program(s) *</Label>
+                <Label className="mb-2 block font-semibold">
+                  Choose Program(s) *
+                </Label>
                 <div className="grid gap-2">
                   {individualProgramOptions.map((p) => (
                     <label
@@ -1012,7 +1127,9 @@ export default function Enrollment() {
               </div>
 
               <div>
-                <Label className="block mb-2 font-semibold">Choose Graduate or Non-Graduate *</Label>
+                <Label className="block mb-2 font-semibold">
+                  Choose Graduate or Non-Graduate *
+                </Label>
                 <div className="flex gap-4">
                   <label className="flex items-center gap-2">
                     <input
@@ -1075,7 +1192,9 @@ export default function Enrollment() {
                     <Label>Organization’s Name *</Label>
                     <Input
                       value={form.organizationName}
-                      onChange={(e) => setForm({ ...form, organizationName: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, organizationName: e.target.value })
+                      }
                     />
                   </div>
 
@@ -1083,7 +1202,9 @@ export default function Enrollment() {
                     <Label>Contact Person’s Name *</Label>
                     <Input
                       value={form.contactFirstName}
-                      onChange={(e) => setForm({ ...form, contactFirstName: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, contactFirstName: e.target.value })
+                      }
                     />
                   </div>
 
@@ -1091,7 +1212,9 @@ export default function Enrollment() {
                     <Label>Surname *</Label>
                     <Input
                       value={form.contactLastName}
-                      onChange={(e) => setForm({ ...form, contactLastName: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, contactLastName: e.target.value })
+                      }
                     />
                   </div>
 
@@ -1099,14 +1222,18 @@ export default function Enrollment() {
                     <Label>Phone No. *</Label>
                     <Input
                       value={form.corporatePhone}
-                      onChange={(e) => setForm({ ...form, corporatePhone: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, corporatePhone: e.target.value })
+                      }
                     />
                   </div>
                   <div>
                     <Label>Email *</Label>
                     <Input
                       value={form.corporateEmail}
-                      onChange={(e) => setForm({ ...form, corporateEmail: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, corporateEmail: e.target.value })
+                      }
                     />
                   </div>
 
@@ -1119,7 +1246,9 @@ export default function Enrollment() {
                     <Label>Name *</Label>
                     <Input
                       value={form.contactFirstName}
-                      onChange={(e) => setForm({ ...form, contactFirstName: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, contactFirstName: e.target.value })
+                      }
                     />
                   </div>
 
@@ -1127,7 +1256,9 @@ export default function Enrollment() {
                     <Label>Surname *</Label>
                     <Input
                       value={form.contactLastName}
-                      onChange={(e) => setForm({ ...form, contactLastName: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, contactLastName: e.target.value })
+                      }
                     />
                   </div>
 
@@ -1135,7 +1266,9 @@ export default function Enrollment() {
                     <Label>Position / Designation *</Label>
                     <Input
                       value={form.iobzPosition}
-                      onChange={(e) => setForm({ ...form, iobzPosition: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, iobzPosition: e.target.value })
+                      }
                     />
                   </div>
 
@@ -1143,7 +1276,12 @@ export default function Enrollment() {
                     <Label>Bank/Organisation *</Label>
                     <Input
                       value={form.iobzBankOrganisation}
-                      onChange={(e) => setForm({ ...form, iobzBankOrganisation: e.target.value })}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          iobzBankOrganisation: e.target.value,
+                        })
+                      }
                     />
                   </div>
 
@@ -1151,7 +1289,9 @@ export default function Enrollment() {
                     <Label>Phone No. *</Label>
                     <Input
                       value={form.corporatePhone}
-                      onChange={(e) => setForm({ ...form, corporatePhone: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, corporatePhone: e.target.value })
+                      }
                     />
                   </div>
 
@@ -1159,17 +1299,23 @@ export default function Enrollment() {
                     <Label>Email *</Label>
                     <Input
                       value={form.corporateEmail}
-                      onChange={(e) => setForm({ ...form, corporateEmail: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, corporateEmail: e.target.value })
+                      }
                     />
                   </div>
                 </div>
               )}
 
               <div>
-                <Label className="mb-2 block font-semibold">Choose Corporate Program(s) *</Label>
+                <Label className="mb-2 block font-semibold">
+                  Choose Corporate Program(s) *
+                </Label>
                 <div className="grid gap-2">
                   {(isIobz
-                    ? corporateProgramOptions.filter((p) => p.id === "iobz_applied")
+                    ? corporateProgramOptions.filter(
+                        (p) => p.id === "iobz_applied",
+                      )
                     : corporateProgramOptions
                   ).map((p) => (
                     <label
@@ -1179,7 +1325,9 @@ export default function Enrollment() {
                       <Checkbox
                         checked={form.corporateProgramIds.includes(p.id)}
                         disabled={isIobz} // ✅ if IoBZ chosen, only IoBZ program shown and fixed
-                        onCheckedChange={() => !isIobz && toggleCorporateProgram(p.id)}
+                        onCheckedChange={() =>
+                          !isIobz && toggleCorporateProgram(p.id)
+                        }
                       />
                       <div className="flex gap-3">
                         <img
@@ -1197,7 +1345,9 @@ export default function Enrollment() {
               {/* ✅ Only non-IOBZ corporate uploads attendee list */}
               {!isIobz && (
                 <div>
-                  <Label className="font-semibold">Upload the list of attendees *</Label>
+                  <Label className="font-semibold">
+                    Upload the list of attendees *
+                  </Label>
                   <Input
                     type="file"
                     accept=".pdf,.xlsx,.xls,.csv,.doc,.docx,.txt"
@@ -1214,7 +1364,11 @@ export default function Enrollment() {
           )}
 
           <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setOpen(false)} disabled={submitting}>
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={submitting}
+            >
               Cancel
             </Button>
             <Button onClick={submit} disabled={submitting}>

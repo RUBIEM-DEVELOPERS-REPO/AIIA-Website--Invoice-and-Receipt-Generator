@@ -12,9 +12,9 @@
  */
 
 import basicAiCert from "./AIIA FLYERS LATES-2.jpg";
-import aiDiploma from "./AIIA FLYERS LATES-10.jpg";
+import aiDiploma from "./ai_diploma.jpeg";
 import graduateAiCert from "./AIIA FLYERS LATES-12.jpg";
-import postgradAiDiploma from "./AIIA FLYERS LATES-7.jpg"; // ✅ CHANGED
+import postgradAiDiploma from "./postgrad_diploma.jpeg"; // ✅ CHANGED
 import nonGraduateAiCert from "./AIIA FLYERS LATES-13.jpg";
 import advancedAiCert from "./AIIA FLYERS LATES-16.jpg"; // ✅ CHANGED
 import masterAiOrgs from "./AIIA FLYERS LATES-6.jpg";
