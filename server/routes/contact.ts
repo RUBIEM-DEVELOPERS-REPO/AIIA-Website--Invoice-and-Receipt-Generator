@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { sendRegistrationEmail } from "../services/email";
+import { db } from "@db";
+import { contacts } from "@db/schema";
 
 const router = Router();
 
@@ -7,6 +9,13 @@ router.post("/send-email", async (req, res) => {
   const { name, email, subject, message } = req.body;
 
   try {
+    await db.insert(contacts).values({
+      name,
+      email,
+      subject: subject || "Contact Form",
+      message,
+    });
+
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <img src="cid:preloader" alt="AI Institute Africa Logo" style="max-width: 200px; height: auto; margin-bottom: 20px;" />
@@ -34,11 +43,11 @@ router.post("/send-email", async (req, res) => {
     if (success) {
       res.json({ success: true });
     } else {
-      res.status(500).json({ error: "Failed to send email" });
+      res.json({ success: true, note: "Saved but email delivery delayed" });
     }
   } catch (error) {
     console.error("Email sending error:", error);
-    res.status(500).json({ error: "Failed to send email" });
+    res.status(500).json({ error: "Failed to send message" });
   }
 });
 
