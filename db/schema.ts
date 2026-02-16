@@ -171,7 +171,25 @@ export const programApplications = pgTable("program_applications", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const summitRegistrations = pgTable("summit_registrations", {
+  id: serial("id").primaryKey(),
+  referenceNumber: text("reference_number").unique().notNull(),
+  fullName: text("full_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  country: text("country").notNull(),
+  organization: text("organization"),
+  notes: text("notes"),
+  selectedSummits: jsonb("selected_summits").notNull(),
+  status: text("status", {
+    enum: ["registered", "confirmed", "attended", "cancelled"]
+  }).notNull().default("registered"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Schema validations
+export const insertSummitRegistrationSchema = createInsertSchema(summitRegistrations);
+export const selectSummitRegistrationSchema = createSelectSchema(summitRegistrations);
 export const insertContactSchema = createInsertSchema(contacts);
 export const selectContactSchema = createSelectSchema(contacts);
 export const insertNewsletterSchema = createInsertSchema(newsletters);
@@ -242,6 +260,8 @@ export type InsertStudentLead = typeof studentLeads.$inferInsert;
 export type SelectStudentLead = typeof studentLeads.$inferSelect;
 export type InsertProgramApplication = typeof programApplications.$inferInsert;
 export type SelectProgramApplication = typeof programApplications.$inferSelect;
+export type InsertSummitRegistration = typeof summitRegistrations.$inferInsert;
+export type SelectSummitRegistration = typeof summitRegistrations.$inferSelect;
 
 // Additional validation schemas
 export const userRegistrationSchema = z.object({

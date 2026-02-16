@@ -12,6 +12,7 @@ import {
   localArticles, 
   studentLeads,
   programApplications,
+  summitRegistrations,
   eventCreationSchema, 
   insertArticleSchema,
   insertLocalArticleSchema,
@@ -284,6 +285,16 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error("Error fetching contacts:", error);
       res.status(500).json({ message: "Failed to fetch contacts" });
+    }
+  });
+
+  app.get("/api/admin/summit-registrations", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const registrations = await db.select().from(summitRegistrations).orderBy(desc(summitRegistrations.createdAt));
+      res.json(registrations);
+    } catch (error) {
+      console.error("Error fetching summit registrations:", error);
+      res.status(500).json({ message: "Failed to fetch summit registrations" });
     }
   });
 
@@ -1519,6 +1530,18 @@ export function registerRoutes(app: Express): Server {
       }
 
       const referenceNumber = `SUMMIT-${Date.now().toString(36).toUpperCase()}`;
+
+      // Save to database
+      await db.insert(summitRegistrations).values({
+        referenceNumber,
+        fullName,
+        email,
+        phone,
+        country,
+        organization: organization || null,
+        notes: notes || null,
+        selectedSummits: selectedSummits,
+      });
 
       // Format summit names for email
       const summitNames = selectedSummits.map((s: any) => s?.title || "Event").join(", ");
