@@ -86,12 +86,7 @@ export default function Events() {
               <Button
                 size="lg"
                 className="px-8 py-3"
-                onClick={() =>
-                  window.open(
-                    "https://docs.google.com/forms/d/e/1FAIpQLSfaTEz5rXmI_iS844F6SaQF4_tvZsr5MJrcnXYtIrWO5Ff3WQ/viewform",
-                    "_blank",
-                  )
-                }
+                onClick={() => window.location.href = '/ai-africa-summit'}
               >
                 Register Now
               </Button>

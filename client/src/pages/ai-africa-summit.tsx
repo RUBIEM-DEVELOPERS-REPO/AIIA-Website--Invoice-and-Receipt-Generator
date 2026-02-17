@@ -26,6 +26,14 @@ export default function AIAfricaSummit() {
     subject: "",
     message: "",
   });
+  const [regData, setRegData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    country: "",
+    organization: "",
+    notes: "",
+  });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -77,6 +85,56 @@ export default function AIAfricaSummit() {
       });
     },
   });
+
+  const registrationMutation = useMutation({
+    mutationFn: async (data: typeof regData) => {
+      const response = await fetch("/api/summit-applications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...data,
+          selectedSummits: [{ title: "AI Africa Summit 2025" }],
+        }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to register");
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Registration Successful!",
+        description: `Your reference number is ${data.referenceNumber}. A confirmation email has been sent.`,
+      });
+      setRegData({ fullName: "", email: "", phone: "", country: "", organization: "", notes: "" });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Registration failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleRegChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setRegData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleRegSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!regData.fullName || !regData.email || !regData.phone || !regData.country) {
+      toast({
+        title: "Please fill in all required fields",
+        description: "Full name, email, phone and country are required.",
+        variant: "destructive",
+      });
+      return;
+    }
+    registrationMutation.mutate(regData);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -386,36 +444,103 @@ export default function AIAfricaSummit() {
 
             <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg border">
               <div className="flex items-center gap-3 mb-6">
-                <ExternalLink className="w-6 h-6 text-indigo-600" />
+                <Send className="w-6 h-6 text-indigo-600" />
                 <h3 className="text-2xl font-semibold">Registration Form</h3>
               </div>
 
-              <div className="w-full h-[600px] md:h-[700px] rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-                <iframe
-                  src="https://docs.google.com/forms/d/e/1FAIpQLSfaTEz5rXmI_iS844F6SaQF4_tvZsr5MJrcnXYtIrWO5Ff3WQ/viewform"
-                  className="w-full h-full"
-                  frameBorder="0"
-                  title="AI Africa Summit Registration Form"
+              <form onSubmit={handleRegSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Full Name *</label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={regData.fullName}
+                    onChange={handleRegChange}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500 outline-none"
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Email Address *</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={regData.email}
+                      onChange={handleRegChange}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      placeholder="your@email.com"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Phone Number *</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={regData.phone}
+                      onChange={handleRegChange}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      placeholder="+263..."
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Country *</label>
+                    <input
+                      type="text"
+                      name="country"
+                      value={regData.country}
+                      onChange={handleRegChange}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      placeholder="Your country"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Organization</label>
+                    <input
+                      type="text"
+                      name="organization"
+                      value={regData.organization}
+                      onChange={handleRegChange}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      placeholder="Company or organization (optional)"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Additional Notes</label>
+                  <textarea
+                    name="notes"
+                    value={regData.notes}
+                    onChange={handleRegChange}
+                    rows={3}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500 outline-none"
+                    placeholder="Any special requirements or questions (optional)"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={registrationMutation.isPending}
+                  className="w-full py-3 px-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  Loading registration form...
-                </iframe>
-              </div>
-
-              <div className="mt-6 p-4 bg-indigo-50 dark:bg-indigo-950 rounded-lg border border-indigo-200 dark:border-indigo-800">
-                <p className="text-sm text-indigo-700 dark:text-indigo-300">
-                  <strong>Note:</strong> If the form doesn't load properly, you
-                  can{" "}
-                  <a
-                    href="https://docs.google.com/forms/d/e/1FAIpQLSfaTEz5rXmI_iS844F6SaQF4_tvZsr5MJrcnXYtIrWO5Ff3WQ/viewform"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline hover:text-indigo-900 dark:hover:text-indigo-100"
-                  >
-                    open it in a new tab
-                  </a>
-                  .
-                </p>
-              </div>
+                  {registrationMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      Register Now
+                    </>
+                  )}
+                </button>
+              </form>
             </div>
           </motion.div>
         );
