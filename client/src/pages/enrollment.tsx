@@ -594,7 +594,7 @@ export default function Enrollment() {
               Innovation
             </p>
 
-            <div className="mt-6 flex justify-center">
+            <div className="mt-6 flex justify-center gap-4 flex-wrap">
               <Button
                 onClick={() => openEnroll()}
                 className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold tracking-wider uppercase px-8 py-6"
@@ -602,6 +602,16 @@ export default function Enrollment() {
               >
                 Enroll Now
               </Button>
+              <a href="https://cognify.aiinstituteafrica.com" target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="outline"
+                  className="border-cyan-500/50 text-cyan-300 hover:bg-cyan-500/10 hover:text-cyan-200 font-bold tracking-wider uppercase px-8 py-6"
+                  style={{ fontFamily: "'Orbitron', sans-serif" }}
+                >
+                  <Globe className="w-5 h-5 mr-2" />
+                  E-Learning Platform
+                </Button>
+              </a>
             </div>
           </div>
 
