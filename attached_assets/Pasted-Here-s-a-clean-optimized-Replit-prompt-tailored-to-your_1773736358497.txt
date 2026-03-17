@@ -1,0 +1,74 @@
+Here’s a **clean, optimized Replit prompt** tailored to your exact need (minimal disruption + precise behavior):
+
+```text
+Update the existing “Projects” section of my website by modifying ONLY the CTA behavior for 3 specific projects:
+
+- ADRS
+- NeuroWorks
+- RIFTS-X
+
+DO NOT:
+- Redesign the cards
+- Change layout, spacing, or styling
+- Affect other projects
+- Modify unrelated components (navbar, footer, etc.)
+
+DO:
+- Reuse the existing project card structure and styling
+- Keep everything visually identical except the CTA text + behavior
+
+REQUIREMENTS:
+
+1. For the following projects:
+   - ADRS
+   - NeuroWorks
+   - RIFTS-X
+
+   Update the Call-to-Action button:
+   - Change button text to: **"Request A Demo"**
+   - Ensure consistent styling with existing CTA buttons
+
+2. Button Behavior:
+   - On click, redirect user to the **Contact page**
+   - Use the existing routing method used in the project:
+     - If React Router → use `<Link to="/contact">`
+     - If Next.js → use `<Link href="/contact">`
+     - If plain HTML → use `<a href="/contact">`
+   - Do NOT open a new tab unless the rest of the site does so
+
+3. Contact Page Behavior:
+   - Ensure the contact page already has (or supports):
+     - Email form OR mailto functionality
+   - If needed, prefill subject line using query params:
+     Example:
+     `/contact?subject=Request Demo - ADRS`
+
+   Apply this per project:
+   - ADRS → "Request Demo - ADRS"
+   - NeuroWorks → "Request Demo - NeuroWorks"
+   - RIFTS-X → "Request Demo - RIFTS-X"
+
+4. For ALL OTHER PROJECTS:
+   - Keep their existing CTA buttons unchanged
+
+5. Implementation Rules:
+   - If projects are stored in a data array → update only those objects
+   - If cards are hardcoded → update only those 3 cards
+   - Keep code clean and reusable
+   - Avoid duplication
+
+6. Bonus (if easy):
+   - Add subtle hover effect to CTA (if already used elsewhere)
+   - Maintain accessibility (aria-labels if applicable)
+
+OUTPUT:
+- Provide ONLY the updated code snippets/files that were modified
+- Clearly indicate what was changed
+```
+
+---
+
+If you want next level polish, I can also:
+
+* Add **modal demo request instead of redirect**
+* Or **auto-fill email body with project details (very powerful for conversions)**

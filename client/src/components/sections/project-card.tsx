@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -29,6 +29,7 @@ interface ProjectCardProps {
   impact: string;
   image: string;
   externalLink?: string;
+  internalLink?: string;
   ctaLabel?: string;
 }
 
@@ -110,6 +111,7 @@ export default function ProjectCard({
   impact,
   image,
   externalLink,
+  internalLink,
   ctaLabel
 }: ProjectCardProps) {
   const cardVariants = {
@@ -248,7 +250,17 @@ export default function ProjectCard({
           </div>
 
           {/* Action Buttons */}
-          {externalLink && (
+          {internalLink && (
+            <div className="pt-2">
+              <Link href={internalLink}>
+                <Button size="sm" className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white" aria-label={ctaLabel || "Request A Demo"}>
+                  <ExternalLink className="w-3 h-3 mr-2" />
+                  {ctaLabel || "Request A Demo"}
+                </Button>
+              </Link>
+            </div>
+          )}
+          {externalLink && !internalLink && (
             <div className="pt-2">
               <a href={externalLink} target="_blank" rel="noopener noreferrer">
                 <Button size="sm" className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white">

@@ -347,7 +347,8 @@ export const PROJECTS = [
     technologies: ["RAG", "Large Language Models", "Knowledge Graphs", "Data Pipelines / ETL", "AI Extraction Engines"],
     impact: "Unlocks enterprise document value, enables trusted AI adoption, creates golden records across organizations, and improves governance, traceability, and AI readiness.",
     image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=500",
-    ctaLabel: "Explore Data Readiness"
+    internalLink: "/contact?subject=Request Demo - ADRS",
+    ctaLabel: "Request A Demo"
   },
   {
     id: 7,
@@ -362,7 +363,8 @@ export const PROJECTS = [
     technologies: ["Natural Language Processing", "Workflow Automation Engines", "AI Agents", "Enterprise Integration Systems", "Governance & Audit Systems"],
     impact: "Increases productivity, reduces manual task execution, enables non-technical users to automate work, and improves compliance and governance.",
     image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=500",
-    ctaLabel: "Automate Your Workforce"
+    internalLink: "/contact?subject=Request Demo - NeuroWorks",
+    ctaLabel: "Request A Demo"
   },
   {
     id: 8,
@@ -377,7 +379,8 @@ export const PROJECTS = [
     technologies: ["Document Digitization", "Tracking Systems", "Audit Trail Systems", "Database Management Systems", "Workflow Automation"],
     impact: "Eliminates lost or misplaced files, improves government efficiency, enables real-time visibility of records, and strengthens accountability and audit trails.",
     image: "https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=500",
-    ctaLabel: "Digitize Records"
+    internalLink: "/contact?subject=Request Demo - RIFTS-X",
+    ctaLabel: "Request A Demo"
   },
   {
     id: 1,

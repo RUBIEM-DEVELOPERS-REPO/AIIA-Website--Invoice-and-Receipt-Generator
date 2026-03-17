@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -35,7 +36,16 @@ export default function Contact() {
   const { toast } = useToast();
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
+    defaultValues: { name: "", email: "", subject: "", message: "" },
   });
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const subject = params.get("subject");
+    if (subject) {
+      form.setValue("subject", subject);
+    }
+  }, [form]);
 
   const mutation = useMutation({
     mutationFn: async (data: ContactFormData) => {
