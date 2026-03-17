@@ -8,9 +8,9 @@ import magayaImage from "@/lib/team/magaya.jpg";
 import chiketaImage from "@/lib/team/chiketa2.jpg";
 import erastusImage from "@/lib/team/erastus.jpg";
 import rusikeImage from "@/lib/team/rusike.jpg";
-import mafiImage from "@/lib/team/mafi.jpg";
-import masikatiImage from "@/lib/team/chris.jpg";
-import giilianImage from "@/lib/team/gillian2.png";
+import perpetuaImage from "@/lib/team/perpetua.jpg";
+import martinImage from "@/lib/team/martin.jpg";
+import ruthImage from "@/lib/team/ruth.jpg";
 
 import newsImage1 from "@/lib/articleimages/fingaz-5.png";
 import newsImage2 from "@/lib/articleimages/fingaz-4.png";
@@ -137,35 +137,25 @@ export const BOARD_MEMBERS = {
         },
       },
       {
-        name: "Munyaradzi Mafi",
-        role: "Secretary",
-        image: mafiImage,
-        bio: "Munyaradzi Mafi is the Head of Digital for Stanbic Bank Zimbabwe. He is a seasoned expert at building technology solutions to deliver value to customers, organizations and the country at large. He has over 10 years of experience building technology systems in Telecoms, Banking and Insurance industries. He is vastly knowledgable in emerging and financial technologies and an established track record successfully delivering technology initiatives as well as building, managing and growing technology capabilities for global organisations. He is a holder of a Bachelors degree in Business Studies and Computer science as well as a Masters in Business Administration allowing him to combine in-depth technical knowledge and refined business acumen and management skills. He is passionate about innovating at the edge and leveraging technology to create solutions that are impactful to society while driving business strategy.",
-        socials: {
-          linkedin: "https://www.linkedin.com/in/munyaradzi-mafi-79640539/",
-          twitter: "https://x.com/gerrymafi?s=21&t=HWrqqLvw0iOr6jcLvBp2fQ",
-        },
-      },
-      {
-        name: "Chris Masikati",
-        role: "Deputy Secretary",
-        image: masikatiImage,
-        bio: "Chris is a seasoned IT professional with over 35 years of experience in electrical engineering and IT, recognized for his success in delivering complex projects. His career includes significant work in Zimbabwe, where he led infrastructure projects at Chinhoyi University of Technology, Great Zimbabwe University, and Midlands State University, as well as serving as UNDP Project Manager for the Ministry of Health's ePMS and PMFS hospital initiative. Now based in the diaspora, Chris is an Oracle Cloud Security Architect and Oracle Cloud Infrastructure Generative AI Professional, consulting for an S&P 500 IT company. He has deep expertise in Oracle Cloud security, generative AI, and IT infrastructure, all applied with a solution-oriented approach to meet evolving business needs. As a thought leader committed to advancing Africa’s tech landscape, Chris is an advocate for the “Solution First” brand mantra, and he actively supports the growth of AI expertise across the continent. His academic background includes an MBA in Technology Management, an MSc in Computer Science, and a BSc in Electrical Engineering.",
-        socials: {
-          linkedin:
-            "https://www.linkedin.com/in/chris-masikati-mba-msc-bsc-itil-prince2%C2%AE-0767121/",
-          twitter: "https://x.com/cmasikati?s=21&t=HWrqqLvw0iOr6jcLvBp2fQ",
-        },
-      },
-      {
-        name: "Mr Gillian Rusike",
+        name: "Ms. Perpetua T. Chimeura",
         role: "Board Member",
-        image: giilianImage,
-        bio: "Gillian Rusike is the visionary Founder and Chief Executive of the Marketers Association of Zimbabwe. A highly respected marketer and multi-award-winning leader, he has significantly elevated the marketing profession in Zimbabwe. Armed with a Bachelor’s degree in marketing management (IMM) and a graduate diploma in marketing (IMM), Gillian's burning desire to uplift the marketing profession led to the establishment of the Marketers Association of Zimbabwe (MAZ) in 2005. Gillian Rusike's passion for success and results earned him the position of Secretary General & Director of the African Marketing Confederation (AMC), a continental body of marketing professionals headquartered in South Africa. Holding a Master’s Degree in Business Leadership (BUSE) and a Masters of Commerce degree in Strategic Marketing (MSU), Gillian's leadership contributions were recognized with the African Leadership Legend Award by The Legacy Building Leaders Institute in 2022. He was also recognized as one of the Iconic Business Leaders of the year 2023 by the Business Connect. In 2013, Junior Chamber International (JCI) honored Gillian as the Outstanding Young Person in Zimbabwe, acknowledging his impactful efforts. Megafest National Business Awards bestowed upon him the Visionary of The Year award in 2014. Beyond his corporate achievements, Gillian's interests extend to nurturing and mentoring upcoming entrepreneurs, leading to the formation of the Entrepreneurs Network of Zimbabwe (ENZ), where he serves as the founder and Board Member. Gillian Rusike's diverse involvement includes serving as Board Chairman of CARE Zimbabwe, the biggest NGO in the country, the past chairperson of the Zimbabwe All Media Research Foundation (ZARF), and maintaining his position on the board. Gillian also saved on the Tourism Business Council of Zimbabwe (TBCZ) board for 6 years spearheading the marketing committee. Throughout his life, Gillian's ambition has been to challenge the status quo for himself and those around him and this led him to start a foundation Boys Engage that focuses on empowering the boy child. A dedicated and hardworking individual, he excels in various areas such as leadership, strategic management, entrepreneurship, marketing strategy, business development, customer relationship marketing, brand management, customer service, and sales management. Gillian Rusike continues to leave inspirational footprints in the realms of leadership, philanthropy and marketing. He is currently studying for a Doctor of Philosophy in Strategic Management with Chinhoyi University of Technology in Zimbabwe.",
-        socials: {
-          linkedin: "https://www.linkedin.com/in/gillian-rusike-2179a215/",
-          twitter: "https://x.com/gilrusike?s=21&t=HWrqqLvw0iOr6jcLvBp2fQ",
-        },
+        image: perpetuaImage,
+        bio: "Ms. Perpetua T. Chimeura is a distinguished professional and valued member of the AI Institute Africa Board. She brings extensive expertise and a strong commitment to advancing artificial intelligence education and innovation across the African continent.",
+        socials: {},
+      },
+      {
+        name: "Eng. Martin Manuhwa",
+        role: "Board Member",
+        image: martinImage,
+        bio: "Eng. Martin Manuhwa is a highly accomplished engineer and strategic leader serving on the AI Institute Africa Board. He brings deep technical expertise and a passion for leveraging engineering innovation to drive AI adoption and capacity building across Africa.",
+        socials: {},
+      },
+      {
+        name: "Ms. Ruth Gorerokufa",
+        role: "Board Member",
+        image: ruthImage,
+        bio: "Ms. Ruth Gorerokufa is a dedicated professional and esteemed member of the AI Institute Africa Board. She is committed to promoting inclusive AI education and empowering communities across Africa through technology and innovation.",
+        socials: {},
       },
     ],
   },

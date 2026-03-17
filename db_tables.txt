@@ -1,0 +1,21 @@
+      table_name      
+----------------------
+ admins
+ articles
+ contacts
+ events
+ local_articles
+ membership_count
+ newsletters
+ payments
+ program_applications
+ random_names
+ session
+ student_leads
+ summit_registrations
+ transactions
+ userrtgs
+ users
+ userwithdrawal
+(17 rows)
+

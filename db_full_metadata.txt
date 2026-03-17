@@ -1,0 +1,330 @@
+===== TABLES =====
+      table_name      
+----------------------
+ admins
+ articles
+ contacts
+ events
+ local_articles
+ membership_count
+ newsletters
+ payments
+ program_applications
+ random_names
+ session
+ student_leads
+ summit_registrations
+ transactions
+ userrtgs
+ users
+ userwithdrawal
+(17 rows)
+
+
+===== COLUMNS =====
+      table_name      |      column_name      |          data_type          | is_nullable |                  column_default                  
+----------------------+-----------------------+-----------------------------+-------------+--------------------------------------------------
+ admins               | id                    | integer                     | NO          | nextval('admins_id_seq'::regclass)
+ admins               | username              | text                        | NO          | 
+ admins               | password              | text                        | NO          | 
+ admins               | full_name             | text                        | NO          | 
+ admins               | role                  | text                        | NO          | 'content_admin'::text
+ admins               | is_active             | boolean                     | YES         | true
+ admins               | last_login_at         | timestamp without time zone | YES         | 
+ admins               | created_at            | timestamp without time zone | NO          | CURRENT_TIMESTAMP
+ admins               | updated_at            | timestamp without time zone | NO          | CURRENT_TIMESTAMP
+ admins               | reset_token           | text                        | YES         | 
+ admins               | reset_token_expiry    | timestamp without time zone | YES         | 
+ articles             | id                    | integer                     | NO          | nextval('articles_id_seq'::regclass)
+ articles             | title                 | text                        | NO          | 
+ articles             | author                | text                        | NO          | 
+ articles             | content               | text                        | NO          | 
+ articles             | image_url             | text                        | YES         | 
+ articles             | requirement           | text                        | NO          | 'Free'::text
+ articles             | created_at            | timestamp without time zone | NO          | now()
+ articles             | updated_at            | timestamp without time zone | NO          | now()
+ contacts             | id                    | integer                     | NO          | nextval('contacts_id_seq'::regclass)
+ contacts             | name                  | text                        | NO          | 
+ contacts             | email                 | text                        | NO          | 
+ contacts             | subject               | text                        | NO          | 
+ contacts             | message               | text                        | NO          | 
+ contacts             | created_at            | timestamp without time zone | NO          | now()
+ events               | id                    | integer                     | NO          | nextval('events_id_seq'::regclass)
+ events               | title                 | text                        | NO          | 
+ events               | description           | text                        | NO          | 
+ events               | date                  | timestamp without time zone | NO          | 
+ events               | location              | text                        | NO          | 
+ events               | type                  | text                        | NO          | 
+ events               | capacity              | integer                     | YES         | 
+ events               | registration_required | boolean                     | YES         | false
+ events               | registration_url      | text                        | YES         | 
+ events               | image_url             | text                        | YES         | 
+ events               | organizer             | text                        | NO          | 
+ events               | status                | text                        | NO          | 'Upcoming'::text
+ events               | created_at            | timestamp without time zone | NO          | now()
+ events               | updated_at            | timestamp without time zone | NO          | now()
+ local_articles       | id                    | integer                     | NO          | nextval('local_articles_id_seq'::regclass)
+ local_articles       | title                 | text                        | NO          | 
+ local_articles       | author                | text                        | NO          | 
+ local_articles       | content               | text                        | NO          | 
+ local_articles       | image_url             | text                        | NO          | 
+ local_articles       | requirement           | text                        | NO          | 'Free'::text
+ local_articles       | created_at            | timestamp without time zone | NO          | now()
+ local_articles       | updated_at            | timestamp without time zone | NO          | now()
+ membership_count     | id                    | integer                     | NO          | nextval('membership_count_id_seq'::regclass)
+ membership_count     | count                 | integer                     | NO          | 0
+ membership_count     | updated_at            | timestamp without time zone | NO          | CURRENT_TIMESTAMP
+ newsletters          | id                    | integer                     | NO          | nextval('newsletters_id_seq'::regclass)
+ newsletters          | email                 | text                        | NO          | 
+ newsletters          | created_at            | timestamp without time zone | NO          | now()
+ payments             | id                    | integer                     | NO          | nextval('payments_id_seq'::regclass)
+ payments             | member_id             | integer                     | YES         | 
+ payments             | plan_name             | text                        | YES         | 
+ payments             | amount                | text                        | YES         | 
+ payments             | billing_cycle         | text                        | YES         | 
+ payments             | status                | text                        | YES         | 'completed'::text
+ payments             | created_at            | timestamp without time zone | NO          | now()
+ payments             | user_id               | integer                     | YES         | 
+ payments             | currency              | text                        | YES         | 'USD'::text
+ payments             | payment_method        | text                        | YES         | 
+ payments             | phone_number          | text                        | YES         | 
+ payments             | provider              | text                        | YES         | 
+ payments             | card_number           | text                        | YES         | 
+ payments             | billing_address       | text                        | YES         | 
+ program_applications | id                    | integer                     | NO          | nextval('program_applications_id_seq'::regclass)
+ program_applications | reference_number      | text                        | NO          | 
+ program_applications | first_name            | text                        | NO          | 
+ program_applications | last_name             | text                        | NO          | 
+ program_applications | email                 | text                        | NO          | 
+ program_applications | graduate_status       | text                        | YES         | 
+ program_applications | selected_programs     | jsonb                       | NO          | 
+ program_applications | document_path         | text                        | YES         | 
+ program_applications | status                | text                        | NO          | 'pending'::text
+ program_applications | admin_notes           | text                        | YES         | 
+ program_applications | reviewed_by           | integer                     | YES         | 
+ program_applications | reviewed_at           | timestamp without time zone | YES         | 
+ program_applications | email_sent            | boolean                     | YES         | false
+ program_applications | created_at            | timestamp without time zone | NO          | now()
+ program_applications | updated_at            | timestamp without time zone | NO          | now()
+ program_applications | training_type         | text                        | YES         | 'individual'::text
+ program_applications | phone                 | text                        | YES         | 
+ program_applications | organization_name     | text                        | YES         | 
+ program_applications | number_of_attendees   | integer                     | YES         | 
+ random_names         | id                    | integer                     | NO          | 
+ random_names         | name                  | character varying           | YES         | 
+ session              | sid                   | character varying           | NO          | 
+ session              | sess                  | json                        | NO          | 
+ session              | expire                | timestamp without time zone | NO          | 
+ student_leads        | id                    | integer                     | NO          | nextval('student_leads_id_seq'::regclass)
+ student_leads        | email                 | text                        | NO          | 
+ student_leads        | phone                 | text                        | NO          | 
+ student_leads        | course_interest       | text                        | NO          | 
+ student_leads        | education_level       | text                        | YES         | 
+ student_leads        | created_at            | timestamp without time zone | NO          | now()
+ summit_registrations | id                    | integer                     | NO          | nextval('summit_registrations_id_seq'::regclass)
+ summit_registrations | reference_number      | text                        | NO          | 
+ summit_registrations | full_name             | text                        | NO          | 
+ summit_registrations | email                 | text                        | NO          | 
+ summit_registrations | phone                 | text                        | NO          | 
+ summit_registrations | country               | text                        | NO          | 
+ summit_registrations | organization          | text                        | YES         | 
+ summit_registrations | notes                 | text                        | YES         | 
+ summit_registrations | selected_summits      | jsonb                       | NO          | 
+ summit_registrations | status                | text                        | NO          | 'registered'::text
+ summit_registrations | created_at            | timestamp without time zone | NO          | CURRENT_TIMESTAMP
+ transactions         | id                    | integer                     | NO          | 
+ transactions         | min                   | integer                     | YES         | 
+ transactions         | percentage            | integer                     | YES         | 
+ transactions         | max                   | integer                     | YES         | 
+ transactions         | category              | text                        | YES         | 
+ userrtgs             | id                    | integer                     | NO          | 
+ userrtgs             | min                   | numeric                     | YES         | 
+ userrtgs             | percentage            | integer                     | YES         | 
+ userrtgs             | max                   | integer                     | YES         | 
+ users                | id                    | integer                     | NO          | nextval('users_id_seq'::regclass)
+ users                | email                 | text                        | NO          | 
+ users                | password              | text                        | NO          | 
+ users                | name                  | text                        | NO          | 
+ users                | membership_type       | text                        | NO          | 'Free'::text
+ users                | membership_status     | text                        | NO          | 'Pending'::text
+ users                | membership_start_date | timestamp without time zone | YES         | 
+ users                | membership_end_date   | timestamp without time zone | YES         | 
+ users                | organization          | text                        | YES         | 
+ users                | role                  | text                        | YES         | 
+ users                | interests             | ARRAY                       | YES         | 
+ users                | country               | text                        | YES         | 
+ users                | is_active             | boolean                     | NO          | true
+ users                | last_login_at         | timestamp without time zone | YES         | 
+ users                | created_at            | timestamp without time zone | NO          | now()
+ users                | updated_at            | timestamp without time zone | NO          | now()
+ users                | membership_key        | text                        | NO          | 
+ users                | company_name          | text                        | YES         | 
+ users                | company_number        | text                        | YES         | 
+ users                | contact_person        | text                        | YES         | 
+ users                | level                 | text                        | YES         | 'user'::text
+ users                | reset_token           | text                        | YES         | 
+ users                | reset_token_expiry    | timestamp without time zone | YES         | 
+ userwithdrawal       | id                    | integer                     | NO          | 
+ userwithdrawal       | min                   | integer                     | YES         | 
+ userwithdrawal       | percentage            | integer                     | YES         | 
+ userwithdrawal       | max                   | integer                     | YES         | 
+(144 rows)
+
+
+===== CONSTRAINTS =====
+      table_name      | constraint_type |              constraint_name               |   column_name    |  foreign_table_name  | foreign_column_name 
+----------------------+-----------------+--------------------------------------------+------------------+----------------------+---------------------
+ admins               | CHECK           | 2200_114689_1_not_null                     |                  |                      | 
+ admins               | CHECK           | 2200_114689_2_not_null                     |                  |                      | 
+ admins               | CHECK           | 2200_114689_3_not_null                     |                  |                      | 
+ admins               | CHECK           | 2200_114689_4_not_null                     |                  |                      | 
+ admins               | CHECK           | 2200_114689_5_not_null                     |                  |                      | 
+ admins               | CHECK           | 2200_114689_8_not_null                     |                  |                      | 
+ admins               | CHECK           | 2200_114689_9_not_null                     |                  |                      | 
+ admins               | CHECK           | admins_role_check                          |                  | admins               | role
+ admins               | PRIMARY KEY     | admins_pkey                                | id               | admins               | id
+ admins               | UNIQUE          | admins_reset_token_key                     | reset_token      | admins               | reset_token
+ admins               | UNIQUE          | admins_username_key                        | username         | admins               | username
+ admins               | UNIQUE          | admins_username_unique                     | username         | admins               | username
+ articles             | CHECK           | 2200_139265_1_not_null                     |                  |                      | 
+ articles             | CHECK           | 2200_139265_2_not_null                     |                  |                      | 
+ articles             | CHECK           | 2200_139265_3_not_null                     |                  |                      | 
+ articles             | CHECK           | 2200_139265_4_not_null                     |                  |                      | 
+ articles             | CHECK           | 2200_139265_6_not_null                     |                  |                      | 
+ articles             | CHECK           | 2200_139265_7_not_null                     |                  |                      | 
+ articles             | CHECK           | 2200_139265_8_not_null                     |                  |                      | 
+ articles             | PRIMARY KEY     | articles_pkey                              | id               | articles             | id
+ contacts             | CHECK           | 2200_24577_1_not_null                      |                  |                      | 
+ contacts             | CHECK           | 2200_24577_2_not_null                      |                  |                      | 
+ contacts             | CHECK           | 2200_24577_3_not_null                      |                  |                      | 
+ contacts             | CHECK           | 2200_24577_4_not_null                      |                  |                      | 
+ contacts             | CHECK           | 2200_24577_5_not_null                      |                  |                      | 
+ contacts             | CHECK           | 2200_24577_6_not_null                      |                  |                      | 
+ contacts             | PRIMARY KEY     | contacts_pkey                              | id               | contacts             | id
+ events               | CHECK           | 2200_147457_11_not_null                    |                  |                      | 
+ events               | CHECK           | 2200_147457_12_not_null                    |                  |                      | 
+ events               | CHECK           | 2200_147457_13_not_null                    |                  |                      | 
+ events               | CHECK           | 2200_147457_14_not_null                    |                  |                      | 
+ events               | CHECK           | 2200_147457_1_not_null                     |                  |                      | 
+ events               | CHECK           | 2200_147457_2_not_null                     |                  |                      | 
+ events               | CHECK           | 2200_147457_3_not_null                     |                  |                      | 
+ events               | CHECK           | 2200_147457_4_not_null                     |                  |                      | 
+ events               | CHECK           | 2200_147457_5_not_null                     |                  |                      | 
+ events               | CHECK           | 2200_147457_6_not_null                     |                  |                      | 
+ events               | CHECK           | events_status_check                        |                  | events               | status
+ events               | CHECK           | events_type_check                          |                  | events               | type
+ events               | PRIMARY KEY     | events_pkey                                | id               | events               | id
+ local_articles       | CHECK           | 2200_131073_1_not_null                     |                  |                      | 
+ local_articles       | CHECK           | 2200_131073_2_not_null                     |                  |                      | 
+ local_articles       | CHECK           | 2200_131073_3_not_null                     |                  |                      | 
+ local_articles       | CHECK           | 2200_131073_4_not_null                     |                  |                      | 
+ local_articles       | CHECK           | 2200_131073_5_not_null                     |                  |                      | 
+ local_articles       | CHECK           | 2200_131073_6_not_null                     |                  |                      | 
+ local_articles       | CHECK           | 2200_131073_7_not_null                     |                  |                      | 
+ local_articles       | CHECK           | 2200_131073_8_not_null                     |                  |                      | 
+ local_articles       | PRIMARY KEY     | local_articles_pkey                        | id               | local_articles       | id
+ membership_count     | CHECK           | 2200_73729_1_not_null                      |                  |                      | 
+ membership_count     | CHECK           | 2200_73729_2_not_null                      |                  |                      | 
+ membership_count     | CHECK           | 2200_73729_3_not_null                      |                  |                      | 
+ membership_count     | PRIMARY KEY     | membership_count_pkey                      | id               | membership_count     | id
+ newsletters          | CHECK           | 2200_24587_1_not_null                      |                  |                      | 
+ newsletters          | CHECK           | 2200_24587_2_not_null                      |                  |                      | 
+ newsletters          | CHECK           | 2200_24587_3_not_null                      |                  |                      | 
+ newsletters          | PRIMARY KEY     | newsletters_pkey                           | id               | newsletters          | id
+ newsletters          | UNIQUE          | newsletters_email_unique                   | email            | newsletters          | email
+ payments             | CHECK           | 2200_40961_1_not_null                      |                  |                      | 
+ payments             | CHECK           | 2200_40961_7_not_null                      |                  |                      | 
+ payments             | FOREIGN KEY     | fk_user                                    | user_id          | users                | id
+ payments             | PRIMARY KEY     | payments_pkey                              | id               | payments             | id
+ program_applications | CHECK           | 2200_360449_14_not_null                    |                  |                      | 
+ program_applications | CHECK           | 2200_360449_15_not_null                    |                  |                      | 
+ program_applications | CHECK           | 2200_360449_1_not_null                     |                  |                      | 
+ program_applications | CHECK           | 2200_360449_2_not_null                     |                  |                      | 
+ program_applications | CHECK           | 2200_360449_3_not_null                     |                  |                      | 
+ program_applications | CHECK           | 2200_360449_4_not_null                     |                  |                      | 
+ program_applications | CHECK           | 2200_360449_5_not_null                     |                  |                      | 
+ program_applications | CHECK           | 2200_360449_7_not_null                     |                  |                      | 
+ program_applications | CHECK           | 2200_360449_9_not_null                     |                  |                      | 
+ program_applications | CHECK           | program_applications_graduate_status_check |                  | program_applications | graduate_status
+ program_applications | CHECK           | program_applications_status_check          |                  | program_applications | status
+ program_applications | FOREIGN KEY     | program_applications_reviewed_by_fkey      | reviewed_by      | admins               | id
+ program_applications | PRIMARY KEY     | program_applications_pkey                  | id               | program_applications | id
+ program_applications | UNIQUE          | program_applications_reference_number_key  | reference_number | program_applications | reference_number
+ random_names         | CHECK           | 2200_188416_1_not_null                     |                  |                      | 
+ random_names         | PRIMARY KEY     | random_names_pkey                          | id               | random_names         | id
+ session              | CHECK           | 2200_65536_1_not_null                      |                  |                      | 
+ session              | CHECK           | 2200_65536_2_not_null                      |                  |                      | 
+ session              | CHECK           | 2200_65536_3_not_null                      |                  |                      | 
+ session              | PRIMARY KEY     | session_pkey                               | sid              | session              | sid
+ student_leads        | CHECK           | 2200_335873_1_not_null                     |                  |                      | 
+ student_leads        | CHECK           | 2200_335873_2_not_null                     |                  |                      | 
+ student_leads        | CHECK           | 2200_335873_3_not_null                     |                  |                      | 
+ student_leads        | CHECK           | 2200_335873_4_not_null                     |                  |                      | 
+ student_leads        | CHECK           | 2200_335873_6_not_null                     |                  |                      | 
+ student_leads        | PRIMARY KEY     | student_leads_pkey                         | id               | student_leads        | id
+ summit_registrations | CHECK           | 2200_401409_10_not_null                    |                  |                      | 
+ summit_registrations | CHECK           | 2200_401409_11_not_null                    |                  |                      | 
+ summit_registrations | CHECK           | 2200_401409_1_not_null                     |                  |                      | 
+ summit_registrations | CHECK           | 2200_401409_2_not_null                     |                  |                      | 
+ summit_registrations | CHECK           | 2200_401409_3_not_null                     |                  |                      | 
+ summit_registrations | CHECK           | 2200_401409_4_not_null                     |                  |                      | 
+ summit_registrations | CHECK           | 2200_401409_5_not_null                     |                  |                      | 
+ summit_registrations | CHECK           | 2200_401409_6_not_null                     |                  |                      | 
+ summit_registrations | CHECK           | 2200_401409_9_not_null                     |                  |                      | 
+ summit_registrations | PRIMARY KEY     | summit_registrations_pkey                  | id               | summit_registrations | id
+ summit_registrations | UNIQUE          | summit_registrations_reference_number_key  | reference_number | summit_registrations | reference_number
+ transactions         | CHECK           | 2200_253959_1_not_null                     |                  |                      | 
+ transactions         | PRIMARY KEY     | transactions_pkey                          | id               | transactions         | id
+ userrtgs             | CHECK           | 2200_204800_1_not_null                     |                  |                      | 
+ userrtgs             | PRIMARY KEY     | userrtgs_pkey                              | id               | userrtgs             | id
+ users                | CHECK           | 2200_57345_13_not_null                     |                  |                      | 
+ users                | CHECK           | 2200_57345_15_not_null                     |                  |                      | 
+ users                | CHECK           | 2200_57345_16_not_null                     |                  |                      | 
+ users                | CHECK           | 2200_57345_17_not_null                     |                  |                      | 
+ users                | CHECK           | 2200_57345_1_not_null                      |                  |                      | 
+ users                | CHECK           | 2200_57345_2_not_null                      |                  |                      | 
+ users                | CHECK           | 2200_57345_3_not_null                      |                  |                      | 
+ users                | CHECK           | 2200_57345_4_not_null                      |                  |                      | 
+ users                | CHECK           | 2200_57345_5_not_null                      |                  |                      | 
+ users                | CHECK           | 2200_57345_6_not_null                      |                  |                      | 
+ users                | CHECK           | users_level_check                          |                  | users                | level
+ users                | PRIMARY KEY     | users_pkey                                 | id               | users                | id
+ users                | UNIQUE          | users_email_key                            | email            | users                | email
+ users                | UNIQUE          | users_reset_token_key                      | reset_token      | users                | reset_token
+ userwithdrawal       | CHECK           | 2200_204805_1_not_null                     |                  |                      | 
+ userwithdrawal       | PRIMARY KEY     | userwithdrawal_pkey                        | id               | userwithdrawal       | id
+(119 rows)
+
+
+===== INDEXES =====
+      tablename       |                 indexname                 |                                                          indexdef                                                           
+----------------------+-------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------
+ admins               | admins_pkey                               | CREATE UNIQUE INDEX admins_pkey ON public.admins USING btree (id)
+ admins               | admins_reset_token_key                    | CREATE UNIQUE INDEX admins_reset_token_key ON public.admins USING btree (reset_token)
+ admins               | admins_username_key                       | CREATE UNIQUE INDEX admins_username_key ON public.admins USING btree (username)
+ admins               | admins_username_unique                    | CREATE UNIQUE INDEX admins_username_unique ON public.admins USING btree (username)
+ articles             | articles_pkey                             | CREATE UNIQUE INDEX articles_pkey ON public.articles USING btree (id)
+ contacts             | contacts_pkey                             | CREATE UNIQUE INDEX contacts_pkey ON public.contacts USING btree (id)
+ events               | events_pkey                               | CREATE UNIQUE INDEX events_pkey ON public.events USING btree (id)
+ local_articles       | local_articles_pkey                       | CREATE UNIQUE INDEX local_articles_pkey ON public.local_articles USING btree (id)
+ membership_count     | membership_count_pkey                     | CREATE UNIQUE INDEX membership_count_pkey ON public.membership_count USING btree (id)
+ newsletters          | newsletters_email_unique                  | CREATE UNIQUE INDEX newsletters_email_unique ON public.newsletters USING btree (email)
+ newsletters          | newsletters_pkey                          | CREATE UNIQUE INDEX newsletters_pkey ON public.newsletters USING btree (id)
+ payments             | payments_pkey                             | CREATE UNIQUE INDEX payments_pkey ON public.payments USING btree (id)
+ program_applications | program_applications_pkey                 | CREATE UNIQUE INDEX program_applications_pkey ON public.program_applications USING btree (id)
+ program_applications | program_applications_reference_number_key | CREATE UNIQUE INDEX program_applications_reference_number_key ON public.program_applications USING btree (reference_number)
+ random_names         | random_names_pkey                         | CREATE UNIQUE INDEX random_names_pkey ON public.random_names USING btree (id)
+ session              | IDX_session_expire                        | CREATE INDEX "IDX_session_expire" ON public.session USING btree (expire)
+ session              | idx_session_expire                        | CREATE INDEX idx_session_expire ON public.session USING btree (expire)
+ session              | session_pkey                              | CREATE UNIQUE INDEX session_pkey ON public.session USING btree (sid)
+ student_leads        | student_leads_pkey                        | CREATE UNIQUE INDEX student_leads_pkey ON public.student_leads USING btree (id)
+ summit_registrations | summit_registrations_pkey                 | CREATE UNIQUE INDEX summit_registrations_pkey ON public.summit_registrations USING btree (id)
+ summit_registrations | summit_registrations_reference_number_key | CREATE UNIQUE INDEX summit_registrations_reference_number_key ON public.summit_registrations USING btree (reference_number)
+ transactions         | transactions_pkey                         | CREATE UNIQUE INDEX transactions_pkey ON public.transactions USING btree (id)
+ userrtgs             | userrtgs_pkey                             | CREATE UNIQUE INDEX userrtgs_pkey ON public.userrtgs USING btree (id)
+ users                | users_email_key                           | CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email)
+ users                | users_pkey                                | CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)
+ users                | users_reset_token_key                     | CREATE UNIQUE INDEX users_reset_token_key ON public.users USING btree (reset_token)
+ userwithdrawal       | userwithdrawal_pkey                       | CREATE UNIQUE INDEX userwithdrawal_pkey ON public.userwithdrawal USING btree (id)
+(27 rows)
+

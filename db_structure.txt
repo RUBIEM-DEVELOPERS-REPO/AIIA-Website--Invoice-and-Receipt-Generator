@@ -1,0 +1,148 @@
+      table_name      |      column_name      |          data_type          | is_nullable |                  column_default                  
+----------------------+-----------------------+-----------------------------+-------------+--------------------------------------------------
+ admins               | id                    | integer                     | NO          | nextval('admins_id_seq'::regclass)
+ admins               | username              | text                        | NO          | 
+ admins               | password              | text                        | NO          | 
+ admins               | full_name             | text                        | NO          | 
+ admins               | role                  | text                        | NO          | 'content_admin'::text
+ admins               | is_active             | boolean                     | YES         | true
+ admins               | last_login_at         | timestamp without time zone | YES         | 
+ admins               | created_at            | timestamp without time zone | NO          | CURRENT_TIMESTAMP
+ admins               | updated_at            | timestamp without time zone | NO          | CURRENT_TIMESTAMP
+ admins               | reset_token           | text                        | YES         | 
+ admins               | reset_token_expiry    | timestamp without time zone | YES         | 
+ articles             | id                    | integer                     | NO          | nextval('articles_id_seq'::regclass)
+ articles             | title                 | text                        | NO          | 
+ articles             | author                | text                        | NO          | 
+ articles             | content               | text                        | NO          | 
+ articles             | image_url             | text                        | YES         | 
+ articles             | requirement           | text                        | NO          | 'Free'::text
+ articles             | created_at            | timestamp without time zone | NO          | now()
+ articles             | updated_at            | timestamp without time zone | NO          | now()
+ contacts             | id                    | integer                     | NO          | nextval('contacts_id_seq'::regclass)
+ contacts             | name                  | text                        | NO          | 
+ contacts             | email                 | text                        | NO          | 
+ contacts             | subject               | text                        | NO          | 
+ contacts             | message               | text                        | NO          | 
+ contacts             | created_at            | timestamp without time zone | NO          | now()
+ events               | id                    | integer                     | NO          | nextval('events_id_seq'::regclass)
+ events               | title                 | text                        | NO          | 
+ events               | description           | text                        | NO          | 
+ events               | date                  | timestamp without time zone | NO          | 
+ events               | location              | text                        | NO          | 
+ events               | type                  | text                        | NO          | 
+ events               | capacity              | integer                     | YES         | 
+ events               | registration_required | boolean                     | YES         | false
+ events               | registration_url      | text                        | YES         | 
+ events               | image_url             | text                        | YES         | 
+ events               | organizer             | text                        | NO          | 
+ events               | status                | text                        | NO          | 'Upcoming'::text
+ events               | created_at            | timestamp without time zone | NO          | now()
+ events               | updated_at            | timestamp without time zone | NO          | now()
+ local_articles       | id                    | integer                     | NO          | nextval('local_articles_id_seq'::regclass)
+ local_articles       | title                 | text                        | NO          | 
+ local_articles       | author                | text                        | NO          | 
+ local_articles       | content               | text                        | NO          | 
+ local_articles       | image_url             | text                        | NO          | 
+ local_articles       | requirement           | text                        | NO          | 'Free'::text
+ local_articles       | created_at            | timestamp without time zone | NO          | now()
+ local_articles       | updated_at            | timestamp without time zone | NO          | now()
+ membership_count     | id                    | integer                     | NO          | nextval('membership_count_id_seq'::regclass)
+ membership_count     | count                 | integer                     | NO          | 0
+ membership_count     | updated_at            | timestamp without time zone | NO          | CURRENT_TIMESTAMP
+ newsletters          | id                    | integer                     | NO          | nextval('newsletters_id_seq'::regclass)
+ newsletters          | email                 | text                        | NO          | 
+ newsletters          | created_at            | timestamp without time zone | NO          | now()
+ payments             | id                    | integer                     | NO          | nextval('payments_id_seq'::regclass)
+ payments             | member_id             | integer                     | YES         | 
+ payments             | plan_name             | text                        | YES         | 
+ payments             | amount                | text                        | YES         | 
+ payments             | billing_cycle         | text                        | YES         | 
+ payments             | status                | text                        | YES         | 'completed'::text
+ payments             | created_at            | timestamp without time zone | NO          | now()
+ payments             | user_id               | integer                     | YES         | 
+ payments             | currency              | text                        | YES         | 'USD'::text
+ payments             | payment_method        | text                        | YES         | 
+ payments             | phone_number          | text                        | YES         | 
+ payments             | provider              | text                        | YES         | 
+ payments             | card_number           | text                        | YES         | 
+ payments             | billing_address       | text                        | YES         | 
+ program_applications | id                    | integer                     | NO          | nextval('program_applications_id_seq'::regclass)
+ program_applications | reference_number      | text                        | NO          | 
+ program_applications | first_name            | text                        | NO          | 
+ program_applications | last_name             | text                        | NO          | 
+ program_applications | email                 | text                        | NO          | 
+ program_applications | graduate_status       | text                        | YES         | 
+ program_applications | selected_programs     | jsonb                       | NO          | 
+ program_applications | document_path         | text                        | YES         | 
+ program_applications | status                | text                        | NO          | 'pending'::text
+ program_applications | admin_notes           | text                        | YES         | 
+ program_applications | reviewed_by           | integer                     | YES         | 
+ program_applications | reviewed_at           | timestamp without time zone | YES         | 
+ program_applications | email_sent            | boolean                     | YES         | false
+ program_applications | created_at            | timestamp without time zone | NO          | now()
+ program_applications | updated_at            | timestamp without time zone | NO          | now()
+ program_applications | training_type         | text                        | YES         | 'individual'::text
+ program_applications | phone                 | text                        | YES         | 
+ program_applications | organization_name     | text                        | YES         | 
+ program_applications | number_of_attendees   | integer                     | YES         | 
+ random_names         | id                    | integer                     | NO          | 
+ random_names         | name                  | character varying           | YES         | 
+ session              | sid                   | character varying           | NO          | 
+ session              | sess                  | json                        | NO          | 
+ session              | expire                | timestamp without time zone | NO          | 
+ student_leads        | id                    | integer                     | NO          | nextval('student_leads_id_seq'::regclass)
+ student_leads        | email                 | text                        | NO          | 
+ student_leads        | phone                 | text                        | NO          | 
+ student_leads        | course_interest       | text                        | NO          | 
+ student_leads        | education_level       | text                        | YES         | 
+ student_leads        | created_at            | timestamp without time zone | NO          | now()
+ summit_registrations | id                    | integer                     | NO          | nextval('summit_registrations_id_seq'::regclass)
+ summit_registrations | reference_number      | text                        | NO          | 
+ summit_registrations | full_name             | text                        | NO          | 
+ summit_registrations | email                 | text                        | NO          | 
+ summit_registrations | phone                 | text                        | NO          | 
+ summit_registrations | country               | text                        | NO          | 
+ summit_registrations | organization          | text                        | YES         | 
+ summit_registrations | notes                 | text                        | YES         | 
+ summit_registrations | selected_summits      | jsonb                       | NO          | 
+ summit_registrations | status                | text                        | NO          | 'registered'::text
+ summit_registrations | created_at            | timestamp without time zone | NO          | CURRENT_TIMESTAMP
+ transactions         | id                    | integer                     | NO          | 
+ transactions         | min                   | integer                     | YES         | 
+ transactions         | percentage            | integer                     | YES         | 
+ transactions         | max                   | integer                     | YES         | 
+ transactions         | category              | text                        | YES         | 
+ userrtgs             | id                    | integer                     | NO          | 
+ userrtgs             | min                   | numeric                     | YES         | 
+ userrtgs             | percentage            | integer                     | YES         | 
+ userrtgs             | max                   | integer                     | YES         | 
+ users                | id                    | integer                     | NO          | nextval('users_id_seq'::regclass)
+ users                | email                 | text                        | NO          | 
+ users                | password              | text                        | NO          | 
+ users                | name                  | text                        | NO          | 
+ users                | membership_type       | text                        | NO          | 'Free'::text
+ users                | membership_status     | text                        | NO          | 'Pending'::text
+ users                | membership_start_date | timestamp without time zone | YES         | 
+ users                | membership_end_date   | timestamp without time zone | YES         | 
+ users                | organization          | text                        | YES         | 
+ users                | role                  | text                        | YES         | 
+ users                | interests             | ARRAY                       | YES         | 
+ users                | country               | text                        | YES         | 
+ users                | is_active             | boolean                     | NO          | true
+ users                | last_login_at         | timestamp without time zone | YES         | 
+ users                | created_at            | timestamp without time zone | NO          | now()
+ users                | updated_at            | timestamp without time zone | NO          | now()
+ users                | membership_key        | text                        | NO          | 
+ users                | company_name          | text                        | YES         | 
+ users                | company_number        | text                        | YES         | 
+ users                | contact_person        | text                        | YES         | 
+ users                | level                 | text                        | YES         | 'user'::text
+ users                | reset_token           | text                        | YES         | 
+ users                | reset_token_expiry    | timestamp without time zone | YES         | 
+ userwithdrawal       | id                    | integer                     | NO          | 
+ userwithdrawal       | min                   | integer                     | YES         | 
+ userwithdrawal       | percentage            | integer                     | YES         | 
+ userwithdrawal       | max                   | integer                     | YES         | 
+(144 rows)
+
