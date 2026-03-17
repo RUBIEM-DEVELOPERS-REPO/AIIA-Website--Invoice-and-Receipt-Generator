@@ -318,67 +318,7 @@ export const LOCAL_ARTICLES = [
 ];
 
 export const PROJECTS = [
-  {
-    id: 1,
-    title: "AI-Powered Maize Disease Detection",
-    description: "Revolutionary agricultural AI system for early detection and classification of maize diseases. Using advanced computer vision and deep learning, this system helps farmers identify crop diseases quickly and accurately to prevent agricultural losses and improve food security across Africa.",
-    status: "Active",
-    category: "Agriculture",
-    startDate: "2024-08-01",
-    endDate: "2025-12-31",
-    progress: 85,
-    team: ["Agricultural Scientists", "AI Engineers", "Plant Pathologists", "Farmers"],
-    technologies: ["Computer Vision", "Deep Learning", "Agricultural Imaging", "Gradio Client", "Disease Classification"],
-    impact: "Supporting over 10,000 farmers across 15 African countries with crop disease prevention",
-    image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=500",
-    externalLink: "https://huggingface.co/spaces/fastinom/Maize_disease"
-  },
-  {
-    id: 2,
-    title: "Skin Disease Classification",
-    description: "Advanced AI model for accurate classification of skin conditions through image analysis. Upload an image of a skin condition, and this model will classify the disease and provide relevant information. Supports 8 major skin condition categories including acne, melanoma, eczema, and fungal infections for improved dermatological care across Africa.",
-    status: "Active",
-    category: "Healthcare",
-    startDate: "2024-09-01",
-    endDate: "2025-11-30",
-    progress: 78,
-    team: ["Dermatologists", "AI Researchers", "Medical Specialists", "Healthcare Workers"],
-    technologies: ["Medical Imaging", "Deep Learning", "Computer Vision", "Disease Classification", "Clinical AI"],
-    impact: "Providing accessible dermatological screening for underserved communities across Africa",
-    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500",
-    externalLink: "https://huggingface.co/spaces/fastinom/Skin_disease"
-  },
-  {
-    id: 3,
-    title: "Hupenyu AI",
-    description: "HUPENYU AI is a powerful AI-driven diagnostic tool transforming healthcare across Zimbabwe. It offers lightning-fast FractureSense™ for precise bone injury detection and MamaScan™ for insightful maternal health predictions — empowering doctors to make life-saving decisions instantly, even in the most remote clinics.",
-    status: "Active",
-    category: "Healthcare",
-    startDate: "2024-10-01",
-    endDate: "2025-10-31",
-    progress: 90,
-    team: ["Medical AI Specialists", "Radiologists", "Maternal Health Experts", "Software Engineers"],
-    technologies: ["FractureSense™", "MamaScan™", "Medical Imaging AI", "Diagnostic Analytics", "Remote Healthcare"],
-    impact: "Transforming healthcare delivery in remote clinics across Zimbabwe with instant AI diagnostics",
-    image: hupenyuBackgroundImage,
-    externalLink: "https://hupenyu-demo-43ad1j9v5-geraldtadikaps-gmailcoms-projects.vercel.app/"
-  },
-  {
-    id: 4,
-    title: "Communications Intelligence Workflow",
-    description: "The Communications Intelligence Workflow is an AI-driven system that automatically creates professional, audience-specific newsletters using real-time web research. Triggered by a webhook receiving a topic, tone, and target audience, the process begins with planning a Table of Contents and selecting sources (Pinecone or Tavily). Each section is researched, summarized, and written based on the audience and tone. The content is then merged, formatted into clean HTML, and enhanced with citations. A compelling subject line is generated, and the final newsletter is emailed to subscribers. Key features include prioritizing Zimbabwean government sources for NDS topics, a 1,000-word limit, and email-ready HTML output—ideal for government, media, and institutional use.",
-    status: "Active",
-    category: "Smart Cities",
-    startDate: "2024-11-01",
-    endDate: "2025-12-31",
-    progress: 85,
-    team: ["AI Engineers", "Content Strategists", "Government Relations", "Communications Specialists"],
-    technologies: ["Webhook Automation", "Real-time Web Research", "AI Content Generation", "HTML Formatting", "Email Automation"],
-    impact: "Streamlining government and institutional communications with automated, research-backed newsletters",
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500",
-    externalLink: "https://replit.com/@devgithub1/ChatPilot"
-  },
-  {
+{
     id: 5,
     title: "Cognify – AI Learning Intelligence System",
     description: "An AI-powered learning platform that transforms traditional education into a personalized, multi-modal, and intelligent learning experience using AI avatars, multilingual content, and adaptive knowledge systems.",
@@ -394,7 +334,7 @@ export const PROJECTS = [
     externalLink: "https://cognify.aiinstituteafrica.com",
     ctaLabel: "Start Learning"
   },
-  {
+{
     id: 6,
     title: "ADRS – AI Data Readiness System",
     description: "A governed data factory that converts raw enterprise documents into structured, traceable, and AI-ready datasets with full audit lineage for use in LLMs, machine learning, and knowledge systems.",
@@ -409,7 +349,7 @@ export const PROJECTS = [
     image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=500",
     ctaLabel: "Explore Data Readiness"
   },
-  {
+{
     id: 7,
     title: "NeuroWorks – AI Workforce Automation Platform",
     description: "An AI-driven workforce system where employees describe tasks in natural language, and the platform converts them into automated workflows, enabling intelligent process execution across systems.",
@@ -424,7 +364,7 @@ export const PROJECTS = [
     image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=500",
     ctaLabel: "Automate Your Workforce"
   },
-  {
+{
     id: 8,
     title: "RIFTS-X – Records Intelligence & File Tracking System",
     description: "A system designed to modernize government record management by providing real-time tracking, digitization, and intelligent monitoring of physical and digital files.",
@@ -438,6 +378,67 @@ export const PROJECTS = [
     impact: "Eliminates lost or misplaced files, improves government efficiency, enables real-time visibility of records, and strengthens accountability and audit trails.",
     image: "https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=500",
     ctaLabel: "Digitize Records"
+  },
+  {,
+{
+    id: 1,
+    title: "AI-Powered Maize Disease Detection",
+    description: "Revolutionary agricultural AI system for early detection and classification of maize diseases. Using advanced computer vision and deep learning, this system helps farmers identify crop diseases quickly and accurately to prevent agricultural losses and improve food security across Africa.",
+    status: "Active",
+    category: "Agriculture",
+    startDate: "2024-08-01",
+    endDate: "2025-12-31",
+    progress: 85,
+    team: ["Agricultural Scientists", "AI Engineers", "Plant Pathologists", "Farmers"],
+    technologies: ["Computer Vision", "Deep Learning", "Agricultural Imaging", "Gradio Client", "Disease Classification"],
+    impact: "Supporting over 10,000 farmers across 15 African countries with crop disease prevention",
+    image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=500",
+    externalLink: "https://huggingface.co/spaces/fastinom/Maize_disease"
+  },
+{
+    id: 2,
+    title: "Skin Disease Classification",
+    description: "Advanced AI model for accurate classification of skin conditions through image analysis. Upload an image of a skin condition, and this model will classify the disease and provide relevant information. Supports 8 major skin condition categories including acne, melanoma, eczema, and fungal infections for improved dermatological care across Africa.",
+    status: "Active",
+    category: "Healthcare",
+    startDate: "2024-09-01",
+    endDate: "2025-11-30",
+    progress: 78,
+    team: ["Dermatologists", "AI Researchers", "Medical Specialists", "Healthcare Workers"],
+    technologies: ["Medical Imaging", "Deep Learning", "Computer Vision", "Disease Classification", "Clinical AI"],
+    impact: "Providing accessible dermatological screening for underserved communities across Africa",
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500",
+    externalLink: "https://huggingface.co/spaces/fastinom/Skin_disease"
+  },
+{
+    id: 3,
+    title: "Hupenyu AI",
+    description: "HUPENYU AI is a powerful AI-driven diagnostic tool transforming healthcare across Zimbabwe. It offers lightning-fast FractureSense™ for precise bone injury detection and MamaScan™ for insightful maternal health predictions — empowering doctors to make life-saving decisions instantly, even in the most remote clinics.",
+    status: "Active",
+    category: "Healthcare",
+    startDate: "2024-10-01",
+    endDate: "2025-10-31",
+    progress: 90,
+    team: ["Medical AI Specialists", "Radiologists", "Maternal Health Experts", "Software Engineers"],
+    technologies: ["FractureSense™", "MamaScan™", "Medical Imaging AI", "Diagnostic Analytics", "Remote Healthcare"],
+    impact: "Transforming healthcare delivery in remote clinics across Zimbabwe with instant AI diagnostics",
+    image: hupenyuBackgroundImage,
+    externalLink: "https://hupenyu-demo-43ad1j9v5-geraldtadikaps-gmailcoms-projects.vercel.app/"
+  },
+{
+    id: 4,
+    title: "Communications Intelligence Workflow",
+    description: "The Communications Intelligence Workflow is an AI-driven system that automatically creates professional, audience-specific newsletters using real-time web research. Triggered by a webhook receiving a topic, tone, and target audience, the process begins with planning a Table of Contents and selecting sources (Pinecone or Tavily). Each section is researched, summarized, and written based on the audience and tone. The content is then merged, formatted into clean HTML, and enhanced with citations. A compelling subject line is generated, and the final newsletter is emailed to subscribers. Key features include prioritizing Zimbabwean government sources for NDS topics, a 1,000-word limit, and email-ready HTML output—ideal for government, media, and institutional use.",
+    status: "Active",
+    category: "Smart Cities",
+    startDate: "2024-11-01",
+    endDate: "2025-12-31",
+    progress: 85,
+    team: ["AI Engineers", "Content Strategists", "Government Relations", "Communications Specialists"],
+    technologies: ["Webhook Automation", "Real-time Web Research", "AI Content Generation", "HTML Formatting", "Email Automation"],
+    impact: "Streamlining government and institutional communications with automated, research-backed newsletters",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500",
+    externalLink: "https://replit.com/@devgithub1/ChatPilot"
   }
 ];
 
