@@ -377,6 +377,67 @@ export const PROJECTS = [
     impact: "Streamlining government and institutional communications with automated, research-backed newsletters",
     image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500",
     externalLink: "https://replit.com/@devgithub1/ChatPilot"
+  },
+  {
+    id: 5,
+    title: "Cognify – AI Learning Intelligence System",
+    description: "An AI-powered learning platform that transforms traditional education into a personalized, multi-modal, and intelligent learning experience using AI avatars, multilingual content, and adaptive knowledge systems.",
+    status: "Active",
+    category: "Education",
+    startDate: "2024-01-01",
+    endDate: "2026-12-31",
+    progress: 85,
+    team: ["AI Engineers", "Education Specialists", "Content Creators", "Data Scientists"],
+    technologies: ["Multi-modal AI", "AI Avatars", "Knowledge Graphs", "Learning Management Systems", "KTCE"],
+    impact: "Personalized learning at scale, faster knowledge acquisition, expanded access to education across languages and regions, and a transformation in how people learn globally.",
+    image: "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=500",
+    externalLink: "https://cognify.aiinstituteafrica.com",
+    ctaLabel: "Start Learning"
+  },
+  {
+    id: 6,
+    title: "ADRS – AI Data Readiness System",
+    description: "A governed data factory that converts raw enterprise documents into structured, traceable, and AI-ready datasets with full audit lineage for use in LLMs, machine learning, and knowledge systems.",
+    status: "Active",
+    category: "Enterprise AI",
+    startDate: "2024-01-01",
+    endDate: "2025-12-31",
+    progress: 78,
+    team: ["Data Engineers", "AI/ML Engineers", "Enterprise Architects", "Governance & Compliance Specialists"],
+    technologies: ["RAG", "Large Language Models", "Knowledge Graphs", "Data Pipelines / ETL", "AI Extraction Engines"],
+    impact: "Unlocks enterprise document value, enables trusted AI adoption, creates golden records across organizations, and improves governance, traceability, and AI readiness.",
+    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=500",
+    ctaLabel: "Explore Data Readiness"
+  },
+  {
+    id: 7,
+    title: "NeuroWorks – AI Workforce Automation Platform",
+    description: "An AI-driven workforce system where employees describe tasks in natural language, and the platform converts them into automated workflows, enabling intelligent process execution across systems.",
+    status: "Active",
+    category: "AI Automation",
+    startDate: "2024-01-01",
+    endDate: "2025-12-31",
+    progress: 80,
+    team: ["AI Engineers", "Automation Engineers", "Business Analysts", "Process Designers"],
+    technologies: ["Natural Language Processing", "Workflow Automation Engines", "AI Agents", "Enterprise Integration Systems", "Governance & Audit Systems"],
+    impact: "Increases productivity, reduces manual task execution, enables non-technical users to automate work, and improves compliance and governance.",
+    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=500",
+    ctaLabel: "Automate Your Workforce"
+  },
+  {
+    id: 8,
+    title: "RIFTS-X – Records Intelligence & File Tracking System",
+    description: "A system designed to modernize government record management by providing real-time tracking, digitization, and intelligent monitoring of physical and digital files.",
+    status: "Active",
+    category: "GovTech",
+    startDate: "2024-01-01",
+    endDate: "2025-12-31",
+    progress: 75,
+    team: ["Software Engineers", "Government Systems Specialists", "Data Management Experts", "Operations Analysts"],
+    technologies: ["Document Digitization", "Tracking Systems", "Audit Trail Systems", "Database Management Systems", "Workflow Automation"],
+    impact: "Eliminates lost or misplaced files, improves government efficiency, enables real-time visibility of records, and strengthens accountability and audit trails.",
+    image: "https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=500",
+    ctaLabel: "Digitize Records"
   }
 ];
 

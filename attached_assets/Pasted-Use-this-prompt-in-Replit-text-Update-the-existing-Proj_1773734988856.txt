@@ -1,0 +1,146 @@
+Use this prompt in Replit:
+
+```text
+Update the existing “Projects” section of my website by adding 4 new project cards while preserving the current design language, layout, styling system, spacing, hover behavior, responsiveness, and interactions already used by the other project cards on the site.
+
+Important:
+- Do not rebuild the whole page
+- Do not replace existing projects
+- Do not change the navbar, footer, or other sections
+- Only update the existing Projects section
+- Match the exact visual style and component structure of the current project cards
+- Reuse the existing card component if one already exists
+- Reuse the existing data structure if projects are rendered from an array
+- Keep all existing projects intact and append these new ones appropriately
+- Ensure the new projects blend in naturally with the current website
+
+For each new project card, include these 9 fields exactly as used by the current cards:
+1. Status & Category
+2. Title
+3. Description
+4. Progress
+5. Timeline
+6. Team
+7. Technologies
+8. Impact
+9. Call-to-Action
+
+If the existing Projects section already has:
+- image thumbnails, include suitable project images or placeholders
+- badges, use the same badge styling
+- progress bars, use the same progress component
+- icon rows, follow the same icon pattern
+- tag pills, render team and technologies in the same format
+- CTA buttons, match the same button style and width
+
+Add these 4 projects:
+
+1) COGNIFY
+Status: Active
+Category: Education
+Title: Cognify – AI Learning Intelligence System
+Description: An AI-powered learning platform that transforms traditional education into a personalized, multi-modal, and intelligent learning experience using AI avatars, multilingual content, and adaptive knowledge systems.
+Progress: 85%
+Timeline: 2024 – 2026
+Team:
+- AI Engineers
+- Education Specialists
+- Content Creators
+- Data Scientists
+Technologies:
+- Multi-modal AI
+- AI Avatars
+- Knowledge Graphs
+- Learning Management Systems
+- KTCE
+Impact: Personalized learning at scale, faster knowledge acquisition, expanded access to education across languages and regions, and a transformation in how people learn globally.
+Call-to-Action: Start Learning
+
+2) ADRS
+Status: Active
+Category: Enterprise AI
+Title: ADRS – AI Data Readiness System
+Description: A governed data factory that converts raw enterprise documents into structured, traceable, and AI-ready datasets with full audit lineage for use in LLMs, machine learning, and knowledge systems.
+Progress: 78%
+Timeline: 2024 – 2025
+Team:
+- Data Engineers
+- AI/ML Engineers
+- Enterprise Architects
+- Governance & Compliance Specialists
+Technologies:
+- RAG
+- Large Language Models
+- Knowledge Graphs
+- Data Pipelines / ETL
+- AI Extraction Engines
+- Schema Versioning
+Impact: Unlocks enterprise document value, enables trusted AI adoption, creates golden records across organizations, and improves governance, traceability, and AI readiness.
+Call-to-Action: Explore Data Readiness
+
+3) NEUROWORKS
+Status: Active
+Category: AI Automation
+Title: NeuroWorks – AI Workforce Automation Platform
+Description: An AI-driven workforce system where employees describe tasks in natural language, and the platform converts them into automated workflows, enabling intelligent process execution across systems.
+Progress: 80%
+Timeline: 2024 – 2025
+Team:
+- AI Engineers
+- Automation Engineers
+- Business Analysts
+- Process Designers
+Technologies:
+- Natural Language Processing
+- Workflow Automation Engines
+- AI Agents
+- Enterprise Integration Systems
+- Governance & Audit Systems
+Impact: Increases productivity, reduces manual task execution, enables non-technical users to automate work, and improves compliance and governance.
+Call-to-Action: Automate Your Workforce
+
+4) RIFTS-X
+Status: Active
+Category: GovTech
+Title: RIFTS-X – Records Intelligence & File Tracking System
+Description: A system designed to modernize government record management by providing real-time tracking, digitization, and intelligent monitoring of physical and digital files.
+Progress: 75%
+Timeline: 2024 – 2025
+Team:
+- Software Engineers
+- Government Systems Specialists
+- Data Management Experts
+- Operations Analysts
+Technologies:
+- Document Digitization
+- Tracking Systems
+- Audit Trail Systems
+- Database Management Systems
+- Workflow Automation
+Impact: Eliminates lost or misplaced files, improves government efficiency, enables real-time visibility of records, and strengthens accountability and audit trails.
+Call-to-Action: Digitize Records
+
+Implementation instructions:
+- Find the existing Projects section/component/data source and extend it rather than rewriting it
+- If projects are stored in a data array, append these 4 objects
+- If cards are hardcoded, add 4 new cards using the same markup pattern
+- Preserve current ordering logic unless it makes more sense to place these among similar AI solution projects
+- Keep card heights consistent with the rest of the project grid
+- Use neat text truncation where needed so the layout remains aligned
+- Ensure mobile responsiveness remains intact
+- Keep hover animations and transitions consistent with the existing cards
+- Do not introduce a new design system
+- Do not use placeholder lorem ipsum text
+- Keep the implementation production-ready
+
+Also:
+- Ensure each project has a relevant thumbnail image matching its theme:
+  - Cognify: AI education / digital learning
+  - ADRS: enterprise data / AI documents / data pipelines
+  - NeuroWorks: AI workforce / automation / enterprise workflows
+  - RIFTS-X: records management / government files / digital tracking
+- If the project card schema supports links or slugs, create appropriate values for each
+- If the CTA currently points to demos or project detail pages, wire the new projects consistently with the existing approach
+
+At the end, provide the updated code only for the affected files.
+```

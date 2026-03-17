@@ -29,6 +29,7 @@ interface ProjectCardProps {
   impact: string;
   image: string;
   externalLink?: string;
+  ctaLabel?: string;
 }
 
 const getStatusIcon = (status: string) => {
@@ -79,6 +80,12 @@ const getCategoryColor = (category: string) => {
       return "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200";
     case "Smart Cities":
       return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
+    case "Enterprise AI":
+      return "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200";
+    case "AI Automation":
+      return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
+    case "GovTech":
+      return "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200";
     default:
       return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
   }
@@ -102,7 +109,8 @@ export default function ProjectCard({
   technologies,
   impact,
   image,
-  externalLink
+  externalLink,
+  ctaLabel
 }: ProjectCardProps) {
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -245,7 +253,7 @@ export default function ProjectCard({
               <a href={externalLink} target="_blank" rel="noopener noreferrer">
                 <Button size="sm" className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white">
                   <ExternalLink className="w-3 h-3 mr-2" />
-                  Try Live Demo
+                  {ctaLabel || "Try Live Demo"}
                 </Button>
               </a>
             </div>
