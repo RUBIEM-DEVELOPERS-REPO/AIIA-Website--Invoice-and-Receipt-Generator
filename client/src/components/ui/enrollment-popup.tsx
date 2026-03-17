@@ -173,7 +173,15 @@ export function EnrollmentPopup({ isOpen, onClose }: EnrollmentPopupProps) {
                   <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 4, repeat: Infinity, ease: "linear" }}>
                     <Laptop className="w-5 h-5 text-purple-400" />
                   </motion.div>
-                  <span className="font-bold text-purple-300 tracking-wide" style={{ fontFamily: "'Orbitron', sans-serif" }}>E-Training Platform Coming Soon!</span>
+                  <a
+                    href="https://cognify.aiinstituteafrica.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-purple-300 tracking-wide hover:text-purple-100 underline underline-offset-2 transition-colors"
+                    style={{ fontFamily: "'Orbitron', sans-serif" }}
+                  >
+                    Cognify
+                  </a>
                 </div>
                 <p className="text-sm text-purple-200/70">
                   Free introductory courses will be available online. Stay tuned!
