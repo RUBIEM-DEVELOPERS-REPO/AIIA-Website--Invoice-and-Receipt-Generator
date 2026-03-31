@@ -15,31 +15,54 @@ interface EmailParams {
   attachments?: EmailAttachment[];
 }
 
-const port_alternatives: number[] = [2525, 8025, 587]; // Only use the first three ports for attempts
+function createTransporter() {
+  // Gmail via App Password (primary)
+  if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+    return nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
+      connectionTimeout: 10000,
+    });
+  }
+  // Gmail via EMAIL_USER / EMAIL_PASSWORD (fallback)
+  if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
+    return nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+      connectionTimeout: 10000,
+    });
+  }
+  // SMTP2GO fallback
+  return nodemailer.createTransport({
+    host: "mail.smtp2go.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.SMTP2GO_USERNAME,
+      pass: process.env.SMTP2GO_PASSWORD,
+    },
+    connectionTimeout: 10000,
+  });
+}
 
 export async function sendRegistrationEmail(
   params: EmailParams,
 ): Promise<boolean> {
-  for (const port of port_alternatives) {
-    try {
-      const transporter = nodemailer.createTransport({
-        host: "mail.smtp2go.com", // Using the primary SMTP server
-        port: port,
-        secure: false, // TLS required for port
-        auth: {
-          user: process.env.SMTP2GO_USERNAME,
-          pass: process.env.SMTP2GO_PASSWORD,
-        },
-        // Adding recommended production settings
-        connectionTimeout: 10000, // 10 seconds
-        greetingTimeout: 10000,
-        socketTimeout: 10000,
-        debug: process.env.NODE_ENV !== "production", // Enable debug logs in development
-        logger: process.env.NODE_ENV !== "production",
-      });
+  try {
+    const transporter = createTransporter();
 
-      // Verify connection configuration before sending
-      await transporter.verify();
+    // Verify connection configuration before sending
+    await transporter.verify();
 
       // Build attachments array - always include logo, add any additional attachments
       const allAttachments = [
@@ -55,7 +78,10 @@ export async function sendRegistrationEmail(
         from: {
           name: "AI Institute Africa",
           address:
-            process.env.SMTP2GO_FROM_EMAIL || "no-reply@aiinstituteafrica.com",
+            process.env.GMAIL_USER ||
+            process.env.EMAIL_USER ||
+            process.env.SMTP2GO_FROM_EMAIL ||
+            "no-reply@aiinstituteafrica.com",
         },
         to: params.to,
         subject: params.subject,
@@ -64,18 +90,15 @@ export async function sendRegistrationEmail(
         attachments: allAttachments,
       });
 
-      console.log("Email sent successfully:", result.messageId);
-      return true; // Return true if email is sent successfully
-    } catch (error) {
-      console.error(`SMTP2GO email error on port ${port}:`, error);
-      if (error instanceof Error) {
-        console.error("Error details:", error.message);
-        console.error("Stack trace:", error.stack);
-      }
+    console.log("Email sent successfully:", result.messageId);
+    return true;
+  } catch (error) {
+    console.error("Email send error:", error);
+    if (error instanceof Error) {
+      console.error("Error details:", error.message);
     }
+    return false;
   }
-
-  return false; // Return false if all attempts fail
 }
 
 export function generateRegistrationEmailContent(
