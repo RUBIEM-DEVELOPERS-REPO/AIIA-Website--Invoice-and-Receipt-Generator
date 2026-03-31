@@ -16,42 +16,22 @@ interface EmailParams {
 }
 
 function createTransporter() {
-  // Gmail via App Password (primary)
-  if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
-    return nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
-      },
-      connectionTimeout: 10000,
-    });
-  }
-  // Gmail via EMAIL_USER / EMAIL_PASSWORD (fallback)
-  if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
-    return nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-      connectionTimeout: 10000,
-    });
-  }
-  // SMTP2GO fallback
+  // SMTP2GO - use SMTP_USER/SMTP_PASS env vars if set (takes priority),
+  // otherwise fall back to SMTP2GO_USERNAME/SMTP2GO_PASSWORD secrets
+  const smtpUser = process.env.SMTP_USER || process.env.SMTP2GO_USERNAME;
+  const smtpPass = process.env.SMTP_PASS || process.env.SMTP2GO_PASSWORD;
+
   return nodemailer.createTransport({
     host: "mail.smtp2go.com",
-    port: 587,
+    port: 2525,
     secure: false,
     auth: {
-      user: process.env.SMTP2GO_USERNAME,
-      pass: process.env.SMTP2GO_PASSWORD,
+      user: smtpUser,
+      pass: smtpPass,
     },
     connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
   });
 }
 
@@ -78,10 +58,8 @@ export async function sendRegistrationEmail(
         from: {
           name: "AI Institute Africa",
           address:
-            process.env.GMAIL_USER ||
-            process.env.EMAIL_USER ||
             process.env.SMTP2GO_FROM_EMAIL ||
-            "no-reply@aiinstituteafrica.com",
+            "admin@aiinstituteafrica.com",
         },
         to: params.to,
         subject: params.subject,

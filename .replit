@@ -43,3 +43,9 @@ waitForPort = 5000
 
 [agent]
 integrations = ["javascript_openai_ai_integrations:2.0.0"]
+
+[userenv]
+
+[userenv.shared]
+SMTP_USER = "aiinstituteafrica.com"
+SMTP_PASS = "cglG5GTmljaBp959"
