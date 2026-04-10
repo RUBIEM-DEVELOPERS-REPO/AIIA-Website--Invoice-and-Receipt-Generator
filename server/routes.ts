@@ -13,6 +13,7 @@ import {
   studentLeads,
   programApplications,
   summitRegistrations,
+  pageVisits,
   eventCreationSchema, 
   insertArticleSchema,
   insertLocalArticleSchema,
@@ -178,6 +179,31 @@ export function registerRoutes(app: Express): Server {
   };
 
   // /api/auth/me endpoint is now handled in auth.ts
+
+  // ─── Traffic tracking middleware ─────────────────────────────────────
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const skip =
+      req.path.startsWith("/api/") ||
+      req.path.startsWith("/src/") ||
+      req.path.startsWith("/@") ||
+      req.path.startsWith("/node_modules/") ||
+      req.path.startsWith("/uploads/") ||
+      req.path.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|map|webp|ts|tsx|json|mjs)$/i);
+    if (!skip) {
+      const ip =
+        (req.headers["x-forwarded-for"] as string || "").split(",")[0].trim() ||
+        req.socket.remoteAddress ||
+        "unknown";
+      const path = req.path || "/";
+      db.insert(pageVisits).values({
+        path,
+        ip,
+        userAgent: req.headers["user-agent"] || null,
+        referer: req.headers["referer"] || null,
+      }).catch(() => {});
+    }
+    next();
+  });
 
   // Register existing routers
   app.use(newsRouter);
@@ -1647,6 +1673,25 @@ export function registerRoutes(app: Express): Server {
       const [totalEvents] = await db.select({ count: sql<number>`count(*)::int` }).from(events);
       const [upcomingEvents] = await db.select({ count: sql<number>`count(*)::int` }).from(events).where(eq(events.status, "Upcoming"));
 
+      // Traffic / page visits
+      const [totalHits] = await db.select({ count: sql<number>`count(*)::int` }).from(pageVisits);
+      const [hitsLast24h] = await db.select({ count: sql<number>`count(*)::int` }).from(pageVisits).where(sql`visited_at >= now() - interval '24 hours'`);
+      const [hitsLast7d] = await db.select({ count: sql<number>`count(*)::int` }).from(pageVisits).where(sql`visited_at >= now() - interval '7 days'`);
+      const [hitsLast30d] = await db.select({ count: sql<number>`count(*)::int` }).from(pageVisits).where(sql`visited_at >= now() - interval '30 days'`);
+
+      const [uniqueIpsTotal] = await db.select({ count: sql<number>`count(distinct ip)::int` }).from(pageVisits);
+      const [uniqueIpsLast7d] = await db.select({ count: sql<number>`count(distinct ip)::int` }).from(pageVisits).where(sql`visited_at >= now() - interval '7 days'`);
+      const [uniqueIpsLast30d] = await db.select({ count: sql<number>`count(distinct ip)::int` }).from(pageVisits).where(sql`visited_at >= now() - interval '30 days'`);
+
+      const topPages = await db.select({
+        path: pageVisits.path,
+        hits: sql<number>`count(*)::int`,
+      }).from(pageVisits)
+        .where(sql`visited_at >= now() - interval '30 days'`)
+        .groupBy(pageVisits.path)
+        .orderBy(sql`count(*) desc`)
+        .limit(10);
+
       const recentMembers = await db.select({
         name: users.name,
         email: users.email,
@@ -1709,6 +1754,16 @@ export function registerRoutes(app: Express): Server {
         events: {
           total: totalEvents?.count || 0,
           upcoming: upcomingEvents?.count || 0,
+        },
+        traffic: {
+          totalHits: totalHits?.count || 0,
+          hitsLast24Hours: hitsLast24h?.count || 0,
+          hitsLast7Days: hitsLast7d?.count || 0,
+          hitsLast30Days: hitsLast30d?.count || 0,
+          uniqueVisitorsAllTime: uniqueIpsTotal?.count || 0,
+          uniqueVisitorsLast7Days: uniqueIpsLast7d?.count || 0,
+          uniqueVisitorsLast30Days: uniqueIpsLast30d?.count || 0,
+          topPageslast30Days: topPages,
         },
       });
     } catch (error) {

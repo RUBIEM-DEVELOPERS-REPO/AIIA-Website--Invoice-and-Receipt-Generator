@@ -187,6 +187,15 @@ export const summitRegistrations = pgTable("summit_registrations", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const pageVisits = pgTable("page_visits", {
+  id: serial("id").primaryKey(),
+  path: text("path").notNull(),
+  ip: text("ip").notNull(),
+  userAgent: text("user_agent"),
+  referer: text("referer"),
+  visitedAt: timestamp("visited_at").defaultNow().notNull(),
+});
+
 // Schema validations
 export const insertSummitRegistrationSchema = createInsertSchema(summitRegistrations);
 export const selectSummitRegistrationSchema = createSelectSchema(summitRegistrations);
