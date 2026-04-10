@@ -37,7 +37,6 @@ import path from "path";
 import fs from "fs";
 import { eq, inArray, sql, asc, desc } from "drizzle-orm";
 import OpenAI from "openai";
-import { sendSmsNotification, buildStatusSmsMessage } from "./services/sms";
 import { 
   sendRegistrationEmail, 
   generateRegistrationEmailContent,
@@ -2031,11 +2030,7 @@ export function registerRoutes(app: Express): Server {
           updatedBy: updatedBy || "CRM System",
         });
 
-        // Fire SMS notification (non-blocking)
-        if (application.phone) {
-          const smsMsg = buildStatusSmsMessage(application.firstName, referenceNumber, status, adminNotes);
-          sendSmsNotification(application.phone, smsMsg).catch(console.error);
-        }
+
       }
 
       res.json({ success: true, referenceNumber, status: status || application.status });
