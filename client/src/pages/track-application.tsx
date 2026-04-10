@@ -235,7 +235,7 @@ export default function TrackApplication() {
                   <div className="mt-3 flex flex-wrap gap-2">
                     {(data.application.selectedPrograms as any[]).map((p: any, i: number) => (
                       <span key={i} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-800 text-gray-300 text-xs border border-gray-700">
-                        <BookOpen className="w-3 h-3 text-cyan-400" />{p.name}
+                        <BookOpen className="w-3 h-3 text-cyan-400" />{typeof p === "string" ? p : p.name}
                       </span>
                     ))}
                   </div>
