@@ -16,6 +16,7 @@ import {
   pageVisits,
   applicationDocuments,
   applicationTimeline,
+  refereeRequests,
   eventCreationSchema, 
   insertArticleSchema,
   insertLocalArticleSchema,
@@ -35,6 +36,8 @@ import { verify_document } from "./service";
 import path from "path";
 import fs from "fs";
 import { eq, inArray, sql, asc, desc } from "drizzle-orm";
+import OpenAI from "openai";
+import { sendSmsNotification, buildStatusSmsMessage } from "./services/sms";
 import { 
   sendRegistrationEmail, 
   generateRegistrationEmailContent,
@@ -157,6 +160,11 @@ const uploadEventImage = multer({
     cb(null, true);
   },
 }).single('image');
+
+const openaiClient = new OpenAI({
+  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+});
 
 export function registerRoutes(app: Express): Server {
   const httpServer = createServer(app);
@@ -1811,6 +1819,181 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // GET /api/track/:ref/cohort — anonymised cohort members for accepted applicants
+  app.get("/api/track/:referenceNumber/cohort", async (req: Request, res: Response) => {
+    const { referenceNumber } = req.params;
+    try {
+      const [application] = await db.select().from(programApplications).where(eq(programApplications.referenceNumber, referenceNumber));
+      if (!application) return res.status(404).json({ message: "Application not found" });
+      if (application.status !== "accepted") return res.status(403).json({ message: "Cohort is only available once your application is accepted." });
+
+      const programs = application.selectedPrograms as any[];
+      const programIds = programs.map((p: any) => p.id);
+
+      const all = await db.select({
+        referenceNumber: programApplications.referenceNumber,
+        firstName: programApplications.firstName,
+        trainingType: programApplications.trainingType,
+        selectedPrograms: programApplications.selectedPrograms,
+        createdAt: programApplications.createdAt,
+      }).from(programApplications).where(eq(programApplications.status, "accepted"));
+
+      const cohort = all
+        .filter((m) => m.referenceNumber !== referenceNumber)
+        .filter((m) => {
+          const mProgIds = (m.selectedPrograms as any[]).map((p: any) => p.id);
+          return programIds.some((id) => mProgIds.includes(id));
+        })
+        .map((m) => ({
+          initial: m.firstName ? m.firstName[0].toUpperCase() + "." : "?",
+          trainingType: m.trainingType,
+          programs: (m.selectedPrograms as any[]).map((p: any) => p.name),
+          enrolledMonth: new Date(m.createdAt).toLocaleString("en-US", { month: "long", year: "numeric" }),
+        }));
+
+      res.json({ cohort, total: cohort.length });
+    } catch (err) {
+      console.error("Cohort error:", err);
+      res.status(500).json({ message: "Failed to load cohort" });
+    }
+  });
+
+  // POST /api/track/:ref/documents/:docId/analyze — AI document checker
+  app.post("/api/track/:referenceNumber/documents/:docId/analyze", async (req: Request, res: Response) => {
+    const { referenceNumber, docId } = req.params;
+    try {
+      const [doc] = await db.select().from(applicationDocuments).where(eq(applicationDocuments.id, parseInt(docId)));
+      if (!doc || doc.referenceNumber !== referenceNumber) return res.status(404).json({ message: "Document not found" });
+
+      let analysis = "";
+      const isImage = doc.mimeType.startsWith("image/");
+
+      if (isImage && fs.existsSync(doc.filePath)) {
+        const base64 = fs.readFileSync(doc.filePath).toString("base64");
+        const result = await openaiClient.chat.completions.create({
+          model: "gpt-4o",
+          messages: [{
+            role: "user",
+            content: [
+              { type: "text", text: `You are reviewing a document submitted for an AI training program application. The applicant labelled this document as: "${doc.category}". Please assess: 1) What type of document this appears to be, 2) Whether it is legible and appears valid, 3) Any issues or recommendations. Be concise (2-4 sentences). Start with "✓" if acceptable or "⚠" if there are concerns.` },
+              { type: "image_url", image_url: { url: `data:${doc.mimeType};base64,${base64}` } },
+            ],
+          }],
+          max_tokens: 200,
+        });
+        analysis = result.choices[0]?.message?.content || "Unable to analyze.";
+      } else {
+        const sizeMB = (doc.fileSize / (1024 * 1024)).toFixed(2);
+        const result = await openaiClient.chat.completions.create({
+          model: "gpt-4o",
+          messages: [{
+            role: "user",
+            content: `You are reviewing a document for an AI training program application. Details — Filename: "${doc.originalName}", File type: ${doc.mimeType}, Size: ${sizeMB} MB, Category: "${doc.category}". Based on this metadata, provide a brief assessment (2-3 sentences) of whether this seems like the right document type for the stated category, and any recommendations. Start with "✓" if it seems appropriate or "⚠" if there are concerns.`,
+          }],
+          max_tokens: 150,
+        });
+        analysis = result.choices[0]?.message?.content || "Unable to analyze.";
+      }
+
+      res.json({ analysis, documentName: doc.originalName, category: doc.category });
+    } catch (err) {
+      console.error("AI analyzer error:", err);
+      res.status(500).json({ message: "AI analysis failed. Please try again." });
+    }
+  });
+
+  // GET /api/track/:ref/referee-requests — list referee requests for an application
+  app.get("/api/track/:referenceNumber/referee-requests", async (req: Request, res: Response) => {
+    const { referenceNumber } = req.params;
+    try {
+      const requests = await db.select().from(refereeRequests).where(eq(refereeRequests.referenceNumber, referenceNumber));
+      res.json(requests);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to load referee requests" });
+    }
+  });
+
+  // POST /api/track/:ref/referee-request — invite a referee
+  app.post("/api/track/:referenceNumber/referee-request", async (req: Request, res: Response) => {
+    const { referenceNumber } = req.params;
+    const { refereeName, refereeEmail } = req.body;
+    if (!refereeName || !refereeEmail) return res.status(400).json({ message: "Referee name and email are required" });
+
+    try {
+      const [application] = await db.select({ firstName: programApplications.firstName, lastName: programApplications.lastName }).from(programApplications).where(eq(programApplications.referenceNumber, referenceNumber));
+      if (!application) return res.status(404).json({ message: "Application not found" });
+
+      const token = require("crypto").randomBytes(24).toString("hex");
+      const [request] = await db.insert(refereeRequests).values({ referenceNumber, refereeName, refereeEmail, uniqueToken: token }).returning();
+
+      const uploadUrl = `https://${process.env.REPLIT_DEV_DOMAIN || "aiinstituteafrica.com"}/referee/${token}`;
+      await sendRegistrationEmail({
+        to: refereeEmail,
+        subject: `Reference Letter Request from ${application.firstName} ${application.lastName} — AI Institute Africa`,
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
+            <h2 style="color:#0891b2;">Reference Letter Request</h2>
+            <p>Dear <strong>${refereeName}</strong>,</p>
+            <p><strong>${application.firstName} ${application.lastName}</strong> has applied to the AI Institute Africa training program and listed you as a referee.</p>
+            <p>Please click the button below to submit your reference letter (any file type is accepted):</p>
+            <div style="text-align:center;margin:30px 0;">
+              <a href="${uploadUrl}" style="background:#0891b2;color:white;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">Submit Reference Letter</a>
+            </div>
+            <p style="color:#666;font-size:13px;">This link is unique to you. Please do not share it. The applicant will be notified once you submit.</p>
+            <p style="color:#666;font-size:12px;">AI Institute Africa · admin@aiinstituteafrica.com</p>
+          </div>`,
+        text: `Reference request from ${application.firstName} ${application.lastName}. Upload at: ${uploadUrl}`,
+      });
+
+      await db.insert(applicationTimeline).values({ referenceNumber, status: "referee_invited", note: `Reference letter requested from ${refereeName} (${refereeEmail})`, updatedBy: "applicant" });
+
+      res.json({ message: "Invitation sent successfully", request });
+    } catch (err) {
+      console.error("Referee request error:", err);
+      res.status(500).json({ message: "Failed to send referee invitation" });
+    }
+  });
+
+  // GET /api/referee/:token — referee views their upload page (metadata only)
+  app.get("/api/referee/:token", async (req: Request, res: Response) => {
+    const [request] = await db.select().from(refereeRequests).where(eq(refereeRequests.uniqueToken, req.params.token));
+    if (!request) return res.status(404).json({ message: "Invalid or expired link" });
+    const [app] = await db.select({ firstName: programApplications.firstName, lastName: programApplications.lastName }).from(programApplications).where(eq(programApplications.referenceNumber, request.referenceNumber));
+    res.json({ refereeName: request.refereeName, applicantName: app ? `${app.firstName} ${app.lastName}` : "the applicant", status: request.status });
+  });
+
+  // POST /api/referee/:token/submit — referee uploads reference letter
+  app.post("/api/referee/:token/submit", (req: Request, res: Response) => {
+    uploadApplicantDoc(req, res, async (err) => {
+      if (err) return res.status(400).json({ message: err.message });
+      if (!req.file) return res.status(400).json({ message: "No file provided" });
+
+      try {
+        const [request] = await db.select().from(refereeRequests).where(eq(refereeRequests.uniqueToken, req.params.token));
+        if (!request) { fs.unlinkSync(req.file.path); return res.status(404).json({ message: "Invalid or expired link" }); }
+        if (request.status === "received") { fs.unlinkSync(req.file.path); return res.status(400).json({ message: "A reference letter has already been submitted for this request" }); }
+
+        const [doc] = await db.insert(applicationDocuments).values({
+          referenceNumber: request.referenceNumber,
+          fileName: req.file.filename,
+          originalName: req.file.originalname,
+          mimeType: req.file.mimetype,
+          fileSize: req.file.size,
+          filePath: req.file.path,
+          category: "Reference Letter",
+        }).returning();
+
+        await db.update(refereeRequests).set({ status: "received", documentId: doc.id }).where(eq(refereeRequests.uniqueToken, req.params.token));
+        await db.insert(applicationTimeline).values({ referenceNumber: request.referenceNumber, status: "referee_submitted", note: `Reference letter received from ${request.refereeName}`, updatedBy: "referee" });
+
+        res.json({ message: "Reference letter submitted successfully. Thank you!" });
+      } catch (error) {
+        if (req.file) fs.unlinkSync(req.file.path);
+        res.status(500).json({ message: "Submission failed" });
+      }
+    });
+  });
+
   // PATCH /api/crm/applications/:ref — CRM updates application status
   app.patch("/api/crm/applications/:referenceNumber", async (req: Request, res: Response) => {
     const crmKey = req.headers["x-crm-api-key"] || req.query.crm_key;
@@ -1847,6 +2030,12 @@ export function registerRoutes(app: Express): Server {
           note: adminNotes || `Status updated to ${status}`,
           updatedBy: updatedBy || "CRM System",
         });
+
+        // Fire SMS notification (non-blocking)
+        if (application.phone) {
+          const smsMsg = buildStatusSmsMessage(application.firstName, referenceNumber, status, adminNotes);
+          sendSmsNotification(application.phone, smsMsg).catch(console.error);
+        }
       }
 
       res.json({ success: true, referenceNumber, status: status || application.status });

@@ -208,6 +208,17 @@ export const applicationTimeline = pgTable("application_timeline", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const refereeRequests = pgTable("referee_requests", {
+  id: serial("id").primaryKey(),
+  referenceNumber: text("reference_number").notNull(),
+  refereeName: text("referee_name").notNull(),
+  refereeEmail: text("referee_email").notNull(),
+  uniqueToken: text("unique_token").unique().notNull(),
+  status: text("status").notNull().default("pending"),
+  documentId: integer("document_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const pageVisits = pgTable("page_visits", {
   id: serial("id").primaryKey(),
   path: text("path").notNull(),
