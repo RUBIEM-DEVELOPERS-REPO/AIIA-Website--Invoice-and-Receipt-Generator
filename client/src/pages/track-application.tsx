@@ -68,6 +68,8 @@ export default function TrackApplication() {
   const [inputRef, setInputRef] = useState("");
   const [activeRef, setActiveRef] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Other");
+  const [pendingFiles, setPendingFiles] = useState<{ file: File; category: string }[]>([]);
+  const [submittingDocs, setSubmittingDocs] = useState(false);
   const [aiResults, setAiResults] = useState<Record<number, string>>({});
   const [analyzingDoc, setAnalyzingDoc] = useState<number | null>(null);
   const [refereeName, setRefereeName] = useState("");
@@ -121,21 +123,34 @@ export default function TrackApplication() {
     onError: (e: any) => toast({ title: "Failed to send", description: e.message, variant: "destructive" }),
   });
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    for (const file of acceptedFiles) {
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const toAdd = acceptedFiles.map(f => ({ file: f, category: selectedCategory }));
+    setPendingFiles(prev => [...prev, ...toAdd]);
+  }, [selectedCategory]);
+
+  const removePending = (idx: number) => setPendingFiles(prev => prev.filter((_, i) => i !== idx));
+
+  const submitDocuments = async () => {
+    if (pendingFiles.length === 0) return;
+    setSubmittingDocs(true);
+    let uploaded = 0;
+    for (const { file, category } of pendingFiles) {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("category", selectedCategory);
+      formData.append("category", category);
       try {
         const res = await fetch(`/api/track/${activeRef}/documents`, { method: "POST", body: formData });
         if (!res.ok) throw new Error((await res.json()).message);
-        toast({ title: "Uploaded", description: file.name });
+        uploaded++;
       } catch (e: any) {
-        toast({ title: "Upload failed", description: e.message, variant: "destructive" });
+        toast({ title: `Failed: ${file.name}`, description: e.message, variant: "destructive" });
       }
     }
+    setPendingFiles([]);
+    setSubmittingDocs(false);
     queryClient.invalidateQueries({ queryKey: ["/api/track", activeRef] });
-  }, [activeRef, selectedCategory, queryClient, toast]);
+    if (uploaded > 0) toast({ title: `${uploaded} document${uploaded > 1 ? "s" : ""} submitted successfully` });
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, disabled: !activeRef });
 
@@ -306,15 +321,35 @@ export default function TrackApplication() {
                       <div {...getRootProps()} className={`border-2 border-dashed rounded-xl p-7 text-center cursor-pointer transition-all ${isDragActive ? "border-cyan-400 bg-cyan-500/10" : "border-gray-700 hover:border-gray-600 bg-gray-800/40"}`}>
                         <input {...getInputProps()} />
                         <Upload className={`w-8 h-8 mx-auto mb-2 ${isDragActive ? "text-cyan-400" : "text-gray-500"}`} />
-                        {isDragActive ? <p className="text-cyan-400 text-sm font-medium">Drop to upload</p> : (
-                          <><p className="text-gray-300 text-sm font-medium">Drag & drop or click to browse</p><p className="text-gray-600 text-xs mt-1">All file types · Max 50 MB</p></>
+                        {isDragActive ? <p className="text-cyan-400 text-sm font-medium">Drop files here</p> : (
+                          <><p className="text-gray-300 text-sm font-medium">Drag & drop or click to browse</p><p className="text-gray-600 text-xs mt-1">All file types · Max 50 MB · multiple files ok</p></>
                         )}
                       </div>
-                      <div className="grid grid-cols-4 gap-1.5">
-                        {[{icon:<FileText className="w-3.5 h-3.5 text-red-400"/>,l:"PDF"},{icon:<FileText className="w-3.5 h-3.5 text-blue-400"/>,l:"Word"},{icon:<Image className="w-3.5 h-3.5 text-pink-400"/>,l:"Images"},{icon:<Music className="w-3.5 h-3.5 text-purple-400"/>,l:"Audio"},{icon:<Video className="w-3.5 h-3.5 text-blue-300"/>,l:"Video"},{icon:<FileText className="w-3.5 h-3.5 text-green-400"/>,l:"Excel"},{icon:<FileText className="w-3.5 h-3.5 text-orange-400"/>,l:"PPT"},{icon:<File className="w-3.5 h-3.5 text-gray-400"/>,l:"Other"}].map(({icon,l})=>(
-                          <div key={l} className="flex flex-col items-center gap-0.5 p-1.5 rounded bg-gray-800 text-center">{icon}<span className="text-gray-600 text-xs">{l}</span></div>
-                        ))}
-                      </div>
+
+                      {/* Staged files queue */}
+                      {pendingFiles.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="text-xs text-gray-400 font-medium">Ready to submit ({pendingFiles.length} file{pendingFiles.length > 1 ? "s" : ""}):</p>
+                          {pendingFiles.map(({ file, category }, idx) => (
+                            <div key={idx} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-800 border border-cyan-500/20">
+                              <div className="shrink-0">{getFileIcon(file.type)}</div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm text-white truncate">{file.name}</p>
+                                <p className="text-xs text-gray-500">{category} · {formatBytes(file.size)}</p>
+                              </div>
+                              <button onClick={() => removePending(idx)} className="p-1 rounded hover:bg-red-500/20 text-gray-500 hover:text-red-400 transition-colors">
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                          <Button onClick={submitDocuments} disabled={submittingDocs} className="w-full bg-cyan-600 hover:bg-cyan-500 gap-2">
+                            {submittingDocs
+                              ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Submitting...</>
+                              : <><Upload className="w-4 h-4" />Submit {pendingFiles.length} Document{pendingFiles.length > 1 ? "s" : ""}</>
+                            }
+                          </Button>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
 

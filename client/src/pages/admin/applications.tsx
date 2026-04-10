@@ -12,7 +12,13 @@ import {
   User,
   Mail,
   GraduationCap,
-  Calendar
+  Calendar,
+  Image,
+  Music,
+  Video,
+  File,
+  Folder,
+  ExternalLink,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -134,6 +140,30 @@ export default function ApplicationsPage() {
       });
     },
   });
+
+  // Fetch tracking documents when view dialog is open
+  const { data: trackingDocs } = useQuery<{ documents: any[]; referenceNumber: string | null }>({
+    queryKey: ["/api/admin/program-applications", selectedApplication?.id, "documents"],
+    queryFn: () => fetch(`/api/admin/program-applications/${selectedApplication!.id}/documents`, { credentials: "include" }).then(r => r.json()),
+    enabled: !!selectedApplication && viewDialogOpen,
+  });
+
+  const getFileIcon = (mimeType: string) => {
+    if (!mimeType) return <File className="w-4 h-4 text-gray-400" />;
+    if (mimeType.startsWith("image/")) return <Image className="w-4 h-4 text-pink-500" />;
+    if (mimeType.startsWith("audio/")) return <Music className="w-4 h-4 text-purple-500" />;
+    if (mimeType.startsWith("video/")) return <Video className="w-4 h-4 text-blue-500" />;
+    if (mimeType === "application/pdf") return <FileText className="w-4 h-4 text-red-500" />;
+    if (mimeType.includes("word")) return <FileText className="w-4 h-4 text-blue-600" />;
+    if (mimeType.includes("excel") || mimeType.includes("spreadsheet")) return <FileText className="w-4 h-4 text-green-600" />;
+    return <File className="w-4 h-4 text-gray-500" />;
+  };
+
+  const formatBytes = (bytes: number) => {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  };
 
   const openViewDialog = (application: Application) => {
     setSelectedApplication(application);
@@ -369,20 +399,74 @@ export default function ApplicationsPage() {
                 </div>
               </div>
 
+              {/* Original document from application form */}
               {selectedApplication.documentPath && (
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-muted-foreground">Uploaded Document</label>
+                  <label className="text-sm font-medium text-muted-foreground">Original Application Document</label>
                   <a
                     href={selectedApplication.documentPath}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-primary hover:underline"
+                    className="flex items-center gap-2 text-primary hover:underline text-sm"
                   >
                     <Download className="h-4 w-4" />
                     View Document
                   </a>
                 </div>
               )}
+
+              {/* Tracking portal documents */}
+              <div className="space-y-2 pt-2 border-t">
+                <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  <Folder className="h-4 w-4" /> Tracking Portal Documents
+                  {trackingDocs && (
+                    <Badge variant="outline" className="ml-1 text-xs">
+                      {trackingDocs.documents.length} file{trackingDocs.documents.length !== 1 ? "s" : ""}
+                    </Badge>
+                  )}
+                </label>
+
+                {!trackingDocs ? (
+                  <p className="text-xs text-muted-foreground">Loading...</p>
+                ) : trackingDocs.documents.length === 0 ? (
+                  <div className="flex items-center gap-2 p-3 rounded-md bg-muted text-sm text-muted-foreground">
+                    <File className="h-4 w-4" />
+                    No documents uploaded via the tracking portal yet.
+                  </div>
+                ) : (
+                  <div className="space-y-1.5 max-h-52 overflow-y-auto">
+                    {trackingDocs.documents.map((doc: any) => (
+                      <div key={doc.id} className="flex items-center gap-3 p-2.5 rounded-md border bg-muted/30 group hover:bg-muted transition-colors">
+                        <div className="shrink-0">{getFileIcon(doc.mimeType)}</div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{doc.originalName}</p>
+                          <p className="text-xs text-muted-foreground">{doc.category} · {formatBytes(doc.fileSize)} · {new Date(doc.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <a
+                          href={doc.downloadUrl}
+                          download
+                          className="shrink-0 p-1.5 rounded hover:bg-background text-muted-foreground hover:text-foreground transition-colors"
+                          title="Download"
+                        >
+                          <Download className="h-4 w-4" />
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {trackingDocs?.referenceNumber && (
+                  <a
+                    href={`/track-application`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    View applicant portal for {trackingDocs.referenceNumber}
+                  </a>
+                )}
+              </div>
 
               <div className="grid grid-cols-2 gap-4 pt-4 border-t">
                 <div className="space-y-1">

@@ -1420,6 +1420,41 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Admin: Get tracking portal documents for an application
+  app.get("/api/admin/program-applications/:id/documents", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const applicationId = parseInt(req.params.id);
+      const [application] = await db.select()
+        .from(programApplications)
+        .where(eq(programApplications.id, applicationId));
+
+      if (!application) return res.status(404).json({ message: "Application not found" });
+
+      const refNum = (application as any).referenceNumber;
+      if (!refNum) return res.json({ documents: [], referenceNumber: null });
+
+      const documents = await db.execute(
+        sql`SELECT id, reference_number, original_name, category, mime_type, file_size, file_path, created_at
+            FROM application_documents WHERE reference_number = ${refNum} ORDER BY created_at DESC`
+      );
+
+      const docsWithUrls = (documents.rows as any[]).map((d: any) => ({
+        id: d.id,
+        originalName: d.original_name,
+        category: d.category,
+        mimeType: d.mime_type,
+        fileSize: Number(d.file_size),
+        createdAt: d.created_at,
+        downloadUrl: `/api/track/${refNum}/documents/${d.id}/download`,
+      }));
+
+      res.json({ documents: docsWithUrls, referenceNumber: refNum });
+    } catch (error) {
+      console.error("Error fetching tracking documents:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
+    }
+  });
+
   // Admin: Update application status (accept/reject)
   app.patch("/api/admin/program-applications/:id", isAdmin, async (req: Request, res: Response) => {
     try {
