@@ -49,3 +49,4 @@ integrations = ["javascript_openai_ai_integrations:2.0.0"]
 [userenv.shared]
 SMTP_USER = "aiinstituteafrica.com"
 SMTP_PASS = "cglG5GTmljaBp959"
+ANALYTICS_API_KEY = "337e8729e72760e745450f4ad7477d1561c5ac686eaf1e5f0ec4afd60cd0f7c0"
