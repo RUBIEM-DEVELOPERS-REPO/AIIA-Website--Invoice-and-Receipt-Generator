@@ -14,6 +14,8 @@ import {
   programApplications,
   summitRegistrations,
   pageVisits,
+  applicationDocuments,
+  applicationTimeline,
   eventCreationSchema, 
   insertArticleSchema,
   insertLocalArticleSchema,
@@ -1625,6 +1627,232 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error("Error submitting summit application:", error);
       res.status(500).json({ message: "Failed to submit registration" });
+    }
+  });
+
+  // ─── Application Tracking Portal ─────────────────────────────────────
+
+  // Multer for all file types (applicant document uploads)
+  const applicantDocsStorage = multer.diskStorage({
+    destination: (_req, _file, cb) => {
+      const dir = path.join(process.cwd(), "uploads", "applicant-docs");
+      fs.mkdirSync(dir, { recursive: true });
+      cb(null, dir);
+    },
+    filename: (_req, file, cb) => {
+      const unique = Date.now() + "-" + Math.round(Math.random() * 1e6);
+      const ext = path.extname(file.originalname);
+      cb(null, `doc-${unique}${ext}`);
+    },
+  });
+
+  const uploadApplicantDoc = multer({
+    storage: applicantDocsStorage,
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+  }).single("file");
+
+  // GET /api/track/:ref — fetch application, documents, and timeline
+  app.get("/api/track/:referenceNumber", async (req: Request, res: Response) => {
+    const { referenceNumber } = req.params;
+    try {
+      const [application] = await db
+        .select()
+        .from(programApplications)
+        .where(eq(programApplications.referenceNumber, referenceNumber));
+
+      if (!application) {
+        return res.status(404).json({ message: "Application not found. Please check your reference number." });
+      }
+
+      const documents = await db
+        .select()
+        .from(applicationDocuments)
+        .where(eq(applicationDocuments.referenceNumber, referenceNumber))
+        .orderBy(desc(applicationDocuments.uploadedAt));
+
+      const timeline = await db
+        .select()
+        .from(applicationTimeline)
+        .where(eq(applicationTimeline.referenceNumber, referenceNumber))
+        .orderBy(asc(applicationTimeline.createdAt));
+
+      // Seed timeline if empty
+      if (timeline.length === 0) {
+        await db.insert(applicationTimeline).values({
+          referenceNumber,
+          status: "submitted",
+          note: "Application successfully submitted.",
+          updatedBy: "system",
+          createdAt: application.createdAt,
+        });
+        timeline.push({
+          id: 0,
+          referenceNumber,
+          status: "submitted",
+          note: "Application successfully submitted.",
+          updatedBy: "system",
+          createdAt: application.createdAt,
+        });
+      }
+
+      res.json({
+        application: {
+          referenceNumber: application.referenceNumber,
+          firstName: application.firstName,
+          lastName: application.lastName,
+          email: application.email,
+          trainingType: application.trainingType,
+          selectedPrograms: application.selectedPrograms,
+          status: application.status,
+          adminNotes: application.adminNotes,
+          createdAt: application.createdAt,
+          updatedAt: application.updatedAt,
+        },
+        documents,
+        timeline,
+      });
+    } catch (err) {
+      console.error("Track application error:", err);
+      res.status(500).json({ message: "Failed to retrieve application" });
+    }
+  });
+
+  // POST /api/track/:ref/documents — upload a document
+  app.post("/api/track/:referenceNumber/documents", (req: Request, res: Response) => {
+    const { referenceNumber } = req.params;
+
+    uploadApplicantDoc(req, res, async (err) => {
+      if (err) return res.status(400).json({ message: err.message || "Upload failed" });
+      if (!req.file) return res.status(400).json({ message: "No file provided" });
+
+      try {
+        const [application] = await db
+          .select({ id: programApplications.id })
+          .from(programApplications)
+          .where(eq(programApplications.referenceNumber, referenceNumber));
+
+        if (!application) {
+          fs.unlinkSync(req.file.path);
+          return res.status(404).json({ message: "Application not found" });
+        }
+
+        const category = (req.body.category as string) || "Other";
+        const [doc] = await db.insert(applicationDocuments).values({
+          referenceNumber,
+          fileName: req.file.filename,
+          originalName: req.file.originalname,
+          mimeType: req.file.mimetype,
+          fileSize: req.file.size,
+          filePath: req.file.path,
+          category,
+        }).returning();
+
+        await db.insert(applicationTimeline).values({
+          referenceNumber,
+          status: "document_uploaded",
+          note: `Document uploaded: ${req.file.originalname}`,
+          updatedBy: "applicant",
+        });
+
+        res.json({ message: "File uploaded successfully", document: doc });
+      } catch (error) {
+        console.error("Document upload error:", error);
+        if (req.file) fs.unlinkSync(req.file.path);
+        res.status(500).json({ message: "Failed to save document" });
+      }
+    });
+  });
+
+  // DELETE /api/track/:ref/documents/:id — remove a document
+  app.delete("/api/track/:referenceNumber/documents/:docId", async (req: Request, res: Response) => {
+    const { referenceNumber, docId } = req.params;
+    try {
+      const [doc] = await db
+        .select()
+        .from(applicationDocuments)
+        .where(eq(applicationDocuments.id, parseInt(docId)));
+
+      if (!doc || doc.referenceNumber !== referenceNumber) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      if (fs.existsSync(doc.filePath)) fs.unlinkSync(doc.filePath);
+      await db.delete(applicationDocuments).where(eq(applicationDocuments.id, parseInt(docId)));
+
+      res.json({ message: "Document removed" });
+    } catch (err) {
+      console.error("Delete doc error:", err);
+      res.status(500).json({ message: "Failed to delete document" });
+    }
+  });
+
+  // GET /api/track/:ref/documents/:id/download — download a document
+  app.get("/api/track/:referenceNumber/documents/:docId/download", async (req: Request, res: Response) => {
+    const { referenceNumber, docId } = req.params;
+    try {
+      const [doc] = await db
+        .select()
+        .from(applicationDocuments)
+        .where(eq(applicationDocuments.id, parseInt(docId)));
+
+      if (!doc || doc.referenceNumber !== referenceNumber) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      if (!fs.existsSync(doc.filePath)) {
+        return res.status(404).json({ message: "File no longer available" });
+      }
+
+      res.setHeader("Content-Disposition", `attachment; filename="${doc.originalName}"`);
+      res.setHeader("Content-Type", doc.mimeType);
+      res.sendFile(path.resolve(doc.filePath));
+    } catch (err) {
+      res.status(500).json({ message: "Download failed" });
+    }
+  });
+
+  // PATCH /api/crm/applications/:ref — CRM updates application status
+  app.patch("/api/crm/applications/:referenceNumber", async (req: Request, res: Response) => {
+    const crmKey = req.headers["x-crm-api-key"] || req.query.crm_key;
+    if (!crmKey || crmKey !== process.env.CRM_API_KEY) {
+      return res.status(401).json({ error: "Unauthorized: invalid CRM API key" });
+    }
+
+    const { referenceNumber } = req.params;
+    const { status, adminNotes, updatedBy } = req.body;
+
+    const validStatuses = ["pending", "under_review", "accepted", "rejected"];
+    if (status && !validStatuses.includes(status)) {
+      return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(", ")}` });
+    }
+
+    try {
+      const [application] = await db
+        .select()
+        .from(programApplications)
+        .where(eq(programApplications.referenceNumber, referenceNumber));
+
+      if (!application) return res.status(404).json({ error: "Application not found" });
+
+      const updateData: any = { updatedAt: new Date() };
+      if (status) updateData.status = status;
+      if (adminNotes !== undefined) updateData.adminNotes = adminNotes;
+
+      await db.update(programApplications).set(updateData).where(eq(programApplications.referenceNumber, referenceNumber));
+
+      if (status && status !== application.status) {
+        await db.insert(applicationTimeline).values({
+          referenceNumber,
+          status,
+          note: adminNotes || `Status updated to ${status}`,
+          updatedBy: updatedBy || "CRM System",
+        });
+      }
+
+      res.json({ success: true, referenceNumber, status: status || application.status });
+    } catch (err) {
+      console.error("CRM update error:", err);
+      res.status(500).json({ error: "Failed to update application" });
     }
   });
 

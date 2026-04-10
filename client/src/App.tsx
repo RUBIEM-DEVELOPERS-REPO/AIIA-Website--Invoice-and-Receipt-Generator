@@ -38,6 +38,7 @@ import ArticlesPage from "@/pages/admin/articles";
 import LocalArticlesPage from "@/pages/admin/local-articles";
 import MarketingEmailPage from "@/pages/admin/marketing-email";
 import ApplicationsPage from "@/pages/admin/applications";
+import TrackApplication from "@/pages/track-application";
 import { ChatAssistant } from "@/components/ui/chat-assistant";
 import { EnrollmentPopup, useEnrollmentPopup } from "@/components/ui/enrollment-popup";
 
@@ -80,6 +81,7 @@ function Router() {
           <Route path="/local_articles" component={Local_Articles} />
           <Route path="/ai-africa-summit" component={AIAfricaSummit} />
           <Route path="/enrollment" component={Enrollment} />
+          <Route path="/track-application" component={TrackApplication} />
           <Route path="/forgot-password" component={ForgotPassword} />
           <Route path="/reset-password" component={ResetPassword} />
 

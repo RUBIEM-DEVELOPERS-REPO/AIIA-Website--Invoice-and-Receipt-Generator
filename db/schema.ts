@@ -187,6 +187,27 @@ export const summitRegistrations = pgTable("summit_registrations", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const applicationDocuments = pgTable("application_documents", {
+  id: serial("id").primaryKey(),
+  referenceNumber: text("reference_number").notNull(),
+  fileName: text("file_name").notNull(),
+  originalName: text("original_name").notNull(),
+  mimeType: text("mime_type").notNull(),
+  fileSize: integer("file_size").notNull(),
+  filePath: text("file_path").notNull(),
+  category: text("category").notNull().default("Other"),
+  uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
+});
+
+export const applicationTimeline = pgTable("application_timeline", {
+  id: serial("id").primaryKey(),
+  referenceNumber: text("reference_number").notNull(),
+  status: text("status").notNull(),
+  note: text("note"),
+  updatedBy: text("updated_by").notNull().default("system"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const pageVisits = pgTable("page_visits", {
   id: serial("id").primaryKey(),
   path: text("path").notNull(),

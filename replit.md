@@ -131,6 +131,13 @@ Changelog:
   * Auto-popup modal with conference details and registration contacts
   * Integrated contact information from flyer (phone numbers and email)
   * Responsive design with professional styling and call-to-action buttons
+- April 10, 2026. Added Applicant Self-Service Tracking Portal:
+  * Public page at /track-application — secured by unique reference number
+  * Real-time application status, progress bar, and activity timeline
+  * Drag-and-drop document upload (all file types, 50 MB limit)
+  * CRM integration endpoint PATCH /api/crm/applications/:ref (X-CRM-Api-Key header)
+  * Two new DB tables: application_documents, application_timeline
+  * Navbar link added for easy access
 - January 16, 2026. Added Program Application Management System:
   * Database table for program applications with status tracking
   * Application submission endpoint with file upload support
