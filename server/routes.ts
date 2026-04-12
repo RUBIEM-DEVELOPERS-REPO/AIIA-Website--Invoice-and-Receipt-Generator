@@ -37,6 +37,7 @@ import path from "path";
 import fs from "fs";
 import { eq, inArray, sql, asc, desc } from "drizzle-orm";
 import OpenAI from "openai";
+import { fireWebhook } from "./services/webhook";
 import { 
   sendRegistrationEmail, 
   generateRegistrationEmailContent,
@@ -605,6 +606,7 @@ export function registerRoutes(app: Express): Server {
       await transporter.sendMail(mailOptions);
 
       const contact = await db.insert(contacts).values(req.body);
+      fireWebhook("contact.created", { name: req.body.name, email: req.body.email, message: req.body.message }).catch(console.error);
       res.json({ success: true, data: contact });
     } catch (error) {
       console.error("Error sending email:", error);
@@ -692,6 +694,7 @@ export function registerRoutes(app: Express): Server {
       const newsletter = await db.insert(newsletters).values({
         email: req.body.email,
       });
+      fireWebhook("newsletter.subscribed", { email: req.body.email }).catch(console.error);
       res.json({ success: true, data: newsletter });
     } catch (error) {
       if (error instanceof ZodError) {
@@ -1376,6 +1379,20 @@ export function registerRoutes(app: Express): Server {
           });
         }
 
+        fireWebhook("application.created", {
+          referenceNumber,
+          firstName: applicantFirstName,
+          lastName: applicantLastName,
+          email,
+          phone: phone || null,
+          trainingType: trainingType || "individual",
+          organizationName: isCorporate ? organizationName : null,
+          numberOfAttendees: isCorporate && numberOfAttendees ? parseInt(numberOfAttendees) : null,
+          programs: programObjects,
+          status: "pending",
+          submittedAt: new Date().toISOString(),
+        }).catch(console.error);
+
         res.status(201).json({
           message: "Application submitted successfully",
           referenceNumber,
@@ -1612,6 +1629,14 @@ export function registerRoutes(app: Express): Server {
         notes: notes || null,
         selectedSummits: selectedSummits,
       });
+
+      fireWebhook("summit.registration", {
+        referenceNumber,
+        fullName, email, phone, country,
+        organization: organization || null,
+        selectedSummits,
+        registeredAt: new Date().toISOString(),
+      }).catch(console.error);
 
       // Format summit names for email
       const summitNames = selectedSummits.map((s: any) => s?.title || "Event").join(", ");
@@ -2064,8 +2089,20 @@ export function registerRoutes(app: Express): Server {
           note: adminNotes || `Status updated to ${status}`,
           updatedBy: updatedBy || "CRM System",
         });
-
-
+        fireWebhook("application.status_changed", {
+          referenceNumber,
+          previousStatus: application.status,
+          newStatus: status,
+          adminNotes: adminNotes || null,
+          updatedBy: updatedBy || "CRM System",
+          changedAt: new Date().toISOString(),
+          applicant: {
+            firstName: application.firstName,
+            lastName: application.lastName,
+            email: application.email,
+            phone: application.phone,
+          },
+        }).catch(console.error);
       }
 
       res.json({ success: true, referenceNumber, status: status || application.status });
