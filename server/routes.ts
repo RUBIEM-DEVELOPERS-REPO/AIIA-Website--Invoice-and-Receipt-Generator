@@ -2089,6 +2089,52 @@ export function registerRoutes(app: Express): Server {
           note: adminNotes || `Status updated to ${status}`,
           updatedBy: updatedBy || "CRM System",
         });
+
+        // Send email notification to applicant
+        try {
+          if (status === "accepted" || status === "rejected") {
+            const statusEmail = generateApplicationStatusEmail(
+              application.firstName,
+              application.lastName,
+              referenceNumber,
+              status as "accepted" | "rejected",
+              adminNotes,
+            );
+            await sendRegistrationEmail({
+              to: application.email,
+              subject: `Application ${status === "accepted" ? "Accepted" : "Update"} — AI Institute Africa`,
+              html: statusEmail.html,
+              text: statusEmail.text,
+            });
+          } else {
+            // General status update email for pending / under_review
+            const statusLabels: Record<string, string> = {
+              pending: "Pending Review",
+              under_review: "Under Review",
+            };
+            const label = statusLabels[status] || status;
+            await sendRegistrationEmail({
+              to: application.email,
+              subject: `Application Update (${label}) — AI Institute Africa`,
+              html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                  <h2 style="color: #0891b2;">Application Status Update</h2>
+                  <p>Dear ${application.firstName} ${application.lastName},</p>
+                  <p>Your application <strong>${referenceNumber}</strong> has been updated.</p>
+                  <div style="background:#f0fdfa;padding:16px 20px;border-left:4px solid #0891b2;border-radius:4px;margin:20px 0;">
+                    <strong>Current Status:</strong> ${label}${adminNotes ? `<br/><br/>${adminNotes}` : ""}
+                  </div>
+                  <p>If you have any questions, please reply to this email or contact us at admin@aiinstituteafrica.com.</p>
+                  <p>Best regards,<br/><strong>AI Institute Africa</strong></p>
+                </div>
+              `,
+              text: `Dear ${application.firstName},\n\nYour application ${referenceNumber} status has been updated to: ${label}.\n\n${adminNotes || ""}\n\nContact us at admin@aiinstituteafrica.com.\n\nAI Institute Africa`,
+            });
+          }
+        } catch (emailErr) {
+          console.error("CRM status email error:", emailErr);
+        }
+
         fireWebhook("application.status_changed", {
           referenceNumber,
           previousStatus: application.status,

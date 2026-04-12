@@ -254,12 +254,6 @@ export default function TrackApplication() {
                       </span>
                     ))}
                   </div>
-                  {data.application.adminNotes && (
-                    <div className="mt-3 p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/20 text-sm text-cyan-200 flex gap-2">
-                      <Info className="w-4 h-4 mt-0.5 shrink-0 text-cyan-400" />
-                      {data.application.adminNotes}
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 
