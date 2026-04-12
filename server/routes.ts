@@ -37,7 +37,6 @@ import path from "path";
 import fs from "fs";
 import { eq, inArray, sql, asc, desc } from "drizzle-orm";
 import OpenAI from "openai";
-import { fireWebhook } from "./services/webhook";
 import { 
   sendRegistrationEmail, 
   generateRegistrationEmailContent,
@@ -606,7 +605,6 @@ export function registerRoutes(app: Express): Server {
       await transporter.sendMail(mailOptions);
 
       const contact = await db.insert(contacts).values(req.body);
-      fireWebhook("contact.created", { name: req.body.name, email: req.body.email, message: req.body.message }).catch(console.error);
       res.json({ success: true, data: contact });
     } catch (error) {
       console.error("Error sending email:", error);
@@ -694,7 +692,6 @@ export function registerRoutes(app: Express): Server {
       const newsletter = await db.insert(newsletters).values({
         email: req.body.email,
       });
-      fireWebhook("newsletter.subscribed", { email: req.body.email }).catch(console.error);
       res.json({ success: true, data: newsletter });
     } catch (error) {
       if (error instanceof ZodError) {
@@ -1379,20 +1376,6 @@ export function registerRoutes(app: Express): Server {
           });
         }
 
-        fireWebhook("application.created", {
-          referenceNumber,
-          firstName: applicantFirstName,
-          lastName: applicantLastName,
-          email,
-          phone: phone || null,
-          trainingType: trainingType || "individual",
-          organizationName: isCorporate ? organizationName : null,
-          numberOfAttendees: isCorporate && numberOfAttendees ? parseInt(numberOfAttendees) : null,
-          programs: programObjects,
-          status: "pending",
-          submittedAt: new Date().toISOString(),
-        }).catch(console.error);
-
         res.status(201).json({
           message: "Application submitted successfully",
           referenceNumber,
@@ -1629,14 +1612,6 @@ export function registerRoutes(app: Express): Server {
         notes: notes || null,
         selectedSummits: selectedSummits,
       });
-
-      fireWebhook("summit.registration", {
-        referenceNumber,
-        fullName, email, phone, country,
-        organization: organization || null,
-        selectedSummits,
-        registeredAt: new Date().toISOString(),
-      }).catch(console.error);
 
       // Format summit names for email
       const summitNames = selectedSummits.map((s: any) => s?.title || "Event").join(", ");
@@ -2090,65 +2065,6 @@ export function registerRoutes(app: Express): Server {
           updatedBy: updatedBy || "CRM System",
         });
 
-        // Send email notification to applicant
-        try {
-          if (status === "accepted" || status === "rejected") {
-            const statusEmail = generateApplicationStatusEmail(
-              application.firstName,
-              application.lastName,
-              referenceNumber,
-              status as "accepted" | "rejected",
-              adminNotes,
-            );
-            await sendRegistrationEmail({
-              to: application.email,
-              subject: `Application ${status === "accepted" ? "Accepted" : "Update"} — AI Institute Africa`,
-              html: statusEmail.html,
-              text: statusEmail.text,
-            });
-          } else {
-            // General status update email for pending / under_review
-            const statusLabels: Record<string, string> = {
-              pending: "Pending Review",
-              under_review: "Under Review",
-            };
-            const label = statusLabels[status] || status;
-            await sendRegistrationEmail({
-              to: application.email,
-              subject: `Application Update (${label}) — AI Institute Africa`,
-              html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                  <h2 style="color: #0891b2;">Application Status Update</h2>
-                  <p>Dear ${application.firstName} ${application.lastName},</p>
-                  <p>Your application <strong>${referenceNumber}</strong> has been updated.</p>
-                  <div style="background:#f0fdfa;padding:16px 20px;border-left:4px solid #0891b2;border-radius:4px;margin:20px 0;">
-                    <strong>Current Status:</strong> ${label}${adminNotes ? `<br/><br/>${adminNotes}` : ""}
-                  </div>
-                  <p>If you have any questions, please reply to this email or contact us at admin@aiinstituteafrica.com.</p>
-                  <p>Best regards,<br/><strong>AI Institute Africa</strong></p>
-                </div>
-              `,
-              text: `Dear ${application.firstName},\n\nYour application ${referenceNumber} status has been updated to: ${label}.\n\n${adminNotes || ""}\n\nContact us at admin@aiinstituteafrica.com.\n\nAI Institute Africa`,
-            });
-          }
-        } catch (emailErr) {
-          console.error("CRM status email error:", emailErr);
-        }
-
-        fireWebhook("application.status_changed", {
-          referenceNumber,
-          previousStatus: application.status,
-          newStatus: status,
-          adminNotes: adminNotes || null,
-          updatedBy: updatedBy || "CRM System",
-          changedAt: new Date().toISOString(),
-          applicant: {
-            firstName: application.firstName,
-            lastName: application.lastName,
-            email: application.email,
-            phone: application.phone,
-          },
-        }).catch(console.error);
       }
 
       res.json({ success: true, referenceNumber, status: status || application.status });
