@@ -88,6 +88,9 @@ function Router() {
           <Route path="/reset-password" component={ResetPassword} />
 
           {/* Admin Routes */}
+          <Route path="/admin">
+            {() => { window.location.replace("/admin/dashboard"); return null; }}
+          </Route>
           <Route
             path="/admin/forgot-password"
             component={AdminForgotPassword}
