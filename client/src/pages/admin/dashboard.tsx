@@ -16,6 +16,7 @@ import {
   BellRing,
   CircleCheck,
   Mail,
+  Receipt,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
@@ -194,6 +195,18 @@ export default function AdminDashboard() {
                   <Link href="/admin/applications">
                     <FileText className="mr-2 h-4 w-4" />
                     Program Applications
+                  </Link>
+                </Button>
+                <Button asChild className="w-full" variant="outline">
+                  <Link href="/invoices">
+                    <Receipt className="mr-2 h-4 w-4" />
+                    Generated Invoices
+                  </Link>
+                </Button>
+                <Button asChild className="w-full" variant="outline">
+                  <Link href="/receipt">
+                    <Receipt className="mr-2 h-4 w-4 text-emerald-600" />
+                    Manual Receipt Gen
                   </Link>
                 </Button>
                 <Button variant="outline" className="w-full">

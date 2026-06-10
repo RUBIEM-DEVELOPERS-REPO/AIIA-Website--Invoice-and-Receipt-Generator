@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import LoginDialog from "@/components/auth/login-dialog";
-import logoImage from "@/lib/logos/preloader.png";
 import { Badge } from "@/components/ui/badge";
 
 const NAV_ITEMS = [
@@ -91,11 +90,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container flex h-16 items-right justify-between">
-        <Link
-          href="/"
-          className="flex items-center gap-2 font-bold text-2xl text-primary"
-        >
-          <img src={logoImage} alt="AiiA Logo" className="h-8" />
+        <Link href="/" className="flex items-center gap-2 font-bold text-2xl text-primary">
           <span>AI Institute Africa</span>
         </Link>
 

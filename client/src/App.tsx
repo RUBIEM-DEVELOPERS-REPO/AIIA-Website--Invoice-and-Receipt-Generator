@@ -27,6 +27,7 @@ import Chat from "@/pages/chat";
 import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
 import AIAfricaSummit from "@/pages/ai-africa-summit";
+import SummitPortal from "@/pages/summit-portal";
 import Enrollment from "@/pages/enrollment";
 import NotFound from "@/pages/not-found";
 import AdminForgotPassword from "@/pages/admin/forgot-password";
@@ -38,6 +39,8 @@ import ArticlesPage from "@/pages/admin/articles";
 import LocalArticlesPage from "@/pages/admin/local-articles";
 import MarketingEmailPage from "@/pages/admin/marketing-email";
 import ApplicationsPage from "@/pages/admin/applications";
+import InvoicesPage from "@/pages/admin/invoices";
+import AdminReceipt from "@/pages/admin/receipt";
 import TrackApplication from "@/pages/track-application";
 import RefereeUpload from "@/pages/referee-upload";
 import { ChatAssistant } from "@/components/ui/chat-assistant";
@@ -81,7 +84,10 @@ function Router() {
 
           <Route path="/local_articles" component={Local_Articles} />
           <Route path="/ai-africa-summit" component={AIAfricaSummit} />
+          <Route path="/summit-portal" component={SummitPortal} />
           <Route path="/enrollment" component={Enrollment} />
+          <Route path="/receipt" component={AdminReceipt} />
+          <Route path="/invoices" component={InvoicesPage} />
           <Route path="/track-application" component={TrackApplication} />
           <Route path="/referee/:token" component={RefereeUpload} />
           <Route path="/forgot-password" component={ForgotPassword} />
@@ -129,6 +135,16 @@ function Router() {
           <ProtectedAdminRoute
             path="/admin/applications"
             component={ApplicationsPage}
+            requiredRole={["super_admin", "content_admin", "member_admin"]}
+          />
+          <ProtectedAdminRoute
+            path="/admin/invoices"
+            component={InvoicesPage}
+            requiredRole={["super_admin", "content_admin", "member_admin"]}
+          />
+          <ProtectedAdminRoute
+            path="/admin/receipt"
+            component={AdminReceipt}
             requiredRole={["super_admin", "content_admin", "member_admin"]}
           />
 

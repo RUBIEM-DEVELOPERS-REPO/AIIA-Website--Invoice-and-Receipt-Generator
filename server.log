@@ -1,0 +1,90 @@
+
+> rest-express@1.0.0 dev
+> tsx --env-file=.env server/index.ts
+
+Uploads directory verified: /Users/patiencemupikeni/Downloads/AIIA/client/src/lib/uploads
+Starting server initialization...
+Article images directory verified: /Users/patiencemupikeni/Downloads/AIIA/client/src/lib/articleimages
+Testing database connection...
+Database connection successful (3282ms)
+Running database migrations...
+Starting events migration...
+Found 1 existing events, skipping migration
+Migrations completed successfully
+Server error: Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 5000
+}
+Stack trace: Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+Port 5000 in use, attempting retry 1 of 3...
+Attempting to find processes on port 5000...
+Attempting to kill process 36151...
+Successfully killed process 36151 on port 5000
+Attempting to kill process 37040...
+Successfully killed process 37040 on port 5000
+Waiting for port 5000 to be available...
+Server error: Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 5000
+}
+Stack trace: Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+Port 5000 in use, attempting retry 2 of 3...
+Server error: Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 5000
+}
+Stack trace: Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+Port 5000 in use, attempting retry 3 of 3...
+Attempting to find processes on port 5000...
+Error while killing port process: Command failed: lsof -i :5000 -t
+Stack trace: Error: Command failed: lsof -i :5000 -t
+    at genericNodeError (node:internal/errors:985:15)
+    at wrappedFn (node:internal/errors:539:14)
+    at checkExecSyncError (node:child_process:925:11)
+    at execSync (node:child_process:997:15)
+    at killPortProcess (/Users/patiencemupikeni/Downloads/AIIA/server/index.ts:171:24)
+    at Timeout.startServer (/Users/patiencemupikeni/Downloads/AIIA/server/index.ts:193:9)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+Waiting for port 5000 to be available...
+Server running at http://0.0.0.0:5000 (15502ms total startup time)
+Application is ready for connections
+Server running at http://0.0.0.0:5000 (15502ms total startup time)
+Application is ready for connections
+Server running at http://0.0.0.0:5000 (15502ms total startup time)
+Application is ready for connections
+Attempting to find processes on port 5000...
+Attempting to kill process 37671...

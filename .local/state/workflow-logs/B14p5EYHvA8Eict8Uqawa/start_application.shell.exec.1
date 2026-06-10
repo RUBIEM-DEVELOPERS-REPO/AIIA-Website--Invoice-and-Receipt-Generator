@@ -1,0 +1,90 @@
+
+> rest-express@1.0.0 dev
+> tsx server/index.ts
+
+[1G[0KUploads directory verified: /home/runner/workspace/client/src/lib/uploads
+Starting server initialization...
+Article images directory verified: /home/runner/workspace/client/src/lib/articleimages
+Testing database connection...
+Database connection test successful
+Database connection successful (815ms)
+Running database migrations...
+Starting events migration...
+Found 1 existing events, skipping migration
+Migrations completed successfully
+Server error: Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+[90m    at Server.setupListenHandle [as _listen2] (node:net:1908:16)[39m
+[90m    at listenInCluster (node:net:1965:12)[39m
+[90m    at doListen (node:net:2139:7)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)[39m {
+  code: [32m'EADDRINUSE'[39m,
+  errno: [33m-98[39m,
+  syscall: [32m'listen'[39m,
+  address: [32m'0.0.0.0'[39m,
+  port: [33m5000[39m
+}
+Stack trace: Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at doListen (node:net:2139:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+Port 5000 in use, attempting retry 1 of 3...
+Attempting to find processes on port 5000...
+Attempting to kill process 374...
+Successfully killed process 374 on port 5000
+Waiting for port 5000 to be available...
+Server error: Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+[90m    at Server.setupListenHandle [as _listen2] (node:net:1908:16)[39m
+[90m    at listenInCluster (node:net:1965:12)[39m
+[90m    at doListen (node:net:2139:7)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)[39m {
+  code: [32m'EADDRINUSE'[39m,
+  errno: [33m-98[39m,
+  syscall: [32m'listen'[39m,
+  address: [32m'0.0.0.0'[39m,
+  port: [33m5000[39m
+}
+Stack trace: Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at doListen (node:net:2139:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+Port 5000 in use, attempting retry 2 of 3...
+Server error: Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+[90m    at Server.setupListenHandle [as _listen2] (node:net:1908:16)[39m
+[90m    at listenInCluster (node:net:1965:12)[39m
+[90m    at doListen (node:net:2139:7)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)[39m {
+  code: [32m'EADDRINUSE'[39m,
+  errno: [33m-98[39m,
+  syscall: [32m'listen'[39m,
+  address: [32m'0.0.0.0'[39m,
+  port: [33m5000[39m
+}
+Stack trace: Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at doListen (node:net:2139:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+Port 5000 in use, attempting retry 3 of 3...
+Attempting to find processes on port 5000...
+Error while killing port process: Command failed: lsof -i :5000 -t
+Stack trace: Error: Command failed: lsof -i :5000 -t
+    at genericNodeError (node:internal/errors:984:15)
+    at wrappedFn (node:internal/errors:538:14)
+    at checkExecSyncError (node:child_process:891:11)
+    at execSync (node:child_process:963:15)
+    at killPortProcess (/home/runner/workspace/server/index.ts:171:24)
+    at Timeout.startServer (/home/runner/workspace/server/index.ts:193:9)
+    at listOnTimeout (node:internal/timers:581:17)
+    at process.processTimers (node:internal/timers:519:7)
+Waiting for port 5000 to be available...
+Server running at http://0.0.0.0:5000 (6149ms total startup time)
+Application is ready for connections
+Server running at http://0.0.0.0:5000 (6149ms total startup time)
+Application is ready for connections
+Server running at http://0.0.0.0:5000 (6149ms total startup time)
+Application is ready for connections
+Attempting to find processes on port 5000...
+Attempting to kill process 1139...
+[1G[0K⠙[1G[0K

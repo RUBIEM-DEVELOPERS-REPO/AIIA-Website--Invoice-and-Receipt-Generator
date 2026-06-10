@@ -76,9 +76,9 @@ export function ProtectedAdminRoute({
   }
 
   // First check if the user is authenticated and has admin access
-  // Also check the session storage as a backup
-  const isAdmin = (currentUser && currentUser.level === "admin") || 
-                 (sessionUser && sessionUser.level === "admin");
+  // We strictly rely on the server's session, otherwise we might show an empty page 
+  // because API requests will fail with 401.
+  const isAdmin = currentUser && currentUser.level === "admin";
   
   if (!isAdmin) {
     return (

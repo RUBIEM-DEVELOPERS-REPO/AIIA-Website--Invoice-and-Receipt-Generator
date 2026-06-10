@@ -10,7 +10,7 @@ import { PartnerShowcase } from "@/components/sections/partner-showcase";
 
 
 
-import logoImage2 from "@/lib/logos/preloader.png";
+// logo image removed from landing
 
 // Animation variants remain unchanged
 const container = {
@@ -58,13 +58,6 @@ export default function Home() {
             className="text-3xl font-bold text-center mb-12"
             variants={item}
           >
-            <div className="flex justify-center">
-              <img
-                src={logoImage2}
-                alt="AiiA Logo"
-                className="h-8 transition-transform transform hover:scale-105"
-              />
-            </div>
             The IV Pillars Which Shape Our Goals Here At The Institute
           </motion.h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -95,13 +88,6 @@ export default function Home() {
             className="text-center mb-16"
             variants={item}
           >
-            <div className="flex justify-center mb-4">
-              <img
-                src={logoImage2}
-                alt="AiiA Logo"
-                className="h-8 transition-transform transform hover:scale-105"
-              />
-            </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent">
               Projects
             </h2>

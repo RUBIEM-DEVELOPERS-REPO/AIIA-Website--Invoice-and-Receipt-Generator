@@ -440,7 +440,7 @@ export const PROJECTS = [
     technologies: ["Webhook Automation", "Real-time Web Research", "AI Content Generation", "HTML Formatting", "Email Automation"],
     impact: "Streamlining government and institutional communications with automated, research-backed newsletters",
     image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500",
-    externalLink: "https://replit.com/@devgithub1/ChatPilot"
+    externalLink: ""
   }
 ]
 

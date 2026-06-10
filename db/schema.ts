@@ -180,7 +180,7 @@ export const summitRegistrations = pgTable("summit_registrations", {
   country: text("country").notNull(),
   organization: text("organization"),
   notes: text("notes"),
-  selectedSummits: jsonb("selected_summits").notNull(),
+  selectedSummits: jsonb("selected_summits").default([]).notNull(),
   status: text("status", {
     enum: ["registered", "confirmed", "attended", "cancelled"]
   }).notNull().default("registered"),
@@ -226,6 +226,62 @@ export const pageVisits = pgTable("page_visits", {
   userAgent: text("user_agent"),
   referer: text("referer"),
   visitedAt: timestamp("visited_at").defaultNow().notNull(),
+});
+
+export const summitInvoices = pgTable("summit_invoices", {
+  id: serial("id").primaryKey(),
+  referenceNumber: text("reference_number").notNull(),
+  invoiceNumber: text("invoice_number").unique().notNull(),
+  fullName: text("full_name").notNull(),
+  organization: text("organization"),
+  address: text("address"),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  paymentMethod: text("payment_method").notNull(),
+  currency: text("currency").notNull().default("USD"),
+  numberOfDelegates: integer("number_of_delegates").notNull(),
+  packageType: text("package_type").notNull(),
+  packageDescription: text("package_description").notNull(),
+  packagePrice: text("package_price").notNull(),
+  secondEventPrice: text("second_event_price").default("0"),
+  bothEvents: text("both_events").default("false"),
+  totalAmount: text("total_amount").notNull(),
+  summitEvent: text("summit_event").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const summitPaymentProofs = pgTable("summit_payment_proofs", {
+  id: serial("id").primaryKey(),
+  referenceNumber: text("reference_number").notNull(),
+  payerName: text("payer_name").notNull(),
+  paymentReference: text("payment_reference").notNull(),
+  paymentDate: text("payment_date").notNull(),
+  paymentLocation: text("payment_location").notNull(),
+  proofFilePath: text("proof_file_path"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const summitDelegates = pgTable("summit_delegates", {
+  id: serial("id").primaryKey(),
+  referenceNumber: text("reference_number").notNull(),
+  delegates: jsonb("delegates").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const summitReceipts = pgTable("summit_receipts", {
+  id: serial("id").primaryKey(),
+  invoiceId: integer("invoice_id").notNull().references(() => summitInvoices.id),
+  referenceNumber: text("reference_number").notNull(),
+  receiptNumber: text("receipt_number").notNull(),
+  fullName: text("full_name").notNull(),
+  organization: text("organization"),
+  paymentDate: text("payment_date").notNull(),
+  paymentMethod: text("payment_method").notNull(),
+  paymentReference: text("payment_reference"),
+  amountPaid: text("amount_paid").notNull(),
+  currency: text("currency").notNull().default("USD"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // Schema validations
@@ -280,6 +336,9 @@ export const insertProgramApplicationSchema = createInsertSchema(programApplicat
 });
 export const selectProgramApplicationSchema = createSelectSchema(programApplications);
 
+export const insertSummitReceiptSchema = createInsertSchema(summitReceipts);
+export const selectSummitReceiptSchema = createSelectSchema(summitReceipts);
+
 // Type definitions
 export type InsertContact = typeof contacts.$inferInsert;
 export type SelectContact = typeof contacts.$inferSelect;
@@ -303,6 +362,8 @@ export type InsertProgramApplication = typeof programApplications.$inferInsert;
 export type SelectProgramApplication = typeof programApplications.$inferSelect;
 export type InsertSummitRegistration = typeof summitRegistrations.$inferInsert;
 export type SelectSummitRegistration = typeof summitRegistrations.$inferSelect;
+export type InsertSummitReceipt = typeof summitReceipts.$inferInsert;
+export type SelectSummitReceipt = typeof summitReceipts.$inferSelect;
 
 // Additional validation schemas
 export const userRegistrationSchema = z.object({

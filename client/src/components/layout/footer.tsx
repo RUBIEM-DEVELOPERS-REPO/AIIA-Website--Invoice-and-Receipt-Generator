@@ -4,14 +4,14 @@ import animationData1 from "@/lib/lotties/X.json";
 import animationData2 from "@/lib/lotties/fb.json";
 import animationData3 from "@/lib/lotties/linkedin.json";
 
-import footerImage from "@/lib/logos/AiiA Logo.png";
 
 export default function Footer() {
   return (
     <footer className="border-t py-12 mt-24">
       <div className="container grid grid-cols-1 md:grid-cols-4 gap-8">
+        {/* Footer logo removed */}
         <div>
-          <img src={footerImage} alt="AiiA Logo" className="h-48" />
+          <h3 className="text-xl font-bold">AI Institute Africa</h3>
         </div>
 
         <div>

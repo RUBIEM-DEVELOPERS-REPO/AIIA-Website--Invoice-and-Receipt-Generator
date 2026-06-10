@@ -2,22 +2,24 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./vite";
 import session from "express-session";
-import { Pool } from "@neondatabase/serverless";
+import pg from "pg";
 import connectPgSimple from "connect-pg-simple";
 import { execSync } from "child_process";
 import path from "path";
 import fs from "fs";
 
+const { Pool } = pg;
+
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: false, limit: "10mb" }));
 
 // Initialize database pool
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   connectionTimeoutMillis: 5000,
   idleTimeoutMillis: 30000,
-  max: 20
+  max: 10,
 });
 
 // Add startup timing logs
@@ -109,9 +111,14 @@ app.get('/health', (req, res) => {
   try {
     // Test database connection before proceeding
     console.log("Testing database connection...");
-    await pool.query('SELECT 1');
+    const client = await pool.connect();
+    try {
+      await client.query('SELECT 1');
+    } finally {
+      client.release();
+    }
     console.log(`Database connection successful (${Date.now() - startTime}ms)`);
-    
+
     // Run database migrations
     const { runMigrations } = await import('./migrationRunner');
     await runMigrations();

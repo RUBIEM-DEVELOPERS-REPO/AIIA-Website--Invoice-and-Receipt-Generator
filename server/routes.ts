@@ -13,6 +13,9 @@ import {
   studentLeads,
   programApplications,
   summitRegistrations,
+  summitInvoices,
+  summitPaymentProofs,
+  summitDelegates,
   pageVisits,
   applicationDocuments,
   applicationTimeline,
@@ -168,6 +171,22 @@ const openaiClient = new OpenAI({
 export function registerRoutes(app: Express): Server {
   const httpServer = createServer(app);
 
+  // Temporary environment verification endpoint
+  app.get("/api/diag-env", (req, res) => {
+    res.json({
+      SENDPULSE_API_KEY: process.env.SENDPULSE_API_KEY ? "Configured (length: " + process.env.SENDPULSE_API_KEY.length + ")" : "Not set",
+      SENDPULSE_CLIENT_ID: process.env.SENDPULSE_CLIENT_ID ? "Configured" : "Not set",
+      SENDPULSE_CLIENT_SECRET: process.env.SENDPULSE_CLIENT_SECRET ? "Configured" : "Not set",
+      SMTP_HOST: process.env.SMTP_HOST || "Not set",
+      SMTP_PORT: process.env.SMTP_PORT || "Not set",
+      SMTP_SECURE: process.env.SMTP_SECURE || "Not set",
+      SMTP_USER: process.env.SMTP_USER || "Not set",
+      SMTP_FROM: process.env.SMTP_FROM || "Not set",
+      SMTP_PASS: process.env.SMTP_PASS ? "Configured" : "Not set",
+      NODE_ENV: process.env.NODE_ENV || "Not set",
+    });
+  });
+
   // Setup authentication for regular users
   setupAuth(app);
 
@@ -186,6 +205,10 @@ export function registerRoutes(app: Express): Server {
 
     next();
   };
+
+  // In-memory token store for short-lived admin invoice links
+  // token => { expires: timestamp, createdBy?: adminId }
+  const adminInvoiceTokenStore = new Map<string, { expires: number; createdBy?: number }>();
 
   // /api/auth/me endpoint is now handled in auth.ts
 
@@ -1616,18 +1639,45 @@ export function registerRoutes(app: Express): Server {
       // Format summit names for email
       const summitNames = selectedSummits.map((s: any) => s?.title || "Event").join(", ");
 
-      // Send confirmation email to applicant
+      // Base URL and Portal link for applicant
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      const portalLink = `${baseUrl}/summit-portal?ref=${referenceNumber}`;
+
+      // Send confirmation email to applicant with doc links instead of heavy attachments
       const confirmationHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #0891b2;">Event Registration Confirmed</h2>
-          <p>Dear ${fullName},</p>
-          <p>Thank you for registering for our upcoming event(s). Your registration has been received.</p>
-          <div style="background-color: #f0fdfa; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #0891b2;">
-            <p style="margin: 0 0 10px 0;"><strong>Reference Number:</strong> ${referenceNumber}</p>
-            <p style="margin: 0;"><strong>Events Registered:</strong> ${summitNames}</p>
+          <div style="background: linear-gradient(135deg, #0891b2, #1e40af); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">Event Registration Confirmed</h1>
           </div>
-          <p>We will send you more details as the event date approaches.</p>
-          <p style="margin-top: 30px;">Best regards,<br><strong>AI Institute Africa Team</strong></p>
+          <div style="padding: 30px; background: #fff; border: 1px solid #e5e7eb; border-radius: 0 0 8px 8px;">
+            <p style="font-size: 16px;">Dear <strong>${fullName}</strong>,</p>
+            <p>Thank you for registering for our upcoming summit event(s). Your registration has been received and is confirmed.</p>
+            <div style="background-color: #f0fdfa; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #0891b2;">
+              <p style="margin: 0 0 8px 0;"><strong>Reference Number:</strong> <span style="font-size: 18px; color: #0891b2;">${referenceNumber}</span></p>
+              <p style="margin: 0;"><strong>Events Registered:</strong> ${summitNames}</p>
+            </div>
+            
+            <p style="font-size: 15px; margin-top: 20px;">Please click the links below to download the event fliers, concept notes, and pricing/schedule documents for your reference:</p>
+            <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0;">
+              <ul style="list-style: none; padding: 0; margin: 0; line-height: 2;">
+                <li>📄 <a href="${baseUrl}/docs/AI%20TECH%20FORUM%20ZIMBABWE%202026%20-%20SUMMARY.pdf" target="_blank" style="color: #0891b2; text-decoration: none; font-weight: bold;">AI Tech Forum Zimbabwe 2026 - Summary (PDF)</a></li>
+                <li>📄 <a href="${baseUrl}/docs/NATIONAL%20AI%20SUMMIT%202026%20-%20SUMMARY.pdf" target="_blank" style="color: #0891b2; text-decoration: none; font-weight: bold;">National AI Summit 2026 - Summary (PDF)</a></li>
+                <li>📄 <a href="${baseUrl}/docs/Masvingo%20Summit%20Price%20%26%20schedule%20%202026%20Summits%20pdf%20(3).pdf" target="_blank" style="color: #0891b2; text-decoration: none; font-weight: bold;">Masvingo Summit Price & Schedule (PDF)</a></li>
+                <li>🖼️ <a href="${baseUrl}/docs/AI%20TECH%20FORUM%20FLIER.jpeg" target="_blank" style="color: #0891b2; text-decoration: none; font-weight: bold;">AI Tech Forum Flier (JPEG)</a></li>
+                <li>🖼️ <a href="${baseUrl}/docs/AI%20FOR%20NATIONAL%20TRANSFORMATION%20FLIER.jpeg" target="_blank" style="color: #0891b2; text-decoration: none; font-weight: bold;">AI for National Transformation Flier (JPEG)</a></li>
+              </ul>
+            </div>
+
+            <div style="background: #eff6ff; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #1e40af;">
+              <p style="margin: 0 0 10px 0;"><strong>Next Step: Complete Your Booking</strong></p>
+              <p style="margin: 0 0 15px 0;">Please use your reference number to access the payment portal and generate your invoice:</p>
+              <a href="${portalLink}" style="display: inline-block; background: #1e40af; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Access Payment Portal →</a>
+              <p style="margin: 15px 0 0 0; font-size: 13px; color: #6b7280;">Or visit: ${portalLink}</p>
+            </div>
+            <p style="margin-top: 30px;">Best regards,<br><strong>AI Institute Africa Team</strong></p>
+            <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
+            <p style="font-size: 12px; color: #9ca3af;">275 Herbert Chitepo Ave, Harare, Zimbabwe | +263 78 643 4988 | admin@aiinstituteafrica.com</p>
+          </div>
         </div>
       `;
 
@@ -1635,7 +1685,8 @@ export function registerRoutes(app: Express): Server {
         to: email,
         subject: "Event Registration Confirmed - AI Institute Africa",
         html: confirmationHtml,
-        text: `Event Registration Confirmed\n\nDear ${fullName},\n\nThank you for registering. Reference: ${referenceNumber}\nEvents: ${summitNames}`,
+        text: `Event Registration Confirmed\n\nDear ${fullName},\n\nThank you for registering. Reference: ${referenceNumber}\nEvents: ${summitNames}\n\nAccess your payment portal: ${portalLink}`,
+        attachments: [],
       });
 
       // Send notification to admin
@@ -2215,6 +2266,397 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error("Analytics error:", error);
       res.status(500).json({ error: "Failed to fetch analytics" });
+    }
+  });
+
+  // ─── Summit Payment Portal ─────────────────────────────────────────────
+
+  // GET: Lookup registration by reference number
+  app.get("/api/summit-portal/:referenceNumber", async (req: Request, res: Response) => {
+    try {
+      const { referenceNumber } = req.params;
+      const [registration] = await db
+        .select()
+        .from(summitRegistrations)
+        .where(eq(summitRegistrations.referenceNumber, referenceNumber))
+        .limit(1);
+
+      if (!registration) {
+        return res.status(404).json({ message: "Registration not found. Please check your reference number." });
+      }
+
+      // Also fetch existing invoice if any
+      const [invoice] = await db
+        .select()
+        .from(summitInvoices)
+        .where(eq(summitInvoices.referenceNumber, referenceNumber))
+        .limit(1);
+
+      res.json({ registration, invoice: invoice || null });
+    } catch (error) {
+      console.error("Summit portal lookup error:", error);
+      res.status(500).json({ message: "Failed to fetch registration" });
+    }
+  });
+
+  // POST: Generate invoice
+  app.post("/api/summit-portal/:referenceNumber/invoice", async (req: Request, res: Response) => {
+    try {
+      const { referenceNumber } = req.params;
+      const {
+        paymentMethod, currency, numberOfDelegates, packageType,
+        packageDescription, packagePrice, summitEvent, address,
+        secondEventPrice, bothEvents,
+      } = req.body;
+
+      const [registration] = await db
+        .select()
+        .from(summitRegistrations)
+        .where(eq(summitRegistrations.referenceNumber, referenceNumber))
+        .limit(1);
+
+      if (!registration) {
+        return res.status(404).json({ message: "Registration not found" });
+      }
+
+      const numDelegates = parseInt(numberOfDelegates);
+      const price1 = parseFloat(packagePrice);
+      const price2 = parseFloat(secondEventPrice || "0");
+      const pricePerDelegate = bothEvents === true || bothEvents === "true" ? price1 + price2 : price1;
+      const totalAmount = (pricePerDelegate * numDelegates).toFixed(2);
+      const invoiceNumber = `SN-${Date.now().toString().slice(-6)}`;
+
+      // Save invoice to DB
+      const [invoice] = await db.insert(summitInvoices).values({
+        referenceNumber,
+        invoiceNumber,
+        fullName: registration.fullName,
+        organization: registration.organization || null,
+        address: address || null,
+        email: registration.email,
+        phone: registration.phone,
+        paymentMethod,
+        currency,
+        numberOfDelegates: numDelegates,
+        packageType,
+        packageDescription,
+        packagePrice,
+        secondEventPrice: price2.toFixed(2),
+        bothEvents: bothEvents ? "true" : "false",
+        totalAmount,
+        summitEvent,
+      }).returning();
+
+      res.json({ invoice, message: "Invoice generated successfully" });
+    } catch (error) {
+      console.error("Invoice generation error:", error);
+      res.status(500).json({ message: "Failed to generate invoice" });
+    }
+  });
+
+
+  // POST: Email invoice to user and admin
+  app.post("/api/summit-portal/:referenceNumber/email-invoice", async (req: Request, res: Response) => {
+    try {
+      const { referenceNumber } = req.params;
+      const { pdfBase64 } = req.body;
+
+      if (!pdfBase64) {
+        return res.status(400).json({ message: "PDF data is required" });
+      }
+
+      const pdfData = typeof pdfBase64 === "string"
+        ? pdfBase64.replace(/^data:[^;]+;base64,/, "").trim()
+        : "";
+
+      if (!pdfData) {
+        return res.status(400).json({ message: "PDF data is invalid" });
+      }
+
+      const [registration] = await db
+        .select()
+        .from(summitRegistrations)
+        .where(eq(summitRegistrations.referenceNumber, referenceNumber))
+        .limit(1);
+
+      const [invoice] = await db
+        .select()
+        .from(summitInvoices)
+        .where(eq(summitInvoices.referenceNumber, referenceNumber))
+        .limit(1);
+
+      if (!registration || !invoice) {
+        return res.status(404).json({ message: "Registration or invoice not found" });
+      }
+
+      const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #1e40af;">Summit Payment Invoice</h2>
+          <p>Dear ${registration.fullName},</p>
+          <p>Your invoice for the upcoming summit has been generated successfully. Please find the PDF invoice attached to this email.</p>
+          <div style="background: #eff6ff; padding: 20px; border-radius: 8px; margin: 16px 0;">
+            <p><strong>Invoice Number:</strong> ${invoice.invoiceNumber}</p>
+            <p><strong>Total Amount:</strong> ${invoice.currency} ${invoice.totalAmount}</p>
+          </div>
+          <p>Please proceed to make the payment using your selected method and submit the proof of payment through the portal.</p>
+          <p>Thank you,<br/>AI Institute Africa</p>
+        </div>
+      `;
+
+      // Send to both applicant and admin
+      await sendRegistrationEmail({
+        to: registration.email,
+        subject: `Your Summit Invoice - ${invoice.invoiceNumber}`,
+        html: emailHtml,
+        text: `Your Invoice: ${invoice.invoiceNumber}. Total: ${invoice.currency} ${invoice.totalAmount}`,
+        attachments: [{
+          filename: `Invoice-${invoice.invoiceNumber}.pdf`,
+          content: pdfData,
+          contentType: "application/pdf"
+        }]
+      });
+
+      // Admin notification
+      await sendRegistrationEmail({
+        to: "admin@aiinstituteafrica.com",
+        subject: `New Invoice Generated - ${invoice.invoiceNumber} (${registration.fullName})`,
+        html: emailHtml,
+        text: `New Invoice: ${invoice.invoiceNumber} for ${registration.fullName}.`,
+        attachments: [{
+          filename: `Invoice-${invoice.invoiceNumber}.pdf`,
+          content: pdfData,
+          contentType: "application/pdf"
+        }]
+      });
+
+      res.json({ message: "Invoice emailed successfully" });
+    } catch (error) {
+      console.error("Invoice generation error:", error);
+      res.status(500).json({ message: "Failed to generate invoice" });
+    }
+  });
+
+  // POST: Submit payment proof (with optional file upload)
+  const paymentProofStorage = multer.diskStorage({
+    destination: (_req, _file, cb) => {
+      const dir = path.join(process.cwd(), "uploads", "payment-proofs");
+      fs.mkdirSync(dir, { recursive: true });
+      cb(null, dir);
+    },
+    filename: (_req, file, cb) => {
+      const unique = Date.now() + "-" + Math.round(Math.random() * 1e6);
+      const ext = path.extname(file.originalname);
+      cb(null, `proof-${unique}${ext}`);
+    },
+  });
+  const uploadPaymentProof = multer({ storage: paymentProofStorage, limits: { fileSize: 10 * 1024 * 1024 } }).single("proof");
+
+  app.post("/api/summit-portal/:referenceNumber/payment-proof", (req: Request, res: Response) => {
+    uploadPaymentProof(req, res, async (err) => {
+      if (err) return res.status(400).json({ message: err.message });
+      try {
+        const { referenceNumber } = req.params;
+        const { payerName, paymentReference, paymentDate, paymentLocation } = req.body;
+
+        const [registration] = await db
+          .select()
+          .from(summitRegistrations)
+          .where(eq(summitRegistrations.referenceNumber, referenceNumber))
+          .limit(1);
+
+        if (!registration) return res.status(404).json({ message: "Registration not found" });
+
+        const baseUrl = `${req.protocol}://${req.get("host")}`;
+        const proofFilePath = req.file ? `/uploads/payment-proofs/${req.file.filename}` : null;
+        const proofFileUrl = proofFilePath ? `${baseUrl}${proofFilePath}` : null;
+
+        await db.insert(summitPaymentProofs).values({
+          referenceNumber,
+          payerName,
+          paymentReference,
+          paymentDate,
+          paymentLocation,
+          proofFilePath,
+        });
+
+        // Attach file to admin email if uploaded
+        const attachments = req.file ? [{ filename: req.file.originalname, path: req.file.path }] : [];
+
+        const adminHtml = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #059669;">Payment Proof Submitted</h2>
+            <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 16px 0;">
+              <p><strong>Reference Number:</strong> ${referenceNumber}</p>
+              <p><strong>Registrant:</strong> ${registration.fullName}</p>
+              <p><strong>Payer Name/Organization:</strong> ${payerName}</p>
+              <p><strong>Payment Reference:</strong> ${paymentReference}</p>
+              <p><strong>Payment Date:</strong> ${paymentDate}</p>
+              <p><strong>Paid At:</strong> ${paymentLocation}</p>
+              ${proofFileUrl ? `<p><strong>Proof of Payment File:</strong> <a href="${proofFileUrl}" target="_blank" style="color: #059669; font-weight: bold; text-decoration: underline;">Click here to download/view file</a></p>` : ""}
+            </div>
+          </div>
+        `;
+
+        await sendRegistrationEmail({
+          to: "admin@aiinstituteafrica.com",
+          subject: `Payment Proof Submitted - ${referenceNumber} (${registration.fullName})`,
+          html: adminHtml,
+          text: `Payment proof from ${payerName} for ref ${referenceNumber}. Paid at ${paymentLocation} on ${paymentDate}.`,
+          attachments,
+        });
+
+        res.json({ message: "Payment proof submitted successfully" });
+      } catch (error) {
+        console.error("Payment proof error:", error);
+        res.status(500).json({ message: "Failed to submit payment proof" });
+      }
+    });
+  });
+
+  // Serve payment proof files
+  app.use("/uploads/payment-proofs", express.static(path.join(process.cwd(), "uploads", "payment-proofs")));
+
+  // Serve docs files
+  app.use("/docs", express.static(path.join(process.cwd(), "docs")));
+
+  // POST: Submit delegate list
+  app.post("/api/summit-portal/:referenceNumber/delegates", async (req: Request, res: Response) => {
+    try {
+      const { referenceNumber } = req.params;
+      const { delegates } = req.body; // array of delegate names
+
+      if (!delegates || !Array.isArray(delegates) || delegates.length === 0) {
+        return res.status(400).json({ message: "Please provide at least one delegate" });
+      }
+
+      const [registration] = await db
+        .select()
+        .from(summitRegistrations)
+        .where(eq(summitRegistrations.referenceNumber, referenceNumber))
+        .limit(1);
+
+      if (!registration) return res.status(404).json({ message: "Registration not found" });
+
+      await db.insert(summitDelegates).values({
+        referenceNumber,
+        delegates,
+      });
+
+      const delegateRows = delegates.map((name: string, i: number) =>
+        `<tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${i + 1}</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${name}</td></tr>`
+      ).join("");
+
+      const adminHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #7c3aed;">Delegate List Submitted</h2>
+          <div style="background: #f5f3ff; padding: 20px; border-radius: 8px; margin: 16px 0;">
+            <p><strong>Reference Number:</strong> ${referenceNumber}</p>
+            <p><strong>Organization/Registrant:</strong> ${registration.fullName}${registration.organization ? " / " + registration.organization : ""}</p>
+            <p><strong>Total Delegates:</strong> ${delegates.length}</p>
+          </div>
+          <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
+            <thead>
+              <tr style="background: #7c3aed; color: white;">
+                <th style="padding: 10px; text-align: left;">#</th>
+                <th style="padding: 10px; text-align: left;">Delegate Name</th>
+              </tr>
+            </thead>
+            <tbody>${delegateRows}</tbody>
+          </table>
+        </div>
+      `;
+
+      await sendRegistrationEmail({
+        to: "admin@aiinstituteafrica.com",
+        subject: `Delegate List Submitted - ${referenceNumber} (${registration.fullName})`,
+        html: adminHtml,
+        text: `Delegate list from ${registration.fullName} (ref: ${referenceNumber}):\n${delegates.map((n: string, i: number) => `${i + 1}. ${n}`).join("\n")}`,
+      });
+
+      res.json({ message: "Delegate list submitted successfully" });
+    } catch (error) {
+      console.error("Delegate list error:", error);
+      res.status(500).json({ message: "Failed to submit delegate list" });
+    }
+  });
+
+  // POST: Create new invoice registration (without reference number)
+  // Admin-only: Create new invoice/registration (standalone module for staff)
+  app.post("/api/summit-portal/register-new", async (req: Request, res: Response) => {
+    try {
+      console.log("[admin] Create registration request body:", req.body);
+      const { fullName, email, organization, phone } = req.body;
+
+      // Validate required fields
+      if (!fullName || !email || !phone) {
+        return res.status(400).json({ message: "Full name, email, and phone number are required" });
+      }
+
+      // Generate a unique reference number
+      const referenceNumber = `SUMMIT-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+
+      const registrationData = {
+        referenceNumber,
+        fullName,
+        email,
+        phone,
+        organization: organization || null,
+        country: "Zimbabwe",
+        notes: "Created via admin invoice module",
+        status: "registered" as const,
+      };
+
+      // Create registration in database
+      await db.insert(summitRegistrations).values(registrationData);
+
+      res.status(201).json({
+        message: "Registration created successfully",
+        referenceNumber,
+        registration: registrationData,
+      });
+    } catch (error) {
+      console.error("Registration creation error:", error);
+      const message = error instanceof Error ? error.message : "Failed to create registration";
+      const payload: any = { message };
+      if (process.env.NODE_ENV !== "production" && error instanceof Error) {
+        payload.details = error.stack;
+      }
+      res.status(500).json(payload);
+    }
+  });
+
+  // Admin-only: generate a short-lived link token for staff to open the invoice creation UI
+  app.post("/api/summit-portal/admin/generate-invoice-link", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const token = Math.random().toString(36).slice(2, 12).toUpperCase();
+      const expires = Date.now() + (60 * 60 * 1000); // 1 hour
+      const adminId = (req.user as any)?.id;
+      adminInvoiceTokenStore.set(token, { expires, createdBy: adminId });
+
+      // Return a frontend-accessible route (frontend should route /admin/create-invoice)
+      const link = `/admin/create-invoice?token=${token}`;
+      res.json({ link, token, expires });
+    } catch (error) {
+      console.error("Generate invoice link error:", error);
+      res.status(500).json({ message: "Failed to generate admin invoice link" });
+    }
+  });
+
+  // Public-facing redirect endpoint: validate token then redirect to frontend admin UI
+  app.get('/admin/create-invoice/:token?', async (req: Request, res: Response) => {
+    try {
+      const token = (req.params && (req.params as any).token) || (req.query && String(req.query.token));
+      if (!token) return res.status(400).send('Missing token');
+      const record = adminInvoiceTokenStore.get(token);
+      if (!record || record.expires < Date.now()) {
+        return res.status(404).send('Link not found or expired');
+      }
+
+      // Redirect to SPA admin page (frontend should handle token param)
+      return res.redirect(`/admin/create-invoice?token=${token}`);
+    } catch (error) {
+      console.error('Admin create-invoice redirect error:', error);
+      res.status(500).send('Server error');
     }
   });
 

@@ -1,0 +1,36 @@
+
+> rest-express@1.0.0 dev
+> tsx server/index.ts
+
+[1G[0KUploads directory verified: /home/runner/workspace/client/src/lib/uploads
+Starting server initialization...
+Article images directory verified: /home/runner/workspace/client/src/lib/articleimages
+Testing database connection...
+Database connection test successful
+Database connection successful (829ms)
+Running database migrations...
+Starting events migration...
+Found 1 existing events, skipping migration
+Migrations completed successfully
+Server running at http://0.0.0.0:5000 (1804ms total startup time)
+Application is ready for connections
+Browserslist: browsers data (caniuse-lite) is 18 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[GET] /api/track/AIIA-2026-I0UFE8 - Content-Type: application/json; charset=utf-8
+GET /api/track/AIIA-2026-I0UFE8 200 in 202ms :: {"application":{"referenceNumber":"AIIA-2026-I0UFE8","firstName":"Patience","lastName":"Mupikeni","email":"patiencemupikeni@gmail.com","trainingType":"corporate","selectedPrograms":["iobz_applied"],"status":"pending","adminNotes":null,"createdAt":"2026-02-04T04:00:51.015Z","updatedAt":"2026-02-04T04:00:51.015Z"},"documents":[],"timeline":[{"id":1,"referenceNumber":"AIIA-2026-I0UFE8","status":"submitted","note":"Application successfully submitted.","updatedBy":"system","createdAt":"2026-02-04T04:00:51.015Z"}]}
+[GET] /api/track/AIIA-2026-I0UFE8/cohort - Content-Type: application/json; charset=utf-8
+GET /api/track/AIIA-2026-I0UFE8/cohort 403 in 62ms :: {"message":"Cohort is only available once your application is accepted."}
+[GET] /api/track/AIIA-2026-I0UFE8/referee-requests - Content-Type: application/json; charset=utf-8
+GET /api/track/AIIA-2026-I0UFE8/referee-requests 200 in 63ms :: []
+[POST] /api/track/AIIA-2026-I0UFE8/documents/9999/analyze - Content-Type: application/json; charset=utf-8
+POST /api/track/AIIA-2026-I0UFE8/documents/9999/analyze 404 in 60ms :: {"message":"Document not found"}
+[GET] /api/auth/me - Content-Type: application/json; charset=utf-8
+GET /api/auth/me 401 in 1ms :: {"message":"Not authenticated"}
+[GET] /api/track/AIIA-2026-ABCDEF - Content-Type: application/json; charset=utf-8
+GET /api/track/AIIA-2026-ABCDEF 404 in 2857ms :: {"message":"Application not found. Please check your reference number."}
+
+[1;1H[0J[2m2:30:16 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/track-application.tsx, /src/index.css?v=OPMYvhmxh9eRH8ybLYhUG[22m
+[GET] /api/track/AIIA-2026-ABCDEF - Content-Type: application/json; charset=utf-8
+GET /api/track/AIIA-2026-ABCDEF 404 in 272ms :: {"message":"Application not found. Please check your reference number."}
+[1G[0K⠙[1G[0K

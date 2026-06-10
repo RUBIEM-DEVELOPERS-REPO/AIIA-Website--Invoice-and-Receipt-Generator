@@ -1,9 +1,62 @@
 import nodemailer from "nodemailer";
-const logoImage = "client/src/lib/logos/preloader.png";
+import fs from "fs/promises";
+import https from "https";
+
+const logoImage = "client/src/lib/logos/AiiA Logo.png";
+
+function httpsPost(url: string, headers: Record<string, string>, body: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const parsedUrl = new URL(url);
+    const postData = typeof body === "string" ? body : JSON.stringify(body);
+    
+    const options = {
+      hostname: parsedUrl.hostname,
+      port: 443,
+      path: parsedUrl.pathname + parsedUrl.search,
+      method: "POST",
+      headers: {
+        ...headers,
+        "Content-Length": Buffer.byteLength(postData),
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      let responseBody = "";
+      res.on("data", (chunk) => {
+        responseBody += chunk;
+      });
+      res.on("end", () => {
+        try {
+          const parsed = JSON.parse(responseBody);
+          if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(parsed);
+          } else {
+            reject(new Error(`HTTP Status ${res.statusCode}: ${JSON.stringify(parsed)}`));
+          }
+        } catch (e) {
+          if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(responseBody);
+          } else {
+            reject(new Error(`HTTP Status ${res.statusCode}: ${responseBody}`));
+          }
+        }
+      });
+    });
+
+    req.on("error", (e) => {
+      reject(e);
+    });
+
+    req.write(postData);
+    req.end();
+  });
+}
 
 interface EmailAttachment {
   filename: string;
-  path: string;
+  path?: string;
+  content?: string;
+  contentType?: string;
   cid?: string;
 }
 
@@ -16,22 +69,23 @@ interface EmailParams {
 }
 
 function createTransporter() {
-  // SMTP2GO - use SMTP_USER/SMTP_PASS env vars if set (takes priority),
-  // otherwise fall back to SMTP2GO_USERNAME/SMTP2GO_PASSWORD secrets
-  const smtpUser = process.env.SMTP_USER || process.env.SMTP2GO_USERNAME;
-  const smtpPass = process.env.SMTP_PASS || process.env.SMTP2GO_PASSWORD;
+  const host = process.env.SMTP_HOST || "mail.smtp2go.com";
+  const port = parseInt(process.env.SMTP_PORT || "2525", 10);
+  const secure = process.env.SMTP_SECURE === "true" || port === 465;
+  const user = process.env.SMTP_USER || process.env.SMTP2GO_USERNAME;
+  const pass = process.env.SMTP_PASS || process.env.SMTP2GO_PASSWORD;
 
   return nodemailer.createTransport({
-    host: "mail.smtp2go.com",
-    port: 2525,
-    secure: false,
+    host,
+    port,
+    secure,
     auth: {
-      user: smtpUser,
-      pass: smtpPass,
+      user,
+      pass,
     },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
   });
 }
 
@@ -39,37 +93,221 @@ export async function sendRegistrationEmail(
   params: EmailParams,
 ): Promise<boolean> {
   try {
-    const transporter = createTransporter();
+    const sendpulseApiKey = process.env.SENDPULSE_API_KEY;
+    const sendpulseClientId = process.env.SENDPULSE_CLIENT_ID;
+    const sendpulseClientSecret = process.env.SENDPULSE_CLIENT_SECRET;
+    const apiKey = process.env.SMTP2GO_API_KEY;
+    const senderEmail = process.env.SMTP_FROM || process.env.SMTP2GO_FROM_EMAIL || "admin@aiinstituteafrica.com";
+    const logoUrl = process.env.LOGO_URL;
 
-    // Verify connection configuration before sending
-    await transporter.verify();
+    // Replace inline logo CID with external URL if configured
+    let htmlContent = params.html || params.text || "";
+    if (logoUrl) {
+      htmlContent = htmlContent.replace(/cid:preloader/g, logoUrl);
+    }
 
-      // Build attachments array - always include logo, add any additional attachments
-      const allAttachments = [
-        {
-          filename: "preloader.png",
-          path: logoImage,
-          cid: "preloader",
+    // Build attachments array - always include logo, add any additional attachments
+    const allAttachments = [
+      {
+        filename: "preloader.png",
+        path: logoImage,
+        cid: "preloader",
+      },
+      ...(params.attachments || []),
+    ];
+
+    let accessToken = sendpulseApiKey;
+
+    if (!accessToken && sendpulseClientId && sendpulseClientSecret) {
+      console.log("Requesting access token from SendPulse via client credentials...");
+      // Get Access Token
+      const tokenData = await httpsPost("https://api.sendpulse.com/oauth/access_token", {
+        "Content-Type": "application/json"
+      }, {
+        grant_type: "client_credentials",
+        client_id: sendpulseClientId,
+        client_secret: sendpulseClientSecret
+      });
+
+      if (!tokenData || !tokenData.access_token) {
+        throw new Error(`SendPulse Auth Error: ${JSON.stringify(tokenData)}`);
+      }
+
+      accessToken = tokenData.access_token;
+    }
+
+    if (accessToken) {
+      console.log("Sending email via SendPulse REST API...");
+
+      // Build attachments
+      const attachmentsBinary: Record<string, string> = {};
+      for (const att of allAttachments) {
+        // Skip attaching the preloader if we replaced it with a web URL
+        if (att.cid === "preloader" && logoUrl) {
+          continue;
+        }
+        try {
+          let fileblob = "";
+          if (att.content) {
+            const cleaned = att.content.replace(/^data:[^;]+;base64,/, "").trim();
+            if (!cleaned) continue;
+            fileblob = cleaned;
+          } else if (att.path) {
+            const fileBuffer = await fs.readFile(att.path);
+            fileblob = fileBuffer.toString("base64");
+          } else {
+            continue;
+          }
+          attachmentsBinary[att.filename] = fileblob;
+        } catch (e) {
+          console.warn(`Could not process attachment for SendPulse: ${att.filename}`, e);
+        }
+      }
+
+      const payload: any = {
+        email: {
+          html: htmlContent,
+          text: params.text || "",
+          subject: params.subject,
+          from: {
+            name: "AI Institute Africa",
+            email: senderEmail,
+          },
+          to: [
+            {
+              name: "",
+              email: params.to,
+            },
+          ],
         },
-        ...(params.attachments || []),
-      ];
+      };
+
+      if (Object.keys(attachmentsBinary).length > 0) {
+        payload.email.attachments_binary = attachmentsBinary;
+      }
+
+      const sendData = await httpsPost("https://api.sendpulse.com/smtp/emails", {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${accessToken}`
+      }, payload);
+
+      if (!sendData || sendData.is_error || sendData.error_code) {
+        throw new Error(`SendPulse Send Error: ${JSON.stringify(sendData)}`);
+      }
+
+      console.log("Email sent successfully via SendPulse REST API:", sendData);
+      return true;
+
+    } else if (apiKey) {
+      // Send using SMTP2GO REST API
+      const inlines = [];
+      const attachments = [];
+
+      for (const att of allAttachments) {
+        try {
+          let fileblob = "";
+          let mimetype = att.contentType || "application/octet-stream";
+          
+          if (!att.contentType) {
+            if (att.filename.endsWith(".png")) mimetype = "image/png";
+            else if (att.filename.endsWith(".jpg") || att.filename.endsWith(".jpeg")) mimetype = "image/jpeg";
+            else if (att.filename.endsWith(".pdf")) mimetype = "application/pdf";
+            else if (att.filename.endsWith(".csv")) mimetype = "text/csv";
+            else if (att.filename.includes("word") || att.filename.endsWith(".docx")) mimetype = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            else if (att.filename.includes("excel") || att.filename.endsWith(".xlsx")) mimetype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+          }
+
+          if (att.content) {
+            const cleaned = att.content.replace(/^data:[^;]+;base64,/, "").trim();
+            if (!cleaned) continue;
+            fileblob = cleaned;
+          } else if (att.path) {
+            const fileBuffer = await fs.readFile(att.path);
+            fileblob = fileBuffer.toString("base64");
+          } else {
+            continue;
+          }
+          
+          if (att.cid) {
+            inlines.push({ filename: att.filename, fileblob, mimetype, cid: att.cid });
+          } else {
+            attachments.push({ filename: att.filename, fileblob, mimetype });
+          }
+        } catch (e) {
+          console.warn(`Could not process attachment for email: ${att.filename}`, e);
+        }
+      }
+
+      const payload: any = {
+        api_key: apiKey,
+        to: [params.to],
+        sender: `AI Institute Africa <${senderEmail}>`,
+        subject: params.subject,
+        text_body: params.text || "",
+        html_body: htmlContent,
+      };
+
+      if (attachments.length > 0) payload.attachments = attachments;
+      if (inlines.length > 0) payload.inlines = inlines;
+
+      const data = await httpsPost("https://api.smtp2go.com/v3/email/send", {
+        "Content-Type": "application/json"
+      }, payload);
+
+      if (data.data?.error || data.data?.failures?.length > 0) {
+        throw new Error(`SMTP2GO API Error: ${JSON.stringify(data)}`);
+      }
+
+      console.log("Email sent successfully via REST API:", data.data?.email_id || "success");
+      return true;
+
+    } else {
+      // Fallback to Nodemailer SMTP
+      const transporter = createTransporter();
+      await transporter.verify();
+
+      const nodemailerAttachments = [];
+      for (const att of allAttachments) {
+        try {
+          if (att.content) {
+            const cleaned = att.content.replace(/^data:[^;]+;base64,/, "").trim();
+            if (!cleaned) continue;
+            nodemailerAttachments.push({
+              filename: att.filename,
+              content: cleaned,
+              encoding: 'base64',
+              cid: att.cid,
+              contentType: att.contentType,
+            });
+          } else if (att.path) {
+            const fileBuffer = await fs.readFile(att.path);
+            nodemailerAttachments.push({
+              filename: att.filename,
+              content: fileBuffer,
+              cid: att.cid,
+              contentType: att.contentType,
+            });
+          }
+        } catch (e) {
+          console.warn(`Could not attach file to SMTP email: ${att.filename}`, e);
+        }
+      }
 
       const result = await transporter.sendMail({
         from: {
           name: "AI Institute Africa",
-          address:
-            process.env.SMTP2GO_FROM_EMAIL ||
-            "admin@aiinstituteafrica.com",
+          address: senderEmail,
         },
         to: params.to,
         subject: params.subject,
         text: params.text || "",
-        html: params.html || params.text || "",
-        attachments: allAttachments,
+        html: htmlContent,
+        attachments: nodemailerAttachments,
       });
 
-    console.log("Email sent successfully:", result.messageId);
-    return true;
+      console.log("Email sent successfully via SMTP:", result.messageId);
+      return true;
+    }
   } catch (error) {
     console.error("Email send error:", error);
     if (error instanceof Error) {

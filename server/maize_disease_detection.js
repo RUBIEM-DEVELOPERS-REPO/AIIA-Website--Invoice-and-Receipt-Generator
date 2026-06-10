@@ -152,11 +152,9 @@ async function demonstrateMaizeDiseaseDetection() {
     }
 
     // Example with test image
-    const testImageUrl = "https://raw.githubusercontent.com/gradio-app/gradio/main/test/test_files/bus.png";
+    console.log(`🔍 Testing with example image`);
     
-    console.log(`🔍 Testing with example image: ${testImageUrl}`);
-    
-    const result = await detector.predictMaizeDisease(testImageUrl);
+    const result = await detector.predictMaizeDisease();
     
     console.log("\n📊 Analysis Results:");
     console.log("-".repeat(30));

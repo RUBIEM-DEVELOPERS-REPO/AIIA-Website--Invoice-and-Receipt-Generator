@@ -136,42 +136,7 @@ export default function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* Floating Map Card */}
-        <motion.div
-          className="hidden lg:block"
-          initial={{ opacity: 0, y: -200 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 1.2,
-            ease: "easeOut",
-            delay: 0.5,
-          }}
-        >
-          <motion.div
-            animate={{
-              y: [-20, 20],
-            }}
-            transition={{
-              y: {
-                duration: 4,
-                repeat: Infinity,
-                repeatType: "reverse",
-                ease: "easeInOut",
-                delay: 1.2,
-              },
-            }}
-          >
-            <Card className="w-96 p-6 bg-black/20 backdrop-blur-sm border border-white/20">
-              <div className="space-y-4">
-                <LottieAnimation animationData={animationData} />
-                <div className="flex items-center gap-2 text-sm text-primary"></div>
-                <p className="text-white">
-                  Our Vision tells Us to Keep On Moving And Innovating
-                </p>
-              </div>
-            </Card>
-          </motion.div>
-        </motion.div>
+
       </div>
     </div>
   );

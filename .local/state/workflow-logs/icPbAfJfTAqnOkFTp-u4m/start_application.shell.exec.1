@@ -1,0 +1,94 @@
+[1G[0K⠙[1G[0K
+> rest-express@1.0.0 dev
+> tsx server/index.ts
+
+[1G[0K⠙[1G[0KUploads directory verified: /home/runner/workspace/client/src/lib/uploads
+Starting server initialization...
+Article images directory verified: /home/runner/workspace/client/src/lib/articleimages
+Testing database connection...
+Database connection test successful
+Database connection successful (809ms)
+Running database migrations...
+Starting events migration...
+Found 1 existing events, skipping migration
+Migrations completed successfully
+Server running at http://0.0.0.0:5000 (2241ms total startup time)
+Application is ready for connections
+Browserslist: browsers data (caniuse-lite) is 18 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[GET] /api/auth/me - Content-Type: application/json; charset=utf-8
+GET /api/auth/me 401 in 4ms :: {"message":"Not authenticated"}
+[GET] /api/events - Content-Type: application/json; charset=utf-8
+GET /api/events 200 in 64ms :: [{"id":4,"title":"AI Conference Africa 2025","description":"The AI Conference Africa 2025, taking place from April 14–17, 2025, at Elephant Hills Hotel, Victoria Falls, will bring together government leaders, academia, organizations, and industry captains to explore advancements in artificial intelligence. The event will feature panel discussions, keynote speeches, and workshops on AI trends, ethics, and policy, alongside networking sessions for collaboration. Attendees can also engage in hands-on AI workshops, startup showcases, and innovation exhibitions, highlighting AI solutions tailored for Africa. Additionally, discussions on AI governance and regulation will shape the future of responsible AI adoption across the continent.","date":"2025-04-14T09:00:00.000Z","location":"Elephant Hills Victoria Falls","type":"Conference","capacity":500,"registrationRequired":true,"registrationUrl":"https://example.com/register","imageUrl":"/src/lib/articleimages/AI events.jpg","organizer":"AI Institute of Africa","status":"Upcoming","createdAt":"2025-06-30T07:36:24.877Z","updatedAt":"2025-06-30T07:36:24.877Z"}]
+[GET] /api/articles - Content-Type: application/json; charset=utf-8
+GET /api/articles 200 in 62ms :: [{"id":1,"title":"Unpacking the basics of Artificial Intelligence","author":"Dr Dennis Magaya","content":"This is a sample article content about AI basics. The original article can be accessed via the external URL.","imageUrl":"https://images.unsplash.com/photo-1677442135136-760c813029e9","requirement":"Free","createdAt":"2025-03-21T12:39:50.404Z","updatedAt":"2025-03-21T12:39:50.404Z"},{"id":2,"title":"Innovation will drive Vision 2030","author":"Dr Dennis Magaya","content":"This is a sample article content about innovation and Vision 2030. The original article can be accessed via the external URL.","imageUrl":"https://images.unsplash.com/photo-1451187580459-43490279c0fa","requirement":"Free","createdAt":"2025-03-21T12:39:50.404Z","updatedAt":"2025-03-21T12:39:50.404Z"},{"id":3,"title":"AI - Leaving no person and no place behind","author":"Dr Dennis Magaya","content":"This is a sample article content about AI inclusivity. The original article can be accessed via the external URL.","imageUrl":"https://images.unsplash.com/photo-1620712943543-bcc4688e7485","requirement":"Free","createdAt":"2025-03-21T12:39:50.404Z","updatedAt":"2025-03-21T12:39:50.404Z"},{"id":4,"title":"Using AI to regulate digital-only banks","author":"Dr Dennis Magaya","content":"This is a sample article content about AI in banking regulation. The original article can be accessed via the external URL.","imageUrl":"https://images.unsplash.com/photo-1501167786227-4cba60f6d58f","requirement":"Membership","createdAt":"2025-03-21T12:39:50.404Z","updatedAt":"2025-03-21T12:39:50.404Z"},{"id":5,"title":"Bank price management and revenue assurance using AI","author":"Dr Dennis Magaya","content":"This is a sample article content about AI in banking revenue management. The original article can be accessed via the external URL.","imageUrl":"https://images.unsplash.com/photo-1601597111158-2fceff292cdc","requirement":"Membership","createdAt":"2025-03-21T12:39:50.404Z","updatedAt":"2025-03-21T12:39:50.404Z"}]
+GET /api/newsletter-stats 200 in 3ms
+[GET] /api/auth/me - Content-Type: application/json; charset=utf-8
+GET /api/auth/me 401 in 1ms :: {"message":"Not authenticated"}
+[GET] /api/track/AIIA-2026-I0UFE8 - Content-Type: application/json; charset=utf-8
+GET /api/track/AIIA-2026-I0UFE8 200 in 187ms :: {"application":{"referenceNumber":"AIIA-2026-I0UFE8","firstName":"Patience","lastName":"Mupikeni","email":"patiencemupikeni@gmail.com","trainingType":"corporate","selectedPrograms":["iobz_applied"],"status":"pending","adminNotes":null,"createdAt":"2026-02-04T04:00:51.015Z","updatedAt":"2026-02-04T04:00:51.015Z"},"documents":[],"timeline":[{"id":1,"referenceNumber":"AIIA-2026-I0UFE8","status":"submitted","note":"Application successfully submitted.","updatedBy":"system","createdAt":"2026-02-04T04:00:51.015Z"}]}
+[GET] /api/track/AIIA-2026-I0UFE8/referee-requests - Content-Type: application/json; charset=utf-8
+GET /api/track/AIIA-2026-I0UFE8/referee-requests 200 in 63ms :: []
+[GET] /api/referee/invalid-token - Content-Type: application/json; charset=utf-8
+GET /api/referee/invalid-token 404 in 59ms :: {"message":"Invalid or expired link"}
+POST /api/admin/login 200 in 3ms
+Checking admin auth: [33mfalse[39m [90mundefined[39m
+[GET] /api/admin/program-applications - Content-Type: application/json; charset=utf-8
+GET /api/admin/program-applications 401 in 1ms :: {"message":"Unauthorized"}
+Checking admin auth: [33mfalse[39m [90mundefined[39m
+[GET] /api/admin/program-applications/1/documents - Content-Type: application/json; charset=utf-8
+GET /api/admin/program-applications/1/documents 401 in 1ms :: {"message":"Unauthorized"}
+Checking admin auth: [33mfalse[39m [90mundefined[39m
+[GET] /api/admin/members - Content-Type: application/json; charset=utf-8
+GET /api/admin/members 401 in 1ms :: {"message":"Unauthorized"}
+Checking admin auth: [33mfalse[39m [90mundefined[39m
+[GET] /api/admin/contacts - Content-Type: application/json; charset=utf-8
+GET /api/admin/contacts 401 in 1ms :: {"message":"Unauthorized"}
+Checking admin auth: [33mfalse[39m [90mundefined[39m
+[GET] /api/admin/summit-registrations - Content-Type: application/json; charset=utf-8
+GET /api/admin/summit-registrations 401 in 1ms :: {"message":"Unauthorized"}
+Checking admin auth: [33mfalse[39m [90mundefined[39m
+[GET] /api/admin/dashboard/stats - Content-Type: application/json; charset=utf-8
+GET /api/admin/dashboard/stats 401 in 1ms :: {"message":"Unauthorized"}
+Checking admin auth: [33mfalse[39m [90mundefined[39m
+[GET] /api/admin/events - Content-Type: application/json; charset=utf-8
+GET /api/admin/events 401 in 1ms :: {"message":"Unauthorized"}
+Checking admin auth: [33mfalse[39m [90mundefined[39m
+[GET] /api/admin/articles - Content-Type: application/json; charset=utf-8
+GET /api/admin/articles 401 in 1ms :: {"message":"Unauthorized"}
+Checking admin auth: [33mfalse[39m [90mundefined[39m
+[GET] /api/admin/local-articles - Content-Type: application/json; charset=utf-8
+GET /api/admin/local-articles 401 in 1ms :: {"message":"Unauthorized"}
+[PATCH] /api/crm/applications/AIIA-2026-I0UFE8 - Content-Type: application/json; charset=utf-8
+PATCH /api/crm/applications/AIIA-2026-I0UFE8 200 in 119ms :: {"success":true,"referenceNumber":"AIIA-2026-I0UFE8","status":"pending"}
+[GET] /api/analytics - Content-Type: application/json; charset=utf-8
+GET /api/analytics 200 in 1980ms :: {"generatedAt":"2026-04-12T07:54:28.938Z","members":{"total":33,"active":32,"pending":1,"byType":{"free":1,"student":0,"full":1,"institution":0},"newLast7Days":0,"newLast30Days":0,"recent":[{"name":"Patience Mupikeni","email":"patiencemupikeni@gmail.com","membershipType":"Free Membership","membershipStatus":"Active","country":"Zimbabwe","createdAt":"2026-01-19T11:34:05.712Z"},{"name":"Super Administrator","email":"admin@aiinstitute.com","membershipType":"Free","membershipStatus":"Pending","country":null,"createdAt":"2026-01-19T11:25:23.451Z"},{"name":"Chenai Makoko","email":"chenaimacoco@gmail.com","membershipType":"Free Membership","membershipStatus":"Active","country":"Zimbabwe","createdAt":"2025-08-19T11:59:48.681Z"},{"name":"Tinashe Ndoro","email":"sales@picnicpark.co.zw","membershipType":"Free Membership","membershipStatus":"Active","country":"Zimbabwe","createdAt":"2025-08-18T19:47:49.658Z"},{"name":"Rumbidzai Ninga","email":"rninga@gmail.com","membershipType":"Free Membership","membershipStatus":"Active","country":"Zimbabwe","createdAt":"2025-07-31T06:42:33.224Z"},{"name":"Toby Green","email":"tobyabgreen@gmail.com","membershipType":"Free Membership","membershipStatus":"Active","country":"France","createdAt":"2025-07-25T13:03:04.143Z"},{"name":"Tawanda Dzingayi","email":"tawanda.dzingayi@students.uz.ac.zw","membershipType":"Student Member","membershipStatus":"Active","country":"Zimbabwe","createdAt":"2025-07-18T21:54:56.482Z"},{"name":"Rotimi Awaye","email":"awayerotimiadeniyi@gmail.com","membershipType":"Free Membership","membershipStatus":"Active","country":"Nigeria","createdAt":"2025-07-15T19:51:01.595Z"},{"name":"Tatenda Makura","email":"stanelymakuea02@gmail.com","membershipType":"Student Member","membershipStatus":"Active","country":"Zimbabwe","createdAt":"2025-06-26T21:03:30.642Z"},{"name":"Courage Chikati","email":"courage.chikati@analyticshive.com","membershipType":"Free Membership","membershipStatus":"Active","country":"South Africa","createdAt":"2025-06-26T11:49:34.963Z"}]},"newsletter":{"totalSubscribers":1,"newLast30Days":0},"contacts":{"total":5,"last30Days":3},"programApplications":{"total":9,"pending":9,"accepted":0,"rejected":0,"last30Days":0,"recent":[{"referenceNumber":"AIIA-2026-I0UFE8","firstName":"Patience","lastName":"Mupikeni","email":"patiencemupikeni@gmail.com","trainingType":"corporate","status":"pending","createdAt":"2026-02-04T04:00:51.015Z"},{"referenceNumber":"AIIA-2026-UV0J1L","firstName":"Isheanesu","lastName":"Gore","email":"patiencemupikeni@gmail.com","trainingType":"corporate","status":"pending","createdAt":"2026-01-22T08:10:36.553Z"},{"referenceNumber":"AIIA-2026-NDN02Y","firstName":"Patience","lastName":"Mupikeni","email":"patiencemupikeni@gmail.com","trainingType":"corporate","status":"pending","createdAt":"2026-01-22T07:58:40.984Z"},{"referenceNumber":"AIIA-2026-AVHYFH","firstName":"Patience","lastName":"Mupikeni","email":"patiencem@rubiem.com","trainingType":"corporate","status":"pending","createdAt":"2026-01-22T07:51:29.639Z"},{"referenceNumber":"AIIA-2026-ZTMKRP","firstName":"Patience","lastName":"Mupikeni","email":"patiencemupikeni@gmail.com","trainingType":"corporate","status":"pending","createdAt":"2026-01-19T10:32:48.193Z"},{"referenceNumber":"AIIA-2026-FM5744","firstName":"Patience","lastName":"Mupikeni","email":"patiencemupikeni@gmail.com","trainingType":"corporate","status":"pending","createdAt":"2026-01-19T10:23:34.758Z"},{"referenceNumber":"AIIA-2026-32EFPO","firstName":"Patience","lastName":"Mupikeni","email":"patiencemupikeni@gmail.com","trainingType":"individual","status":"pending","createdAt":"2026-01-16T14:36:08.058Z"},{"referenceNumber":"AIIA-2026-3I4U64","firstName":"Patience","lastName":"Mupikeni","email":"patiencemupikeni@gmail.com","trainingType":"individual","status":"pending","createdAt":"2026-01-16T14:24:13.577Z"},{"referenceNumber":"AIIA-2026-0QTL0M","firstName":"Patience","lastName":"Mupikeni","email":"patiencemupikeni@gmail.com","trainingType":"individual","status":"pending","createdAt":"2026-01-16T14:22:25.250Z"}]},"summitRegistrations":{"total":1,"last30Days":0},"studentLeads":{"total":0,"last30Days":0},"events":{"total":1,"upcoming":1},"traffic":{"totalHits":48,"hitsLast24Hours":7,"hitsLast7Days":48,"hitsLast30Days":48,"uniqueVisitorsAllTime":2,"uniqueVisitorsLast7Days":2,"uniqueVisitorsLast30Days":2,"topPageslast30Days":[{"path":"/","hits":33},{"path":"/events","hits":3},{"path":"/track-application","hits":3},{"path":"/about","hits":3},{"path":"/membership","hits":2},{"path":"/programs","hits":1},{"path":"/forgot-password","hits":1},{"path":"/ai-africa-summit","hits":1},{"path":"/enrollment","hits":1}]}}
+[GET] /api/track/AIIA-2026-I0UFE8 - Content-Type: application/json; charset=utf-8
+GET /api/track/AIIA-2026-I0UFE8 200 in 173ms :: {"application":{"referenceNumber":"AIIA-2026-I0UFE8","firstName":"Patience","lastName":"Mupikeni","email":"patiencemupikeni@gmail.com","trainingType":"corporate","selectedPrograms":["iobz_applied"],"status":"pending","adminNotes":null,"createdAt":"2026-02-04T04:00:51.015Z","updatedAt":"2026-04-12T07:54:28.828Z"},"documents":[],"timeline":[{"id":1,"referenceNumber":"AIIA-2026-I0UFE8","status":"submitted","note":"Application successfully submitted.","updatedBy":"system","createdAt":"2026-02-04T04:00:51.015Z"}]}
+[GET] /api/track/AIIA-9999-ZZZZZZ - Content-Type: application/json; charset=utf-8
+GET /api/track/AIIA-9999-ZZZZZZ 404 in 58ms :: {"message":"Application not found. Please check your reference number."}
+[GET] /api/auth/me - Content-Type: application/json; charset=utf-8
+GET /api/auth/me 401 in 1ms :: {"message":"Not authenticated"}
+[GET] /api/auth/me - Content-Type: application/json; charset=utf-8
+GET /api/auth/me 401 in 1ms :: {"message":"Not authenticated"}
+[GET] /count - Content-Type: application/json; charset=utf-8
+GET /api/membership/count 200 in 1021ms :: {"availableSpots":161}
+[GET] /count - Content-Type: application/json; charset=utf-8
+GET /api/membership/count 304 in 60ms :: {"availableSpots":161}
+[GET] /count - Content-Type: application/json; charset=utf-8
+GET /api/membership/count 304 in 59ms :: {"availableSpots":161}
+[GET] /count - Content-Type: application/json; charset=utf-8
+GET /api/membership/count 304 in 58ms :: {"availableSpots":161}
+[GET] /count - Content-Type: application/json; charset=utf-8
+GET /api/membership/count 304 in 58ms :: {"availableSpots":161}
+[GET] /count - Content-Type: application/json; charset=utf-8
+GET /api/membership/count 304 in 58ms :: {"availableSpots":161}
+[GET] /count - Content-Type: application/json; charset=utf-8
+GET /api/membership/count 304 in 58ms :: {"availableSpots":161}
+[1G[0K⠙[1G[0K[1mnpm[22m [96mnotice[39m
+[1mnpm[22m [96mnotice[39m New [33mminor[39m version of npm available! [33m11.1.0[39m -> [34m11.12.1[39m
+[1mnpm[22m [96mnotice[39m Changelog: [34mhttps://github.com/npm/cli/releases/tag/v11.12.1[39m
+[1mnpm[22m [96mnotice[39m To update run: [4mnpm install -g npm@11.12.1[24m
+[1mnpm[22m [96mnotice[39m
+[1G[0K⠙[1G[0K
