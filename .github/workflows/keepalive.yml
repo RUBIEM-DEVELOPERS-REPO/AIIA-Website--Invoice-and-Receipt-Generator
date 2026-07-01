@@ -15,7 +15,7 @@ jobs:
           host: ${{ secrets.CPANEL_HOST }}
           username: ${{ secrets.CPANEL_USER }}
           key: ${{ secrets.CPANEL_SSH_KEY }}
-          port: 2222
+          port: 22
           script: |
             source /home/aiinstit/nodevenv/aiia-app/18/bin/activate 2>/dev/null
             if ! pgrep -f "aiia-app/dist/index.js" > /dev/null 2>&1; then
