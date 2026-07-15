@@ -1,4 +1,4 @@
-import { TEAM_MEMBERS_HIERARCHY } from "@/lib/constants";
+
 import TeamCard from "@/components/sections/team-card";
 import { motion } from "framer-motion";
 import { Link } from "wouter";

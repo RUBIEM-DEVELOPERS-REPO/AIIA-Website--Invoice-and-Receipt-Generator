@@ -1,89 +1,116 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { serveStatic } from "./vite";
 import session from "express-session";
 import pg from "pg";
 import connectPgSimple from "connect-pg-simple";
-import { execSync } from "child_process";
 import path from "path";
 import fs from "fs";
+import { execSync } from "child_process";
 
 const { Pool } = pg;
+
+// ─── App setup ────────────────────────────────────────────────────────────────
 
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: false, limit: "10mb" }));
 
-// Initialize database pool
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  connectionTimeoutMillis: 5000,
-  idleTimeoutMillis: 30000,
-  max: 10,
-});
-
-// Add startup timing logs
 const startTime = Date.now();
 console.log("Starting server initialization...");
 
-// Configure session store
+// ─── Database pool ─────────────────────────────────────────────────────────────
+
+export const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  connectionTimeoutMillis: 8000,
+  idleTimeoutMillis: 30000,
+  max: 20,
+  // Reconnect automatically on idle connection errors
+  allowExitOnIdle: false,
+});
+
+pool.on("error", (err) => {
+  console.error("[DB] Unexpected pool error:", err.message);
+});
+
+// ─── DB connection with retry loop ────────────────────────────────────────────
+
+async function connectWithRetry(
+  maxAttempts = 10,
+  baseDelayMs = 2000
+): Promise<void> {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const client = await pool.connect();
+      await client.query("SELECT 1");
+      client.release();
+      console.log(
+        `[DB] Connected successfully (attempt ${attempt}, ${Date.now() - startTime}ms)`
+      );
+      return;
+    } catch (err: any) {
+      const delay = Math.min(baseDelayMs * 2 ** (attempt - 1), 30_000);
+      console.warn(
+        `[DB] Connection attempt ${attempt}/${maxAttempts} failed: ${err.message}. Retrying in ${delay / 1000}s...`
+      );
+      if (attempt === maxAttempts) {
+        throw new Error(
+          `[DB] Could not connect after ${maxAttempts} attempts: ${err.message}`
+        );
+      }
+      await new Promise((r) => setTimeout(r, delay));
+    }
+  }
+}
+
+// ─── Session store ─────────────────────────────────────────────────────────────
+
 const PostgresStore = connectPgSimple(session);
 const sessionStore = new PostgresStore({
   pool,
   createTableIfMissing: true,
-  pruneSessionInterval: 60
+  pruneSessionInterval: 60,
 });
 
-// Configure session middleware
 app.use(
   session({
     store: sessionStore,
-    secret: process.env.REPL_ID || 'your-secret-key',
+    secret: process.env.SESSION_SECRET || process.env.REPL_ID || "aiia-secret",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      // In deployment, we need to allow non-secure cookies since we might not have HTTPS
-      secure: false, 
+      secure: process.env.NODE_ENV === "production",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       httpOnly: true,
-      sameSite: 'lax'
+      sameSite: "lax",
     },
-    name: 'aiia.sid' // Custom session cookie name
+    name: "aiia.sid",
   })
 );
 
-// Debug middleware for content type
-app.use((req, res, next) => {
-  const oldSend = res.send;
-  res.send = function (...args) {
-    console.log(`[${req.method}] ${req.path} - Content-Type:`, res.getHeader('content-type'));
-    return oldSend.apply(res, args);
-  };
-  next();
-});
+// ─── Request logging middleware ────────────────────────────────────────────────
 
-// Add CORS headers for development
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
 
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+  const reqStart = Date.now();
+  const reqPath = req.path;
+  let capturedJson: Record<string, any> | undefined;
 
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
+  const originalJson = res.json.bind(res);
+  res.json = function (body: any, ...args: any[]) {
+    capturedJson = body;
+    return originalJson(body, ...args);
   };
 
   res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+    if (reqPath.startsWith("/api")) {
+      const duration = Date.now() - reqStart;
+      let logLine = `${req.method} ${reqPath} ${res.statusCode} in ${duration}ms`;
+      if (capturedJson && res.statusCode >= 400) {
+        logLine += ` :: ${JSON.stringify(capturedJson)}`;
       }
       console.log(logLine);
     }
@@ -92,7 +119,28 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files from the articleimages directory
+// ─── Health check (always available, even before DB connects) ──────────────────
+
+app.get("/health", async (_req, res) => {
+  let dbOk = false;
+  try {
+    const client = await pool.connect();
+    await client.query("SELECT 1");
+    client.release();
+    dbOk = true;
+  } catch {
+    dbOk = false;
+  }
+  res.status(dbOk ? 200 : 503).json({
+    status: dbOk ? "ok" : "degraded",
+    db: dbOk ? "connected" : "unavailable",
+    uptime: Math.floor((Date.now() - startTime) / 1000),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// ─── Static asset directories ──────────────────────────────────────────────────
+
 const articleImagesDir = path.join(process.cwd(), "client", "src", "lib", "articleimages");
 if (!fs.existsSync(articleImagesDir)) {
   fs.mkdirSync(articleImagesDir, { recursive: true });
@@ -102,135 +150,110 @@ if (!fs.existsSync(articleImagesDir)) {
 }
 app.use("/lib/articleimages", express.static(articleImagesDir));
 
-// Add health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+// ─── Global error handler ──────────────────────────────────────────────────────
+
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  console.error("[Error]", err.message);
+  if (err.stack) console.error(err.stack);
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(status).json({
+    message,
+    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
+  });
 });
+
+// ─── Port cleanup (cross-platform) ────────────────────────────────────────────
+
+function freePort(port: number): void {
+  try {
+    if (process.platform === "win32") {
+      const result = execSync(
+        `netstat -ano | findstr :${port}`,
+        { encoding: "utf8" }
+      );
+      const pids = [...new Set(
+        result.trim().split("\n")
+          .map((line) => line.trim().split(/\s+/).pop())
+          .filter(Boolean)
+      )];
+      for (const pid of pids) {
+        try {
+          execSync(`taskkill /PID ${pid} /F`, { stdio: "ignore" });
+          console.log(`[Port] Freed PID ${pid} on port ${port}`);
+        } catch { /* might already be gone */ }
+      }
+    } else {
+      const result = execSync(`lsof -i :${port} -t`, { encoding: "utf8" });
+      result.trim().split("\n").forEach((pid) => {
+        try { execSync(`kill -9 ${pid}`); } catch { /* ignore */ }
+      });
+    }
+  } catch {
+    // No process found on port — that's fine
+  }
+}
+
+// ─── HTTP server startup with retry ───────────────────────────────────────────
+
+function startListening(
+  server: ReturnType<typeof import("http").createServer>,
+  port: number,
+  host: string,
+  attempt = 1,
+  maxAttempts = 5
+): void {
+  server.listen(port, host, () => {
+    console.log(
+      `[Server] Listening at http://${host}:${port} (${Date.now() - startTime}ms startup)`
+    );
+    console.log("[Server] Ready for connections");
+  }).on("error", (err: any) => {
+    if (err.code === "EADDRINUSE" && attempt < maxAttempts) {
+      console.warn(`[Server] Port ${port} in use — attempt ${attempt}/${maxAttempts}. Freeing...`);
+      freePort(port);
+      setTimeout(() => startListening(server, port, host, attempt + 1, maxAttempts), 2000);
+    } else {
+      console.error(`[Server] Fatal: could not bind port ${port} after ${attempt} attempts`, err);
+      process.exit(1);
+    }
+  });
+}
+
+// ─── Main startup ──────────────────────────────────────────────────────────────
 
 (async () => {
   try {
-    // Test database connection before proceeding
-    console.log("Testing database connection...");
-    const client = await pool.connect();
-    try {
-      await client.query('SELECT 1');
-    } finally {
-      client.release();
-    }
-    console.log(`Database connection successful (${Date.now() - startTime}ms)`);
+    // Connect to DB with retry — server HTTP listener comes up AFTER successful connection
+    await connectWithRetry(10, 2000);
 
-    // Run database migrations
-    const { runMigrations } = await import('./migrationRunner');
+    // Run migrations only after DB is confirmed up
+    const { runMigrations } = await import("./migrationRunner");
     await runMigrations();
 
+    // Register all routes (mounts sub-routers, static dirs, auth)
     const server = registerRoutes(app);
 
-    // Error handling middleware with full stack traces
-    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-      console.error("Error in request handling:", err);
-      console.error("Stack trace:", err.stack);
-      const status = err.status || err.statusCode || 500;
-      const message = err.message || "Internal Server Error";
-      res.status(status).json({ message, stack: err.stack });
-    });
-
-    // Configure static file serving with proper MIME types
-    const staticConfig = {
-      setHeaders: (res: Response, filePath: string) => {
-        if (filePath.endsWith('.js')) {
-          res.setHeader('Content-Type', 'application/javascript');
-        } else if (filePath.endsWith('.css')) {
-          res.setHeader('Content-Type', 'text/css');
-        }
-      }
-    };
-
-    // Serve static files based on environment
-    if (process.env.NODE_ENV === 'production') {
-      const distPath = path.join(process.cwd(), 'dist', 'public');
-      console.log('Serving static files from:', distPath);
-      app.use(express.static(distPath, staticConfig));
-
-      // SPA fallback - must be after API routes but before 404
-      app.get('*', (req, res, next) => {
-        if (req.path.startsWith('/api')) {
-          next();
-        } else {
-          console.log('SPA fallback for:', req.path);
-          res.sendFile(path.join(distPath, 'index.html'));
-        }
+    // Serve frontend assets
+    if (process.env.NODE_ENV === "production") {
+      const distPath = path.join(process.cwd(), "dist", "public");
+      console.log("[Server] Serving static files from:", distPath);
+      app.use(express.static(distPath));
+      app.get("*", (req, res, next) => {
+        if (req.path.startsWith("/api")) return next();
+        res.sendFile(path.join(distPath, "index.html"));
       });
     } else {
-      // In development, let Vite handle everything
-      const { setupVite } = await import('./vite');
+      const { setupVite } = await import("./vite");
       await setupVite(app, server);
     }
 
-    // Try to start the server with retries
-    const HOST = "0.0.0.0";
-    const PORT = 5000;
-    const MAX_RETRIES = 3;
-    let retryCount = 0;
+    // Bind to port (with retry on EADDRINUSE)
+    startListening(server, 5000, "0.0.0.0");
 
-    const killPortProcess = () => {
-      try {
-        console.log("Attempting to find processes on port 5000...");
-        const result = execSync('lsof -i :5000 -t');
-        const pids = result.toString().trim().split('\n');
-        for (const pid of pids) {
-          console.log(`Attempting to kill process ${pid}...`);
-          execSync(`kill -9 ${pid}`);
-          console.log(`Successfully killed process ${pid} on port ${PORT}`);
-        }
-        return true;
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log(`Error while killing port process: ${error.message}`);
-          if (error.stack) {
-            console.log(`Stack trace: ${error.stack}`);
-          }
-        }
-        return false;
-      }
-    };
-
-    const startServer = () => {
-      if (retryCount > 0) {
-        // Try to kill any existing process on the port
-        killPortProcess();
-        // Wait a bit for the port to be freed
-        console.log(`Waiting for port ${PORT} to be available...`);
-      }
-
-      server.listen(PORT, HOST, () => {
-        console.log(`Server running at http://${HOST}:${PORT} (${Date.now() - startTime}ms total startup time)`);
-        console.log(`Application is ready for connections`);
-      }).on('error', (error: any) => {
-        console.error("Server error:", error);
-        if (error.stack) {
-          console.error("Stack trace:", error.stack);
-        }
-
-        if (error.code === 'EADDRINUSE' && retryCount < MAX_RETRIES) {
-          retryCount++;
-          console.log(`Port ${PORT} in use, attempting retry ${retryCount} of ${MAX_RETRIES}...`);
-
-          // Wait before retry
-          setTimeout(startServer, 2000);
-        } else {
-          console.error(`Failed to start server after ${retryCount} retries:`, error);
-          process.exit(1);
-        }
-      });
-    };
-
-    startServer();
-
-  } catch (error) {
-    console.error("Failed to start server:", error);
-    if (error instanceof Error && error.stack) {
-      console.error("Stack trace:", error.stack);
-    }
+  } catch (error: any) {
+    console.error("[Server] Fatal startup error:", error.message);
+    if (error.stack) console.error(error.stack);
     process.exit(1);
   }
 })();

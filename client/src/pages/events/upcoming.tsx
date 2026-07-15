@@ -315,7 +315,7 @@ export default function UpcomingEvents() {
             ))}
           </div>
 
-          {upcomingEvents.length === 0 && (
+          {([...upcomingEvents] as typeof upcomingEvents[number][]).length === 0 && (
             <motion.div variants={fadeInUp} className="text-center py-16">
               <div className="max-w-md mx-auto">
                 <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />

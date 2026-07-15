@@ -1,6 +1,15 @@
 
+// @ts-ignore – paynow has no TypeScript declarations
 import { Paynow } from "paynow";
-import { type Payment } from "@db/schema";
+
+/** Extended payment shape used by paynow that includes mobile-specific fields */
+interface PaynowPaymentRequest {
+  id: number;
+  amount: string;
+  paymentMethod: string | null;
+  phoneNumber?: string;
+  provider?: string;
+}
 
 // Initialize Paynow
 const paynow = new Paynow(
@@ -12,7 +21,7 @@ const paynow = new Paynow(
 paynow.resultUrl = `${process.env.APP_URL}/api/payments/callback`;
 paynow.returnUrl = `${process.env.APP_URL}/payment/success`;
 
-export async function initiatePayment(payment: Payment) {
+export async function initiatePayment(payment: PaynowPaymentRequest) {
   const payment_ref = `REF-${payment.id}`;
   const payment_obj = paynow.createPayment(payment_ref);
   payment_obj.add("Membership Payment", Number(payment.amount));

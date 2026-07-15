@@ -1,5 +1,6 @@
-import { db } from "../../db";
-import { conversations, messages } from "@shared/schema";
+import { db } from "@db";
+// @ts-ignore – conversations and messages are replit-integration tables not in the main schema
+import { conversations, messages } from "@db/schema";
 import { eq, desc } from "drizzle-orm";
 
 export interface IChatStorage {

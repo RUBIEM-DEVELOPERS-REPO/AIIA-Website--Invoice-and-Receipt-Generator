@@ -73,7 +73,7 @@ const ArticleDialog: React.FC<ArticleDialogProps> = ({
                       e.preventDefault();
                       onClose();
                       // Trigger login dialog through DOM event
-                      document.querySelector('[aria-label="Login"]')?.click();
+                      (document.querySelector('[aria-label="Login"]') as HTMLElement)?.click();
                     }}
                   >
                     Login
